@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="border-t border-border mt-8">
-      <div className="max-w-5xl mx-auto px-6 py-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+      <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         {/* Left */}
         <div>
           <p className="text-sm font-semibold text-ink">Abhinandan</p>
@@ -11,7 +11,7 @@ export default function Footer() {
         </div>
 
         {/* Center */}
-        <div className="text-center">
+        <div>
           <p className="text-sm text-ink-muted mb-2">
             Working on something interesting?
           </p>
@@ -26,14 +26,14 @@ export default function Footer() {
         </div>
 
         {/* Right */}
-        <div className="text-right text-xs text-ink-muted flex flex-col gap-1">
+        <div className="text-xs text-ink-muted flex flex-col gap-1 sm:text-right">
           <a
             href="mailto:abhinandan@abhinandan.one"
             className="hover:text-ink transition-colors"
           >
             abhinandan@abhinandan.one
           </a>
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-3 sm:justify-end">
             <a
               href="https://github.com/awesome-v0"
               target="_blank"
