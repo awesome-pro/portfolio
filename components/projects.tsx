@@ -33,11 +33,11 @@ const PROJECTS: Project[] = [
   },
   {
     tag: "Full-Stack AI Product",
-    title: "[Product Name Placeholder]",
+    title: "NewTools",
     description:
-      "End-to-end AI-powered product built from scratch. Handled everything from model selection and prompt design to the React frontend and GCP deployment. Used by [N] users in production.",
-    stack: ["Next.js", "TypeScript", "Claude API", "GCP"],
-    link: "[PROJECT_LINK_PLACEHOLDER]",
+      "Built a free, privacy-focused browser utility platform from scratch. Features AI-powered PDF-to-CSV extraction (Claude API with SSE streaming), a shared daily credit system, Supabase auth, and a suite of client-side tools — all with zero data sent to the server.",
+    stack: ["Next.js", "TypeScript", "FastAPI", "Claude API", "Supabase"],
+    link: "https://newtools.space",
   },
 ];
 
