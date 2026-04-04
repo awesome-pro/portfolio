@@ -44,6 +44,14 @@ export default function About() {
           <p className="text-sm text-ink-faint mt-2">
             Currently open to select projects · [CITY_PLACEHOLDER]
           </p>
+          <a
+            href="[RESUME_URL]"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-accent hover:text-accent-hover transition-colors self-start mt-1"
+          >
+            View Resume →
+          </a>
         </div>
 
         {/* Stats */}

@@ -1,13 +1,14 @@
 import Image from "next/image";
 import BookCallButton from "@/components/book-call-button";
+import { Badge } from "./ui/badge";
 
 export default function Hero() {
   return (
     <section className="min-h-[90vh] flex flex-col justify-center px-6 max-w-5xl mx-auto lg:flex-row lg:items-center lg:justify-between gap-12">
-      <div className="flex-1">
-        <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted mb-6">
-          Founding Engineer · AI Systems
-        </p>
+      <div className="flex-1 items-center">
+         <Badge>
+            Agentic AI Engineer
+          </Badge>
 
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-none text-ink mb-6">
           I build the infrastructure
