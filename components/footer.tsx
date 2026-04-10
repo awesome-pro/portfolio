@@ -22,7 +22,7 @@ export default function Footer() {
               Mail
             </a>
             <a
-              href="[RESUME_URL]"
+              href="https://abhinandan.one/resume"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-ink transition-colors"
@@ -30,7 +30,7 @@ export default function Footer() {
               Resume
             </a>
             <a
-              href="https://github.com/awesome-v0"
+              href="https://github.com/awesome-pro"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-ink transition-colors"
@@ -38,7 +38,7 @@ export default function Footer() {
               GitHub
             </a>
             <a
-              href="https://linkedin.com/in/abhinandan-ver"
+              href="https://linkedin.com/in/abhibuilds"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-ink transition-colors"
@@ -46,12 +46,20 @@ export default function Footer() {
               LinkedIn
             </a>
             <a
-              href="https://x.com/abhinandan_ai"
+              href="https://x.com/abhibuilds"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-ink transition-colors"
             >
              X
+            </a>
+            <a
+              href="https://youtube.com/@abhinandan_builds"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-ink transition-colors"
+            >
+             YouTube
             </a>
           </div>
         </div>
