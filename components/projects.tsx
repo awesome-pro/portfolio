@@ -1,9 +1,27 @@
+"use client";
+
+import { useState } from "react";
+
+interface MediaItem {
+  type: "image" | "video";
+  src: string;
+  alt?: string;
+}
+
+interface ProjectLink {
+  label: string;
+  url: string;
+}
+
 interface Project {
   tag: string;
   title: string;
   description: string;
   stack: string[];
-  link: string | null;
+  liveDemo: string | null;
+  github: string | null;
+  links?: ProjectLink[];
+  media?: MediaItem[];
 }
 
 const PROJECTS: Project[] = [
@@ -13,7 +31,8 @@ const PROJECTS: Project[] = [
     description:
       "Designed and shipped a multi-agent pipeline using Claude's API that decomposes complex research queries into parallel sub-agents, reconciles conflicting outputs, and synthesizes a grounded response. Reduced end-to-end latency by [X]% vs. sequential chains.",
     stack: ["TypeScript", "Claude API", "Node.js"],
-    link: "[PROJECT_LINK_PLACEHOLDER]",
+    liveDemo: null,
+    github: null,
   },
   {
     tag: "LLM Observability",
@@ -21,7 +40,8 @@ const PROJECTS: Project[] = [
     description:
       "Built production observability for a system routing prompts across GPT-4, Claude, and Gemini. Tracks latency p50/p95, cost-per-token, error rates, and semantic drift — powers real-time routing decisions.",
     stack: ["Python", "Flask", "GCP", "PostgreSQL"],
-    link: "[PROJECT_LINK_PLACEHOLDER]",
+    liveDemo: null,
+    github: null,
   },
   {
     tag: "Inference Engineering",
@@ -29,7 +49,8 @@ const PROJECTS: Project[] = [
     description:
       "Architected a caching and batching layer in front of foundation model endpoints. Achieved [X]ms median cold-start and [X]% cache hit rate in production, cutting inference costs by ~[X]%.",
     stack: ["Python", "Docker", "Redis", "AWS"],
-    link: "[PROJECT_LINK_PLACEHOLDER]",
+    liveDemo: null,
+    github: null,
   },
   {
     tag: "Full-Stack AI Product",
@@ -37,9 +58,102 @@ const PROJECTS: Project[] = [
     description:
       "Built a free, privacy-focused browser utility platform from scratch. Features AI-powered PDF-to-CSV extraction (Claude API with SSE streaming), a shared daily credit system, Supabase auth, and a suite of client-side tools — all with zero data sent to the server.",
     stack: ["Next.js", "TypeScript", "FastAPI", "Claude API", "Supabase"],
-    link: "https://newtools.space",
+    liveDemo: "https://newtools.space",
+    github: null,
   },
 ];
+
+function MediaCarousel({ media }: { media: MediaItem[] }) {
+  const [index, setIndex] = useState(0);
+
+  const prev = () => setIndex((i) => (i - 1 + media.length) % media.length);
+  const next = () => setIndex((i) => (i + 1) % media.length);
+
+  const current = media[index];
+
+  return (
+    <div className="relative w-full aspect-video bg-background rounded-xl overflow-hidden mb-4 group">
+      {current.type === "video" ? (
+        <video
+          src={current.src}
+          className="w-full h-full object-cover"
+          controls
+          playsInline
+          preload="metadata"
+        />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={current.src}
+          alt={current.alt ?? "Project media"}
+          className="w-full h-full object-cover"
+        />
+      )}
+
+      {media.length > 1 && (
+        <>
+          {/* Arrows */}
+          <button
+            onClick={prev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-ink-muted hover:text-ink transition-opacity opacity-0 group-hover:opacity-100"
+            aria-label="Previous"
+          >
+            ‹
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-background/80 border border-border flex items-center justify-center text-ink-muted hover:text-ink transition-opacity opacity-0 group-hover:opacity-100"
+            aria-label="Next"
+          >
+            ›
+          </button>
+
+          {/* Dots */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {media.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  i === index ? "bg-ink" : "bg-ink/30"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function LinkPill({
+  href,
+  label,
+  disabled,
+}: {
+  href: string | null;
+  label: string;
+  disabled?: boolean;
+}) {
+  if (disabled || !href) {
+    return (
+      <span className="inline-flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-full border border-border text-ink-faint cursor-not-allowed select-none">
+        {label}
+      </span>
+    );
+  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-full border border-border text-ink-muted hover:border-ink-muted hover:text-ink transition-colors"
+    >
+      {label} ↗
+    </a>
+  );
+}
 
 export default function Projects() {
   return (
@@ -57,6 +171,12 @@ export default function Projects() {
             key={project.title}
             className="bg-surface border border-border rounded-2xl p-6 flex flex-col gap-4 hover:border-ink-muted transition-colors"
           >
+            {/* Media carousel */}
+            {project.media && project.media.length > 0 && (
+              <MediaCarousel media={project.media} />
+            )}
+
+            {/* Header */}
             <div>
               <p className="text-xs font-semibold tracking-widest uppercase text-ink-faint mb-2">
                 {project.tag}
@@ -66,10 +186,12 @@ export default function Projects() {
               </h3>
             </div>
 
+            {/* Description */}
             <p className="text-sm leading-relaxed text-ink-muted flex-1">
               {project.description}
             </p>
 
+            {/* Stack */}
             <div className="flex flex-wrap gap-1.5">
               {project.stack.map((tech) => (
                 <span
@@ -81,16 +203,22 @@ export default function Projects() {
               ))}
             </div>
 
-            {project.link && project.link !== "[PROJECT_LINK_PLACEHOLDER]" && (
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-accent hover:text-accent-hover transition-colors self-start"
-              >
-                View ↗
-              </a>
-            )}
+            {/* Links */}
+            <div className="flex flex-wrap gap-2 pt-1 border-t border-border">
+              <LinkPill
+                href={project.liveDemo}
+                label="Live Demo"
+                disabled={!project.liveDemo}
+              />
+              <LinkPill
+                href={project.github}
+                label="GitHub"
+                disabled={!project.github}
+              />
+              {project.links?.map((link) => (
+                <LinkPill key={link.label} href={link.url} label={link.label} />
+              ))}
+            </div>
           </div>
         ))}
       </div>

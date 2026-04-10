@@ -1,3 +1,12 @@
+const AWARDS = [
+  { label: "Top 1% TypeScript Engineer Globally · Algora", href: "https://algora.io/profile/awesome-pro" },
+  { label: "HDFC Badhate Kadam Scholar", href: "https://drive.google.com/file/d/17KPdIiC27LJ4wcFIAtoVYwTV9fHQgrCi/view?usp=sharing" },
+  { label: "Reliance Foundation Scholar", href: "https://drive.google.com/file/d/1vFGwoIFeGAxpgHGlwcPJ3qkB48vqx_On/view" },
+  { label: "Amazon ML Summer School 2025", href: null },
+  { label: "2nd Place · Outlier AI Hackathon", href: null },
+  { label: "IYMC Gold Honour", href: "https://drive.google.com/file/d/1yVa7inC4SaJKWa-m0xaY7jZUIMwka792/view?usp=sharing" },
+];
+
 interface Experience {
   company: string;
   role: string;
@@ -10,12 +19,18 @@ interface Experience {
 const EXPERIENCES: Experience[] = [
   {
     company: "Browzer",
-    role: "[Role Placeholder]",
-    location: "[Location]",
+    role: "Founding Software Engineer",
+    location: "Remote",
     period: "Oct 2025 – Present",
     current: true,
     bullets: [
-      // Add your experience details here
+      "Built a CDP-based browser automation engine using Electron.js and Chrome DevTools Protocol, enabling reliable semantic action capture and replay across complex web workflows.",
+      "Designed and shipped a WXT Chrome extension (MV3) with a FastAPI backend, orchestrating real-time browser ↔ server communication via SSE with Heroku-tuned heartbeat infrastructure.",
+      "Integrated Claude as the LLM backbone to plan and execute automation tasks from recorded browser actions, powering an agentic execution pipeline end-to-end.",
+      "Architected multi-tenant auth using Supabase with JWT custom claims, role-based access control, and 30-day session persistence across web and extension clients.",
+      "Implemented Stripe subscription billing with webhook handling for edge cases including cancellation flows and payment recovery.",
+      "Set up GitHub Actions CI/CD with automated Claude-powered code review and changelog generation, reducing manual release overhead significantly.",
+      "Built a process graph system using Neo4j + Supabase to model and persist workflow relationships extracted from recorded browser sessions.",
     ],
   },
   {
@@ -120,6 +135,33 @@ export default function Experience() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Awards — minimal inline strip */}
+      <div className="mt-10 pt-8 border-t border-border flex flex-wrap gap-2 items-center">
+        <span className="text-[11px] font-semibold tracking-widest uppercase text-ink-faint mr-1">
+          Recognition
+        </span>
+        {AWARDS.map((award) =>
+          award.href ? (
+            <a
+              key={award.label}
+              href={award.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] px-2.5 py-1 rounded-full border border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
+            >
+              {award.label}
+            </a>
+          ) : (
+            <span
+              key={award.label}
+              className="text-[11px] px-2.5 py-1 rounded-full border border-border text-ink-faint"
+            >
+              {award.label}
+            </span>
+          )
+        )}
       </div>
     </section>
   );
