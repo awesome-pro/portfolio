@@ -5,6 +5,7 @@ import Projects from "@/components/projects";
 import Experience from "@/components/experience";
 import About from "@/components/about";
 import Proof from "@/components/proof";
+import LatestBlogs from "@/components/blogs/LatestBlogs";
 import Footer from "@/components/footer";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
         <Skills />
         <About />
         <Proof />
+        <LatestBlogs />
       </main>
       <Footer />
     </div>
