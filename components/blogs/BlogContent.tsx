@@ -1,57 +1,128 @@
-import { generateHTML } from "@tiptap/html";
-import StarterKit from "@tiptap/starter-kit";
-import TiptapImage from "@tiptap/extension-image";
-import TiptapLink from "@tiptap/extension-link";
-import Youtube from "@tiptap/extension-youtube";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { createLowlight, common } from "lowlight";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import rehypeRaw from "rehype-raw";
 
-const lowlight = createLowlight(common);
-
-const extensions = [
-  StarterKit.configure({ codeBlock: false }),
-  TiptapImage,
-  TiptapLink,
-  Youtube,
-  CodeBlockLowlight.configure({ lowlight }),
-];
-
-export default function BlogContent({
-  content,
-}: {
-  content: Record<string, unknown>;
-}) {
-  // Guard: TipTap JSON must have a `type` field
-  if (!content || !content.type) return null;
-
-  const html = generateHTML(content, extensions);
+export default function BlogContent({ content }: { content: string }) {
+  if (!content) return null;
 
   return (
-    <div
-      className="
-        blog-content text-ink leading-relaxed
-        [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h1]:text-ink [&_h1]:mt-10 [&_h1]:mb-4
-        [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-ink [&_h2]:mt-8 [&_h2]:mb-3
-        [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-ink [&_h3]:mt-6 [&_h3]:mb-2
-        [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-ink [&_h4]:mt-5 [&_h4]:mb-2
-        [&_p]:text-base [&_p]:leading-7 [&_p]:text-ink-muted [&_p]:mb-4
-        [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:opacity-80
-        [&_strong]:text-ink [&_strong]:font-semibold
-        [&_em]:italic
-        [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul]:text-ink-muted
-        [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol]:text-ink-muted
-        [&_li]:mb-1.5 [&_li]:leading-7
-        [&_blockquote]:border-l-4 [&_blockquote]:border-border [&_blockquote]:pl-4 [&_blockquote]:text-ink-muted [&_blockquote]:italic [&_blockquote]:my-6
-        [&_hr]:border-border [&_hr]:my-8
-        [&_img]:rounded-xl [&_img]:border [&_img]:border-border [&_img]:my-6 [&_img]:w-full [&_img]:object-cover
-        [&_pre]:bg-surface [&_pre]:border [&_pre]:border-border [&_pre]:rounded-xl [&_pre]:p-5 [&_pre]:my-6 [&_pre]:overflow-x-auto
-        [&_code]:font-mono [&_code]:text-sm
-        [&_pre_code]:text-ink-muted
-        [&_:not(pre)>code]:bg-surface [&_:not(pre)>code]:border [&_:not(pre)>code]:border-border [&_:not(pre)>code]:rounded [&_:not(pre)>code]:px-1.5 [&_:not(pre)>code]:py-0.5 [&_:not(pre)>code]:text-sm [&_:not(pre)>code]:text-ink
-        [&_.youtube-embed]:w-full [&_.youtube-embed]:aspect-video [&_.youtube-embed]:rounded-xl [&_.youtube-embed]:overflow-hidden [&_.youtube-embed]:my-6 [&_.youtube-embed]:border [&_.youtube-embed]:border-border
-        [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-xl [&_iframe]:border [&_iframe]:border-border [&_iframe]:my-6
-      "
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className="blog-content">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeHighlight, rehypeRaw]}
+        components={{
+          h1: ({ children }) => (
+            <h1 className="text-3xl font-bold tracking-tight text-ink mt-10 mb-4 first:mt-0">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-2xl font-semibold tracking-tight text-ink mt-8 mb-3">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-xl font-semibold text-ink mt-6 mb-2">
+              {children}
+            </h3>
+          ),
+          h4: ({ children }) => (
+            <h4 className="text-lg font-semibold text-ink mt-5 mb-2">
+              {children}
+            </h4>
+          ),
+          p: ({ children }) => (
+            <p className="text-base leading-7 text-ink-muted mb-4">{children}</p>
+          ),
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target={href?.startsWith("http") ? "_blank" : undefined}
+              rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="text-primary underline underline-offset-2 hover:opacity-80 transition-opacity"
+            >
+              {children}
+            </a>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-semibold text-ink">{children}</strong>
+          ),
+          em: ({ children }) => <em className="italic">{children}</em>,
+          ul: ({ children }) => (
+            <ul className="list-disc pl-6 mb-4 text-ink-muted space-y-1.5">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="list-decimal pl-6 mb-4 text-ink-muted space-y-1.5">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => (
+            <li className="leading-7">{children}</li>
+          ),
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-4 border-border pl-4 italic text-ink-muted my-6">
+              {children}
+            </blockquote>
+          ),
+          hr: () => <hr className="border-border my-8" />,
+          img: ({ src, alt }) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={src}
+              alt={alt ?? ""}
+              className="rounded-xl border border-border my-6 w-full object-cover"
+            />
+          ),
+          pre: ({ children }) => (
+            <pre className="bg-surface border border-border rounded-xl p-5 my-6 overflow-x-auto text-sm leading-relaxed">
+              {children}
+            </pre>
+          ),
+          code: ({ className, children, ...props }) => {
+            const isBlock = className?.includes("language-");
+            if (isBlock) {
+              return (
+                <code className={`font-mono text-sm text-ink-muted ${className ?? ""}`} {...props}>
+                  {children}
+                </code>
+              );
+            }
+            return (
+              <code
+                className="font-mono text-sm bg-surface border border-border rounded px-1.5 py-0.5 text-ink"
+                {...props}
+              >
+                {children}
+              </code>
+            );
+          },
+          table: ({ children }) => (
+            <div className="overflow-x-auto my-6">
+              <table className="w-full border-collapse border border-border rounded-xl text-sm">
+                {children}
+              </table>
+            </div>
+          ),
+          thead: ({ children }) => (
+            <thead className="bg-surface">{children}</thead>
+          ),
+          th: ({ children }) => (
+            <th className="border border-border px-4 py-2 text-left font-semibold text-ink">
+              {children}
+            </th>
+          ),
+          td: ({ children }) => (
+            <td className="border border-border px-4 py-2 text-ink-muted">
+              {children}
+            </td>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }

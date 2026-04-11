@@ -7,8 +7,7 @@ export interface Blog {
   slug: string;
   excerpt: string | null;
   cover_image_url: string | null;
-  content: Record<string, unknown>;
-  content_text: string | null;
+  content: string; // raw markdown
   tags: string[];
   reading_time_minutes: number | null;
   is_published: boolean;

@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { JSONContent } from "@tiptap/react";
 import { createClient } from "@/lib/supabase/client";
 import type { Blog } from "@/lib/blogs";
 import BlogEditor from "@/components/admin/BlogEditor";
@@ -17,8 +16,15 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function estimateReadingTime(text: string): number {
-  const words = text.trim().split(/\s+/).length;
+function estimateReadingTime(markdown: string): number {
+  // Strip markdown syntax before counting words
+  const text = markdown
+    .replace(/```[\s\S]*?```/g, "") // code blocks
+    .replace(/`[^`]+`/g, "")        // inline code
+    .replace(/!\[.*?\]\(.*?\)/g, "") // images
+    .replace(/\[.*?\]\(.*?\)/g, "")  // links
+    .replace(/[#*_~>|-]/g, "");      // markdown chars
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
 
@@ -33,35 +39,22 @@ export default function BlogForm({ initial }: BlogFormProps) {
   const [title, setTitle] = useState(initial?.title ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [excerpt, setExcerpt] = useState(initial?.excerpt ?? "");
-  const [tagsInput, setTagsInput] = useState(
-    (initial?.tags ?? []).join(", ")
-  );
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
-    initial?.cover_image_url ?? null
-  );
-  const [content, setContent] = useState<JSONContent>(
-    (initial?.content as JSONContent) ?? {}
-  );
-  const [contentText, setContentText] = useState(initial?.content_text ?? "");
+  const [tagsInput, setTagsInput] = useState((initial?.tags ?? []).join(", "));
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(initial?.cover_image_url ?? null);
+  const [content, setContent] = useState<string>(initial?.content ?? "");
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
-  const handleEditorChange = useCallback(
-    (json: JSONContent, text: string) => {
-      setContent(json);
-      setContentText(text);
-    },
-    []
-  );
+  const handleEditorChange = useCallback((markdown: string) => {
+    setContent(markdown);
+  }, []);
 
   function handleTitleChange(val: string) {
     setTitle(val);
-    if (!initial) {
-      setSlug(slugify(val));
-    }
+    if (!initial) setSlug(slugify(val));
   }
 
   async function handleSave(publish: boolean) {
@@ -69,23 +62,11 @@ export default function BlogForm({ initial }: BlogFormProps) {
     setError(null);
     setSaved(false);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setError("Not authenticated."); setSaving(false); return; }
 
-    if (!user) {
-      setError("Not authenticated.");
-      setSaving(false);
-      return;
-    }
-
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-
-    const readingTime = estimateReadingTime(contentText);
-
+    const tags = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+    const readingTime = estimateReadingTime(content);
     const shouldPublish = publish || isPublished;
     const publishedAt =
       shouldPublish && !initial?.published_at
@@ -98,7 +79,6 @@ export default function BlogForm({ initial }: BlogFormProps) {
       excerpt: excerpt || null,
       cover_image_url: coverImageUrl,
       content,
-      content_text: contentText,
       tags,
       reading_time_minutes: readingTime,
       is_published: shouldPublish,
@@ -113,11 +93,7 @@ export default function BlogForm({ initial }: BlogFormProps) {
         .update(payload)
         .eq("id", initial.id);
 
-      if (updateError) {
-        setError(updateError.message);
-        setSaving(false);
-        return;
-      }
+      if (updateError) { setError(updateError.message); setSaving(false); return; }
     } else {
       const { data: newBlog, error: insertError } = await supabase
         .from("blogs")
@@ -125,13 +101,8 @@ export default function BlogForm({ initial }: BlogFormProps) {
         .select()
         .single();
 
-      if (insertError) {
-        setError(insertError.message);
-        setSaving(false);
-        return;
-      }
+      if (insertError) { setError(insertError.message); setSaving(false); return; }
 
-      // Navigate to edit page after creation so save works correctly
       router.replace(`/admin/edit/${newBlog.id}`);
       setSaving(false);
       setSaved(true);
@@ -141,8 +112,6 @@ export default function BlogForm({ initial }: BlogFormProps) {
     setIsPublished(shouldPublish);
     setSaving(false);
     setSaved(true);
-
-    // Brief flash then clear the saved indicator
     setTimeout(() => setSaved(false), 3000);
   }
 
@@ -150,9 +119,7 @@ export default function BlogForm({ initial }: BlogFormProps) {
     <div className="flex flex-col gap-8">
       {/* Title */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-ink-muted font-mono">
-          Title *
-        </label>
+        <label className="text-xs font-medium text-ink-muted font-mono">Title *</label>
         <input
           type="text"
           required
@@ -165,13 +132,9 @@ export default function BlogForm({ initial }: BlogFormProps) {
 
       {/* Slug */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-ink-muted font-mono">
-          Slug (URL) *
-        </label>
+        <label className="text-xs font-medium text-ink-muted font-mono">Slug (URL) *</label>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-ink-faint whitespace-nowrap">
-            /blogs/
-          </span>
+          <span className="font-mono text-xs text-ink-faint whitespace-nowrap">/blogs/</span>
           <input
             type="text"
             required
@@ -188,9 +151,7 @@ export default function BlogForm({ initial }: BlogFormProps) {
 
       {/* Excerpt */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-ink-muted font-mono">
-          Excerpt (shown in cards & SEO)
-        </label>
+        <label className="text-xs font-medium text-ink-muted font-mono">Excerpt (shown in cards & SEO)</label>
         <textarea
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
@@ -202,9 +163,7 @@ export default function BlogForm({ initial }: BlogFormProps) {
 
       {/* Tags */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-ink-muted font-mono">
-          Tags (comma separated)
-        </label>
+        <label className="text-xs font-medium text-ink-muted font-mono">Tags (comma separated)</label>
         <input
           type="text"
           value={tagsInput}
@@ -214,19 +173,10 @@ export default function BlogForm({ initial }: BlogFormProps) {
         />
       </div>
 
-      {/* Editor */}
+      {/* Markdown Editor */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-ink-muted font-mono">
-          Content
-        </label>
-        <BlogEditor
-          initialContent={
-            initial?.content
-              ? (initial.content as JSONContent)
-              : undefined
-          }
-          onChange={handleEditorChange}
-        />
+        <label className="text-xs font-medium text-ink-muted font-mono">Content (Markdown)</label>
+        <BlogEditor initialContent={initial?.content} onChange={handleEditorChange} />
       </div>
 
       {/* Footer bar */}
@@ -234,28 +184,16 @@ export default function BlogForm({ initial }: BlogFormProps) {
         <label className="flex items-center gap-2.5 cursor-pointer select-none">
           <div
             onClick={() => setIsPublished(!isPublished)}
-            className={`w-10 h-6 rounded-full transition-colors relative ${
-              isPublished ? "bg-ink" : "bg-border"
-            }`}
+            className={`w-10 h-6 rounded-full transition-colors relative ${isPublished ? "bg-ink" : "bg-border"}`}
           >
-            <div
-              className={`absolute top-1 w-4 h-4 rounded-full bg-background transition-transform ${
-                isPublished ? "translate-x-5" : "translate-x-1"
-              }`}
-            />
+            <div className={`absolute top-1 w-4 h-4 rounded-full bg-background transition-transform ${isPublished ? "translate-x-5" : "translate-x-1"}`} />
           </div>
-          <span className="text-sm text-ink-muted">
-            {isPublished ? "Published" : "Draft"}
-          </span>
+          <span className="text-sm text-ink-muted">{isPublished ? "Published" : "Draft"}</span>
         </label>
 
         <div className="flex items-center gap-3">
-          {error && (
-            <p className="text-xs text-destructive font-mono">{error}</p>
-          )}
-          {saved && (
-            <p className="text-xs text-ink-muted font-mono">Saved ✓</p>
-          )}
+          {error && <p className="text-xs text-destructive font-mono">{error}</p>}
+          {saved && <p className="text-xs text-ink-muted font-mono">Saved ✓</p>}
 
           <button
             type="button"
