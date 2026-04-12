@@ -1,4 +1,5 @@
 import Link from "next/link";
+import VisitorCounter from "@/components/visitor-counter";
 
 export default function Footer() {
   return (
@@ -10,6 +11,9 @@ export default function Footer() {
           <p className="text-xs text-ink-muted mt-0.5">
             Agentic AI Engineer
           </p>
+          <div className="mt-1.5">
+            <VisitorCounter />
+          </div>
         </div>
 
        
