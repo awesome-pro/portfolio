@@ -116,34 +116,7 @@ export default async function BlogPostPage({
       <Nav />
 
       <main className="max-w-3xl mx-auto px-6 py-16">
-        {/* Header */}
-        <header className="mb-10">
-          {/* Tags */}
-          {blog.tags && blog.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-5">
-              {blog.tags.map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/blogs?tag=${encodeURIComponent(tag)}`}
-                  className="font-mono text-xs px-2.5 py-1 rounded-full bg-surface border border-border text-ink-muted hover:border-ink-muted hover:text-ink transition-colors"
-                >
-                  {tag}
-                </Link>
-              ))}
-            </div>
-          )}
-
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-4 leading-tight">
-            {blog.title}
-          </h1>
-
-          {blog.excerpt && (
-            <p className="text-lg text-ink-muted leading-relaxed mb-6">
-              {blog.excerpt}
-            </p>
-          )}
-
-          {/* Meta */}
+      <header className="mb-10">
           <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-ink-faint border-t border-border pt-5">
             <span>Abhinandan</span>
             {blog.published_at && (
@@ -161,7 +134,7 @@ export default async function BlogPostPage({
               </>
             )}
           </div>
-        </header>
+       </header>
 
         {/* Cover image */}
         {blog.cover_image_url && (
