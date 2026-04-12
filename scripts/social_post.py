@@ -190,7 +190,7 @@ def generate_posts() -> tuple[str, str]:
 
     logger.info("Calling Claude to research and generate posts...")
     response = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-haiku-4-5-20251001",
         max_tokens=1500,
         tools=[_WEB_SEARCH_TOOL, _DUAL_POST_TOOL],
         tool_choice={"type": "auto"},

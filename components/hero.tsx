@@ -24,10 +24,10 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-3">
           <BookCallButton variant="primary" className="w-full sm:w-auto justify-center" />
           <a
-            href="mailto:abhinandan@abhinandan.one"
+            href="mailto:hi@abhinandan.one"
             className="inline-flex items-center justify-center gap-1.5 border border-border text-ink px-5 py-2.5 rounded-full text-sm font-medium hover:border-ink transition-colors w-full sm:w-auto"
           >
-            abhinandan@abhinandan.one
+            hi@abhinandan.one
           </a>
         </div>
       </div>
