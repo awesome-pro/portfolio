@@ -14,7 +14,6 @@ export interface Blog {
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  author_id: string | null;
 }
 
 export async function getPublishedBlogs(options?: {
@@ -47,6 +46,21 @@ export async function getPublishedBlogs(options?: {
 
 export async function getBlogBySlug(slug: string): Promise<Blog | null> {
   const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .single();
+
+  if (error) return null;
+  return data as Blog;
+}
+
+// Build-time / ISR version — no cookies(), safe for statically-rendered routes
+export async function getBlogBySlugStatic(slug: string): Promise<Blog | null> {
+  const supabase = createStaticClient();
 
   const { data, error } = await supabase
     .from("blogs")

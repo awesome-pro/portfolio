@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBlogBySlug, getAllSlugsStatic } from "@/lib/blogs";
+import { getBlogBySlugStatic, getAllSlugsStatic } from "@/lib/blogs";
 import BlogContent from "@/components/blogs/BlogContent";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
@@ -20,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const blog = await getBlogBySlugStatic(slug);
 
   if (!blog) {
     return { title: "Post Not Found — Abhinandan" };
@@ -75,7 +75,7 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const blog = await getBlogBySlugStatic(slug);
 
   if (!blog) notFound();
 
@@ -117,6 +117,14 @@ export default async function BlogPostPage({
 
       <main className="max-w-3xl mx-auto px-6 py-16">
       <header className="mb-10">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-ink leading-tight mb-4">
+            {blog.title}
+          </h1>
+          {blog.excerpt && (
+            <p className="text-lg text-ink-muted leading-relaxed mb-6">
+              {blog.excerpt}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-ink-faint border-t border-border pt-5">
             <span>Abhinandan</span>
             {blog.published_at && (

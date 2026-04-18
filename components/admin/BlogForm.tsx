@@ -84,7 +84,6 @@ export default function BlogForm({ initial }: BlogFormProps) {
       is_published: shouldPublish,
       published_at: publishedAt,
       updated_at: new Date().toISOString(),
-      author_id: user.id,
     };
 
     if (initial?.id) {

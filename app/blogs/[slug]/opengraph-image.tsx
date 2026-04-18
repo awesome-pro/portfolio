@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getBlogBySlug } from "@/lib/blogs";
+import { getBlogBySlugStatic } from "@/lib/blogs";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -10,7 +10,7 @@ export default async function OGImage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const blog = await getBlogBySlugStatic(slug);
 
   const title = blog?.title ?? "Blog Post";
   const excerpt = blog?.excerpt ?? "";
