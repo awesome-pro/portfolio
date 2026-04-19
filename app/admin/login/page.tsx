@@ -29,7 +29,7 @@ export default function AdminLoginPage() {
       return;
     }
 
-    router.push("/admin/create");
+    router.push("/admin");
     router.refresh();
   }
 

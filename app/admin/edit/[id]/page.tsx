@@ -5,6 +5,8 @@ import BlogForm from "@/components/admin/BlogForm";
 import SignOutButton from "@/components/admin/SignOutButton";
 import DeleteBlogButton from "@/components/admin/DeleteBlogButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditBlogPage({
   params,
 }: {
@@ -22,7 +24,7 @@ export default async function EditBlogPage({
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
             <Link
-              href="/admin"
+              href="/admin/blogs"
               className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
             >
               ← All posts
