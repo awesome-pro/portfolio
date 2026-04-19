@@ -14,6 +14,8 @@ export interface Blog {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  likes: number;
+  views: number;
 }
 
 export async function getPublishedBlogs(options?: {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogBySlugStatic, getAllSlugsStatic } from "@/lib/blogs";
 import BlogContent from "@/components/blogs/BlogContent";
+import BlogInteractions from "@/components/blogs/BlogInteractions";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 
@@ -141,6 +142,8 @@ export default async function BlogPostPage({
                 <span>{blog.reading_time_minutes} min read</span>
               </>
             )}
+            <span>·</span>
+            <BlogInteractions slug={blog.slug} />
           </div>
        </header>
 
