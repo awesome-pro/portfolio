@@ -32,17 +32,15 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="flex-shrink-0 lg:w-72 xl:w-80 lg:max-h-[60vh]">
-        <div className="relative w-full aspect-[3/4] max-h-[50vh] lg:max-h-[60vh] rounded-2xl overflow-hidden">
+       <div className="relative w-[1/3] aspect-[3/4] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
           <Image
-            src="/hero-photo.jpg"
+            src="/hero.png"
             alt="Abhinandan"
             fill
             className="object-cover"
             priority
           />
         </div>
-      </div>
     </section>
   );
 }

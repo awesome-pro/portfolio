@@ -26,20 +26,43 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    tag: "LLM Evaluation Tooling",
+    title: "agenteval",
+    description:
+      "Built and published a Python CLI/package for testing LLM agents with repeated-run reliability scoring instead of brittle exact-match assertions. Shipped tool-call tracing, behavioral assertions (tool usage, ordering, schema, timing), OpenAI/Anthropic adapters, realistic live eval examples, JSON reporting, CI/CD, and a public PyPI release.",
+    stack: [],
+    media: [
+      {
+        type: "image",
+        src: "/projects/agenteval/demo.png",
+        alt: "Demo of agenteval in action",
+      },
+      {
+        type: "image",
+        src: "/projects/agenteval/examples.png",
+        alt: "Examples",
+      },
+      {
+        type: "image",
+        src: "/projects/agenteval/failure-demo.png",
+        alt: "Failure demo",
+      },
+      {
+        type: "image",
+        src: "/projects/agenteval/architecture.png",
+        alt: "Architecture",
+      },
+    ],
+    liveDemo: "https://pypi.org/project/agenteval-py/",
+    github: "https://github.com/awesome-pro/agenteval",
+    links: [{ label: "PyPI", url: "https://pypi.org/project/agenteval-py/" }],
+  },
+  {
     tag: "Multi-Agent System",
     title: "Parallel Research Orchestrator",
     description:
       "Designed and shipped a multi-agent pipeline using Claude's API that decomposes complex research queries into parallel sub-agents, reconciles conflicting outputs, and synthesizes a grounded response. Reduced end-to-end latency by [X]% vs. sequential chains.",
     stack: ["TypeScript", "Claude API", "Node.js"],
-    liveDemo: null,
-    github: null,
-  },
-  {
-    tag: "LLM Observability",
-    title: "Multi-LLM Monitoring Dashboard",
-    description:
-      "Built production observability for a system routing prompts across GPT-4, Claude, and Gemini. Tracks latency p50/p95, cost-per-token, error rates, and semantic drift — powers real-time routing decisions.",
-    stack: ["Python", "Flask", "GCP", "PostgreSQL"],
     liveDemo: null,
     github: null,
   },

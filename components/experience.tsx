@@ -21,7 +21,7 @@ const EXPERIENCES: Experience[] = [
     company: "Browzer",
     role: "Founding Software Engineer",
     location: "Remote",
-    period: "Oct 2025 – Present",
+    period: "Sep 2025 – Present",
     current: true,
     bullets: [
       "Built a CDP-based browser automation engine using Electron.js and Chrome DevTools Protocol, enabling reliable semantic action capture and replay across complex web workflows.",
@@ -101,15 +101,9 @@ export default function Experience() {
             {/* Top row: company + period */}
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-1">
               <div className="flex items-center gap-2.5">
-                <span className="text-base font-semibold text-accent">
+                <span className="text-base font-semibold">
                   {exp.company}
                 </span>
-                {exp.current && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-accent/8 text-accent border border-accent/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
-                    Current
-                  </span>
-                )}
                 <span className="text-xs text-black/50">· {exp.location}</span>
               </div>
               <span className="font-mono text-xs text-ink-muted shrink-0">
