@@ -58,13 +58,39 @@ const PROJECTS: Project[] = [
     links: [{ label: "PyPI", url: "https://pypi.org/project/agenteval-py/" }],
   },
   {
-    tag: "Multi-Agent System",
-    title: "Parallel Research Orchestrator",
+    tag: "Agent Orchestration Framework",
+    title: "Orchflow",
     description:
-      "Designed and shipped a multi-agent pipeline using Claude's API that decomposes complex research queries into parallel sub-agents, reconciles conflicting outputs, and synthesizes a grounded response. Reduced end-to-end latency by [X]% vs. sequential chains.",
-    stack: ["TypeScript", "Claude API", "Node.js"],
-    liveDemo: null,
-    github: null,
+      "Created and published a dependency-free Python 3.11+ framework for readable multi-agent pipelines. Shipped sequential, parallel, conditional, retryable, and observable flows, plus human review gates, JSON checkpoint/resume, structured Agent outputs, offline tests, and tag-based PyPI releases through v0.5.0.",
+    stack: [
+      "Python",
+      "AsyncIO",
+      "LiteLLM",
+      "PyPI",
+      "GitHub Actions",
+      "Pytest",
+      "Ruff",
+      "Pyright",
+    ],
+    media: [
+      {
+        type: "image",
+        src: "/projects/orchflow/architecture.svg",
+        alt: "Orchflow architecture and shipped framework capabilities",
+      },
+    ],
+    liveDemo: "https://pypi.org/project/orchflow/",
+    github: "https://github.com/awesome-pro/orchflow",
+    links: [
+      {
+        label: "Docs",
+        url: "https://github.com/awesome-pro/orchflow#readme",
+      },
+      {
+        label: "v0.5.0",
+        url: "https://github.com/awesome-pro/orchflow/releases/tag/v0.5.0",
+      },
+    ],
   },
   {
     tag: "Inference Engineering",
