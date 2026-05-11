@@ -19,7 +19,7 @@ export default function BookCallButton({
        className="rounded-full px-5 h-10"
         asChild
       >
-        <Link href="https://cal.com/awesome-v0/15min"
+        <Link href="https://cal.com/abhibuilds/30min"
           target="_blank"
           rel="noopener noreferrer">
             Book a Call
@@ -31,7 +31,7 @@ export default function BookCallButton({
 
   return (
     <a
-      href="https://cal.com/awesome-v0/15min"
+      href="https://cal.com/abhibuilds/30min"
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center gap-1.5 border border-border text-ink px-5 py-2.5 rounded-full text-sm font-medium hover:border-ink transition-colors ${className}`}
