@@ -29,7 +29,7 @@ const PROJECTS: Project[] = [
     tag: "Production Agent Runtime",
     title: "GuardLoop",
     description:
-      "Built a typed Python runtime guardrail layer for production AI agents that blocks runaway cost, token, time, and tool-call failures before risky operations execute. Shipped Decimal-based budget enforcement, OpenAI and Anthropic SDK wrappers, per-tool circuit breakers, verifier-driven self-healing retries, structured RunResult failures, OpenTelemetry GenAI-style spans, and adapters that guard existing LangGraph graphs plus OpenAI Agents SDK runs without rewriting the agent framework.",
+      "Built a typed Python runtime guardrail for production AI agents that stops runaway loops before the next risky call runs. Shipped pre-flight, Decimal-precise caps on cost, tokens, time, and tool calls; OpenAI and Anthropic SDK wrappers; per-tool circuit breakers; a verify-fix-retry loop that feeds verifier feedback back into the agent under one shared budget; structured RunResult failures; and OpenTelemetry GenAI spans for every protected call. Added adapters that put all of it inside existing LangGraph graphs and OpenAI Agents SDK runs without rewriting the agent",
     stack: [
       "AsyncIO",
       "OpenAI SDK",
@@ -38,6 +38,13 @@ const PROJECTS: Project[] = [
       "OpenAI Agents SDK",
       "OpenTelemetry",
       "Pydantic",
+    ],
+    media: [
+      {
+        type: "image",
+        src: "/projects/guardloop/cover.png",
+        alt: "GuardLoop — runtime guardrails (budget caps, circuit breakers, verifier retry loop, OpenTelemetry) wrapping an AI agent loop",
+      },
     ],
     liveDemo: "https://pypi.org/project/guardloop/",
     github: "https://github.com/awesome-pro/guardloop",
