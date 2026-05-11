@@ -93,12 +93,21 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    tag: "Inference Engineering",
-    title: "Low-Latency Inference Layer",
+    tag: "Agent Runtime & Observability",
+    title: "agentruntime",
     description:
-      "Architected a caching and batching layer in front of foundation model endpoints. Achieved [X]ms median cold-start and [X]% cache hit rate in production, cutting inference costs by ~[X]%.",
-    stack: ["Python", "Docker", "Redis", "AWS"],
+      "Built a production runtime layer that wraps any AI agent and enforces hard limits on cost, tokens, time, and tool calls — preventing the runaway-loop failures that lead to $400+ overnight API bills. Pre-flight budget checks using Decimal accounting, monotonic time enforcement via asyncio.wait_for, OpenAI and Anthropic provider wrappers, and OpenTelemetry GenAI-convention spans for full trace observability in Jaeger or any OTel backend. Roadmap: per-tool circuit breakers (v0.2) and verifier-based self-healing loops (v0.3).",
+    stack: ["Python 3.11+", "OpenTelemetry", "Pydantic", "tiktoken", "asyncio"],
     liveDemo: null,
+    github: "https://github.com/awesome-pro/agentruntime",
+  },
+  {
+    tag: "Full-Stack AI Product",
+    title: "NewTools",
+    description:
+      "Built a free, privacy-focused browser utility platform from scratch. Features AI-powered PDF-to-CSV extraction (Claude API with SSE streaming), a shared daily credit system, Supabase auth, and a suite of client-side tools — all with zero data sent to the server.",
+    stack: ["Next.js", "TypeScript", "FastAPI", "Claude API", "Supabase"],
+    liveDemo: "https://newtools.space",
     github: null,
   },
   {
