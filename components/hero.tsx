@@ -4,13 +4,13 @@ import { Badge } from "./ui/badge";
 
 export default function Hero() {
   return (
-    <section className="min-h-[90vh] flex flex-col justify-center px-6 max-w-5xl mx-auto lg:flex-row lg:items-center lg:justify-between gap-12">
-      <div className="flex-1 items-center">
-         <Badge>
-            Agentic AI Engineer
-          </Badge>
+    <section className="mx-auto grid min-h-[90vh] max-w-6xl grid-cols-1 items-center gap-10 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] lg:gap-16 lg:py-20">
+      <div className="max-w-3xl">
+        <Badge>
+          Agentic AI Engineer
+        </Badge>
 
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-none text-ink mb-6">
+        <h1 className="mt-5 mb-6 text-5xl leading-none font-bold tracking-tight text-ink sm:text-6xl lg:text-7xl">
           I build the infrastructure
           <br />
           <span className="text-ink-muted font-semibold">AI products run on.</span>
@@ -32,15 +32,16 @@ export default function Hero() {
         </div>
       </div>
 
-       <div className="relative w-[1/3] aspect-[3/4] rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-          <Image
-            src="/hero.png"
-            alt="Abhinandan"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+      <div className="relative aspect-[3/4] w-full max-w-sm justify-self-center overflow-hidden rounded-2xl shadow-lg transition-shadow hover:shadow-xl sm:max-w-md lg:w-[22rem] lg:max-w-none lg:justify-self-end xl:w-[24rem]">
+        <Image
+          src="/hero.png"
+          alt="Abhinandan"
+          fill
+          className="object-cover object-center"
+          sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) 28rem, 24rem"
+          preload
+        />
+      </div>
     </section>
   );
 }
