@@ -26,6 +26,33 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    tag: "Production Agent Runtime",
+    title: "GuardLoop",
+    description:
+      "Built a typed Python runtime guardrail layer for production AI agents that blocks runaway cost, token, time, and tool-call failures before risky operations execute. Shipped Decimal-based budget enforcement, OpenAI and Anthropic SDK wrappers, per-tool circuit breakers, verifier-driven self-healing retries, structured RunResult failures, OpenTelemetry GenAI-style spans, and adapters that guard existing LangGraph graphs plus OpenAI Agents SDK runs without rewriting the agent framework.",
+    stack: [
+      "AsyncIO",
+      "OpenAI SDK",
+      "Anthropic SDK",
+      "LangGraph",
+      "OpenAI Agents SDK",
+      "OpenTelemetry",
+      "Pydantic",
+    ],
+    liveDemo: "https://pypi.org/project/guardloop/",
+    github: "https://github.com/awesome-pro/guardloop",
+    links: [
+      {
+        label: "Docs",
+        url: "https://github.com/awesome-pro/guardloop#readme",
+      },
+      {
+        label: "PyPI",
+        url: "https://pypi.org/project/guardloop/",
+      },
+    ],
+  },
+  {
     tag: "LLM Evaluation Tooling",
     title: "agenteval",
     description:
@@ -63,14 +90,10 @@ const PROJECTS: Project[] = [
     description:
       "Created and published a dependency-free Python 3.11+ framework for readable multi-agent pipelines. Shipped sequential, parallel, conditional, retryable, and observable flows, plus human review gates, JSON checkpoint/resume, structured Agent outputs, offline tests, and tag-based PyPI releases through v0.5.0.",
     stack: [
-      "Python",
       "AsyncIO",
       "LiteLLM",
       "PyPI",
       "GitHub Actions",
-      "Pytest",
-      "Ruff",
-      "Pyright",
     ],
     media: [
       {
@@ -91,24 +114,6 @@ const PROJECTS: Project[] = [
         url: "https://github.com/awesome-pro/orchflow/releases/tag/v0.5.0",
       },
     ],
-  },
-  {
-    tag: "Agent Runtime & Observability",
-    title: "agentruntime",
-    description:
-      "Built a production runtime layer that wraps any AI agent and enforces hard limits on cost, tokens, time, and tool calls — preventing the runaway-loop failures that lead to $400+ overnight API bills. Pre-flight budget checks using Decimal accounting, monotonic time enforcement via asyncio.wait_for, OpenAI and Anthropic provider wrappers, and OpenTelemetry GenAI-convention spans for full trace observability in Jaeger or any OTel backend. Roadmap: per-tool circuit breakers (v0.2) and verifier-based self-healing loops (v0.3).",
-    stack: ["Python 3.11+", "OpenTelemetry", "Pydantic", "tiktoken", "asyncio"],
-    liveDemo: null,
-    github: "https://github.com/awesome-pro/agentruntime",
-  },
-  {
-    tag: "Full-Stack AI Product",
-    title: "NewTools",
-    description:
-      "Built a free, privacy-focused browser utility platform from scratch. Features AI-powered PDF-to-CSV extraction (Claude API with SSE streaming), a shared daily credit system, Supabase auth, and a suite of client-side tools — all with zero data sent to the server.",
-    stack: ["Next.js", "TypeScript", "FastAPI", "Claude API", "Supabase"],
-    liveDemo: "https://newtools.space",
-    github: null,
   },
   {
     tag: "Full-Stack AI Product",
