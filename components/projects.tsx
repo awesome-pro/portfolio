@@ -30,15 +30,7 @@ const PROJECTS: Project[] = [
     title: "GuardLoop",
     description:
       "Built a typed Python runtime guardrail for production AI agents that stops runaway loops before the next risky call runs. Shipped pre-flight, Decimal-precise caps on cost, tokens, time, and tool calls; OpenAI and Anthropic SDK wrappers; per-tool circuit breakers; a verify-fix-retry loop that feeds verifier feedback back into the agent under one shared budget; structured RunResult failures; and OpenTelemetry GenAI spans for every protected call. Added adapters that put all of it inside existing LangGraph graphs and OpenAI Agents SDK runs without rewriting the agent",
-    stack: [
-      "AsyncIO",
-      "OpenAI SDK",
-      "Anthropic SDK",
-      "LangGraph",
-      "OpenAI Agents SDK",
-      "OpenTelemetry",
-      "Pydantic",
-    ],
+    stack: [],
     media: [
       {
         type: "image",
@@ -113,23 +105,43 @@ const PROJECTS: Project[] = [
     github: "https://github.com/awesome-pro/orchflow",
     links: [
       {
-        label: "Docs",
-        url: "https://github.com/awesome-pro/orchflow#readme",
-      },
-      {
-        label: "v0.5.0",
-        url: "https://github.com/awesome-pro/orchflow/releases/tag/v0.5.0",
+        label: "PyPI",
+        url: "https://pypi.org/project/orchflow/",
       },
     ],
   },
   {
-    tag: "Full-Stack AI Product",
-    title: "NewTools",
+    tag: "Semantic LLM Cache",
+    title: "SmartMemo",
     description:
-      "Built a free, privacy-focused browser utility platform from scratch. Features AI-powered PDF-to-CSV extraction (Claude API with SSE streaming), a shared daily credit system, Supabase auth, and a suite of client-side tools — all with zero data sent to the server.",
-    stack: ["Next.js", "TypeScript", "FastAPI", "Claude API", "Supabase"],
-    liveDemo: "https://newtools.space",
-    github: null,
+      "Built and published a Python semantic memory and caching layer for LLM agent calls. Ships an async get_or_call facade, SQLite persistence, FAISS-backed vector search, and a trainable pairwise equivalence classifier that gates cache hits beyond cosine similarity — because cosine similarity alone is not semantic equivalence. Added a durable feedback export pipeline so rejected cache hits become classifier retraining data, a CLI for cache stats, training, and evaluation, and GitHub Actions CI with PyPI trusted publishing.",
+    stack: [
+      "FAISS",
+      "SentenceTransformers",
+      "PyTorch",
+      "SQLite",
+      "Pydantic",
+      "NumPy"
+    ],
+    media: [
+      {
+        type: "image",
+        src: "/projects/smartmemo/cover.png",
+        alt: "SmartMemo — semantic cache with embedding search, classifier-gated hits, and feedback export pipeline",
+      },
+    ],
+    liveDemo: "https://pypi.org/project/smartmemo/",
+    github: "https://github.com/awesome-pro/smartmemo",
+    links: [
+      {
+        label: "PyPI",
+        url: "https://pypi.org/project/smartmemo/",
+      },
+      {
+        label: "Changelog",
+        url: "https://github.com/awesome-pro/smartmemo/blob/main/CHANGELOG.md",
+      },
+    ],
   },
 ];
 
