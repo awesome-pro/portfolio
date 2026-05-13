@@ -1,22 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useTransition } from "react";
+import { updateRepoStatusAndNotes } from "@/app/admin/repos/actions";
 
 const STATUSES = [
-  { value: "suggested", label: "Suggested" },
-  { value: "started", label: "Started" },
-  { value: "contributed", label: "Contributed" },
-  { value: "skipped", label: "Skipped" },
+  { value: "suggested", label: "Suggested", active: "bg-blue-50 text-blue-700 border-blue-200" },
+  { value: "started", label: "Started", active: "bg-amber-50 text-amber-700 border-amber-200" },
+  { value: "contributed", label: "Contributed", active: "bg-green-50 text-green-700 border-green-200" },
+  { value: "skipped", label: "Skipped", active: "bg-surface text-ink-faint border-border" },
 ];
-
-const STATUS_ACTIVE: Record<string, string> = {
-  suggested: "bg-blue-50 text-blue-700 border-blue-200",
-  started: "bg-amber-50 text-amber-700 border-amber-200",
-  contributed: "bg-green-50 text-green-700 border-green-200",
-  skipped: "bg-surface text-ink-faint border-border",
-};
 
 export default function RepoEditForm({
   id,
@@ -27,23 +19,17 @@ export default function RepoEditForm({
   status: string;
   userNotes: string;
 }) {
-  const router = useRouter();
   const [status, setStatus] = useState(initialStatus);
   const [notes, setNotes] = useState(initialNotes);
-  const [saving, setSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
 
-  async function handleSave() {
-    setSaving(true);
-    const supabase = createClient();
-    await supabase
-      .from("contribution_targets")
-      .update({ status, user_notes: notes })
-      .eq("id", id);
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-    router.refresh();
+  function handleSave() {
+    startTransition(async () => {
+      await updateRepoStatusAndNotes(id, status, notes);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    });
   }
 
   return (
@@ -51,13 +37,13 @@ export default function RepoEditForm({
       <div className="flex flex-col gap-2">
         <p className="text-xs font-mono text-ink-muted">Status</p>
         <div className="flex flex-wrap gap-2">
-          {STATUSES.map(({ value, label }) => (
+          {STATUSES.map(({ value, label, active }) => (
             <button
               key={value}
               onClick={() => setStatus(value)}
               className={`text-sm font-mono px-4 py-2 rounded-xl border transition-colors ${
                 status === value
-                  ? STATUS_ACTIVE[value]
+                  ? active
                   : "bg-surface text-ink-faint border-border hover:text-ink-muted"
               }`}
             >
@@ -83,10 +69,10 @@ export default function RepoEditForm({
 
       <button
         onClick={handleSave}
-        disabled={saving}
+        disabled={isPending}
         className="self-start bg-ink text-background rounded-xl px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
       >
-        {saving ? "Saving…" : saved ? "Saved ✓" : "Save"}
+        {isPending ? "Saving…" : saved ? "Saved ✓" : "Save"}
       </button>
     </div>
   );

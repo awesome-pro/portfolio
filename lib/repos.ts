@@ -23,6 +23,28 @@ export async function getAllRepos(): Promise<ContributionRepo[]> {
   return (data as ContributionRepo[]) ?? [];
 }
 
+export async function getActiveRepos(): Promise<ContributionRepo[]> {
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from("contribution_targets")
+    .select("*")
+    .neq("status", "skipped")
+    .order("discovered_at", { ascending: false });
+  if (error) return [];
+  return (data as ContributionRepo[]) ?? [];
+}
+
+export async function getSkippedRepos(): Promise<ContributionRepo[]> {
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from("contribution_targets")
+    .select("*")
+    .eq("status", "skipped")
+    .order("discovered_at", { ascending: false });
+  if (error) return [];
+  return (data as ContributionRepo[]) ?? [];
+}
+
 export async function getRepoById(id: string): Promise<ContributionRepo | null> {
   const supabase = createServiceClient();
   const { data, error } = await supabase
