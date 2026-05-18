@@ -34,8 +34,6 @@ Not a template. Every section is handwritten — no theme purchased, no starter 
 
 ### Blog platform
 
-Built from scratch. No third-party CMS.
-
 - **Editor** — [Tiptap](https://tiptap.dev) with code blocks (lowlight syntax highlighting), YouTube embeds, image uploads, placeholder hints, and link handling. All extensions are wired and typesafe.
 - **Rendering** — Markdown → HTML via `react-markdown` with `remark-gfm` and `rehype-highlight`. Reading time calculated at runtime.
 - **Data access** — Three Supabase client variants, each for a different rendering context:
