@@ -127,28 +127,6 @@ Migrations live in `migrations/`. Apply them in the Supabase SQL editor or via t
 
 ---
 
-## Screenshots
-
-<!-- PLACEHOLDER: Add screenshots of the following -->
-<!-- 1. Homepage hero — mobile + desktop -->
-<!-- 2. Projects section (carousel open on agenteval or Orchflow) -->
-<!-- 3. Blog listing page -->
-<!-- 4. Blog post with code block -->
-<!-- 5. Admin blog editor (Tiptap) -->
-
----
-
-## Projects featured
-
-| Project | What it is |
-|---|---|
-| [agenteval](https://github.com/awesome-pro/agenteval) | Python CLI/package for LLM agent testing — behavioral assertions, tool-call tracing, OpenAI/Anthropic adapters, PyPI-published |
-| [Orchflow](https://github.com/awesome-pro/orchflow) | Dependency-free Python 3.11+ multi-agent orchestration framework — sequential, parallel, conditional, retryable flows, checkpoint/resume |
-| Low-Latency Inference Layer | Caching and batching layer in front of foundation model endpoints — Redis-backed, deployed on AWS |
-| [NewTools](https://newtools.space) | Privacy-first browser utility platform — Claude API with SSE streaming, zero server-side data storage |
-
----
-
 ## Recognition
 
 - Top 1% TypeScript Engineer Globally · [Algora](https://algora.io/profile/awesome-pro)
