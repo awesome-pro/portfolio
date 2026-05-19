@@ -30,13 +30,6 @@ All admin routes protected by a middleware proxy (`proxy.ts`) that validates the
 - Blog CRUD — create, edit, publish/unpublish drafts, delete
 - Image uploads to Supabase Storage via `/api/upload` (multipart, with public URL returned)
 - Contribution repo tracker — a personal tool for tracking open-source targets, backed by a Postgres table with status workflow and indexed queries (schema in `migrations/`)
-
-### Real-time and analytics
-
-- **Visitor counter** — increments on each page load via `/api/visitors`, displayed live
-- **Vercel Analytics + Speed Insights** — zero-config, no cookie banners
-- **Resume redirect** — `/resume` permanently redirects to the Google Docs resume via `next.config.ts`
-
 ### CI/CD
 
 - GitHub Actions with automated Claude-powered code review on every PR
