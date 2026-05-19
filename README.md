@@ -3,8 +3,6 @@
 
 # abhinandan.one
 
-Personal site and engineering portfolio — live at **[abhinandan.one](https://abhinandan.one)**
-
 ![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
@@ -12,26 +10,7 @@ Personal site and engineering portfolio — live at **[abhinandan.one](https://a
 ![Supabase](https://img.shields.io/badge/Supabase-SSR-3FCF8E?logo=supabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)
 
----
-
-Not a template. Every section is handwritten — no theme purchased, no starter cloned past the initial scaffold. This is the actual production site with a custom CMS, real-time features, auth-gated admin, and a blog platform built from scratch.
-
----
-
 ## What's inside
-
-### Portfolio sections
-
-| Section | What it does |
-|---|---|
-| **Hero** | Intro with image, CTA to book a call |
-| **Projects** | Media carousel per project (image + video), stack tags, live/GitHub links |
-| **Experience** | Timeline with company, role, bullets — rendered from typed data |
-| **Skills** | Grouped by AI/ML, languages, and infrastructure |
-| **About** | Prose + stats grid |
-| **Depth** | Five specific architectural calls with reasoning — not a skills list |
-| **Blog** | Latest posts pulled from Supabase, linked to full blog routes |
-
 ### Blog platform
 
 - **Editor** — [Tiptap](https://tiptap.dev) with code blocks (lowlight syntax highlighting), YouTube embeds, image uploads, placeholder hints, and link handling. All extensions are wired and typesafe.
