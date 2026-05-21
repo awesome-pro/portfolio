@@ -26,6 +26,24 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    tag: "Agentic RL Research",
+    title: "AgentFlow-Pro",
+    description:
+      "Rebuilt the AgentFlow paper (ICLR 2026) from scratch as a trainable multi-agent reasoning system — a Planner→Executor→Verifier loop where only the Planner is RL-fine-tuned — and extended it with two research upgrades over the original: DAPO (Decoupled Clip + Dynamic Sampling Policy Optimization) in place of GRPO, and a Process Reward Model for step-level reward shaping. Shipped real agent tools (a sandboxed Python/SymPy executor with REPL-style output and lenient parsing, Tavily web search) and JSON-schema-constrained LLM I/O. Built a reproducible evaluation harness — AIME24 and GPQA-Diamond loaders with decontaminated train/test splits, full trajectory export, and a robust math + multiple-choice scorer — and established a measured 33% AIME24 baseline on an 8B model. Built the full RL training pipeline: an LLM-judge step-labeling stage, a Qwen3-0.6B process reward model, and a DAPO trainer on TRL + Unsloth QLoRA, including a hand-implemented dynamic-sampling stage that TRL itself does not provide. Along the way, diagnosed and fixed a 53× inference regression by tracing it to a silently-ignored decode flag and switching to the model server's native API.",
+    stack: [
+      "PyTorch",
+      "TRL",
+      "Unsloth",
+      "Transformers",
+      "Ollama",
+      "Qwen3",
+      "SymPy",
+      "Pydantic",
+    ],
+    liveDemo: null,
+    github: "https://github.com/awesome-pro/agentflow-pro",
+  },
+  {
     tag: "Production Agent Runtime",
     title: "GuardLoop",
     description:
@@ -114,14 +132,15 @@ const PROJECTS: Project[] = [
     tag: "Semantic LLM Cache",
     title: "SmartMemo",
     description:
-      "Built and published a Python semantic memory and caching layer for LLM agent calls. Ships an async get_or_call facade, SQLite persistence, FAISS-backed vector search, and a trainable pairwise equivalence classifier that gates cache hits beyond cosine similarity — because cosine similarity alone is not semantic equivalence. Added a durable feedback export pipeline so rejected cache hits become classifier retraining data, a CLI for cache stats, training, and evaluation, and GitHub Actions CI with PyPI trusted publishing.",
+      "Built and published a Python semantic memory and caching layer for LLM agent calls, built on one thesis: cosine similarity is a useful candidate selector but not semantic equivalence. SmartMemo pairs embedding search with a learned pairwise equivalence classifier that makes the final cache-hit decision — so near-identical prompts like “approve this refund” and “deny this refund” never share a cached answer. It ships a pretrained classifier (trained on 16k+ labeled pairs across nine domains) that beats a tuned cosine baseline by +30 precision points at equal recall on a held-out gold set, so classifier-gated caching works with zero training. Also shipped: an async get_or_call facade, SQLite (WAL) persistence, FAISS vector search, explicit and opt-in implicit re-issue feedback with durable export and gated manual retraining, opt-in LLM-call retries, structured logging, a stats/training/evaluation CLI, and GitHub Actions CI across Python 3.11–3.14 with PyPI trusted publishing.",
     stack: [
       "FAISS",
       "SentenceTransformers",
       "PyTorch",
       "SQLite",
       "Pydantic",
-      "NumPy"
+      "NumPy",
+      "GitHub Actions",
     ],
     media: [
       {
