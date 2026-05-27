@@ -23,6 +23,12 @@
 - **OG images** — Dynamic per-post Open Graph image generated at `app/blogs/[slug]/opengraph-image.tsx`
 - **Sitemap** — Auto-generated at build time from all published blog slugs
 
+### Resume
+
+- **Source** — Editable LaTeX lives in `data/resume.tex`
+- **PDF** — `pnpm resume:build` compiles the source into `public/resume.pdf`
+- **Page** — `/resume` renders the generated PDF and exposes a direct download
+
 ### Admin CMS
 
 All admin routes protected by a middleware proxy (`proxy.ts`) that validates the Supabase JWT session server-side and redirects unauthenticated requests to `/admin/login`.
@@ -72,6 +78,12 @@ pnpm dev
 Open [http://localhost:3000](http://localhost:3000).
 
 Admin dashboard is at `/admin/login` — requires a Supabase user account.
+
+To update the resume PDF after editing `data/resume.tex`, start Docker and run:
+
+```bash
+pnpm resume:build
+```
 
 ---
 

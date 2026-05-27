@@ -1,0 +1,220 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez (original template)
+% Updated for: Abhinandan
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+\pdfgentounicode=1
+
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Abhinandan} \\ \vspace{1pt}
+    \small +91-8130635690 $|$ \href{mailto:abhinandan@abhinandan.one}{\underline{abhinandan@abhinandan.one}}
+     \\[3pt]
+    \href{https://abhinandan.one}{\underline{abhinandan.one}} $|$
+    \href{https://linkedin.com/in/abhibuilds}{\underline{linkedin.com/in/abhibuilds}} $|$
+    \href{https://github.com/awesome-pro}{\underline{github.com/awesome-pro}}
+\end{center}
+
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Founding Software Engineer}{Sept 2025 -- Present}
+      {Browzer}{Remote}
+      \resumeItemListStart
+        \resumeItem{Built Browzer's production Chrome MV3 recorder + CDP-native browser agent, achieving 95\%+ precise AX/DOM element capture with iframe support, obstruction checks, and real mouse/key/upload execution.}
+        \resumeItem{Built a smart streaming ReAct loop across FastAPI + extension with SSE tool execution, multi-tab orchestration, safe parallelism, abort/continue, and audit logs.}
+        \resumeItem{Cut automation LLM spend by roughly 67\% using compact recording traces, context-window compression, prompt caching, and model-routing across GPT-5, Claude Sonnet 4.6, and Gemini 3.1 Pro.}
+        \resumeItem{Shipped a zero-LLM replay engine: recordings run as variable-driven tool-call templates, with a stateful AI fallback that resumes mid-run on failure instead of restarting.}
+        \resumeItem{Shipped self-healing docs that auto-repair on UI drift --- Haiku $\rightarrow$ Sonnet diff triage, LLM-free replay of intact steps, and a CDP agent that fixes only what changed.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Software Engineer}{Jan 2025 -- Jul 2025}
+      {Cynos Nexus}{Noida, India}
+      \resumeItemListStart
+        \resumeItem{Shipped core features of an AI-powered real estate platform using Next.js, Nest.js, GraphQL, Redis, and GCP.}
+        \resumeItem{Built the AI knowledge base service on FastAPI + LangChain.}
+        \resumeItem{Integrated Google Cloud Vision + XLSX import to let users seed client databases from contact diary photos or Excel.}
+        \resumeItem{Automated deployment infrastructure using Docker, GitHub Actions for CI/CD, and Nginx for reverse proxy/load balancing.}\resumeItemListEnd
+
+      \resumeSubheading
+  {Contract Software Engineer}{Sept 2024 -- Dec 2024}
+  {Etkin.ai}{Remote, Turkiye}
+  \resumeItemListStart
+    \resumeItem{Engineered a high-performance PDF generator using WeasyPrint, converting dynamic JSON reports to high-quality PDFs.}
+    \resumeItem{Optimised data processing using CSV upload \& Celery worker, reducing processing time by 40\%.}
+    \resumeItem{Established CI/CD pipelines with GitHub Actions and Docker on AWS EC2.}
+    \resumeItem{Collaborated to build a LangChain and pgvector knowledge base, improving ML query accuracy by 15\%.}
+  \resumeItemListEnd
+
+
+\resumeSubheading
+  {Open Source Contributor}{June 2024 -- Aug 2024}
+  {HeroUI}{Y Combinator S24 startup}
+  \resumeItemListStart
+    \resumeItem{
+    Received a \href{https://abhinandan.one/nextui-offer.png}{\textbf{personal offer from the CEO}} to join HeroUI (prev.\ NextUI) after making \href{https://github.com/heroui-inc/heroui/pulls?q=is\%3Apr+author\%3Aawesome-pro} {\textbf{open-source contributions}}.}
+    \resumeItem{Resolved 10+ bugs \& delivered 7+ feature enhancements in core components including Calendar, Table and Pagination.}
+  \resumeItemListEnd
+
+
+\resumeSubheading
+  {SWE Intern}{Jan 2024 -- Apr 2024}
+  {SkilledUp}{Noida}
+\resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{Open Source Projects}
+    \resumeSubHeadingListStart
+
+      \resumeProjectHeading
+          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL/Unsloth, Ollama, FastMCP, SymPy} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
+          \resumeItemListStart
+            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with JSON-schema planning, Tavily search, sandboxed Python/SymPy tools, AIME24/GPQA trajectory evals, and a planner fine-tuning pipeline for LLM-judge step labels, Qwen3-0.6B PRM, and TRL/Unsloth QLoRA DAPO.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{guardloop} $|$ \emph{OpenAI/Anthropic SDKs, OpenTelemetry, LangGraph} $|$ \href{https://github.com/awesome-pro/guardloop}{\underline{github.com/awesome-pro/guardloop}}}{}
+          \resumeItemListStart
+            \resumeItem{Production guardrail runtime for async agents: pre-flight Decimal cost/token/time/tool-call budgets, per-tool circuit breakers, verifier feedback retry loop, OpenTelemetry GenAI spans, and no-rewrite LangGraph/OpenAI Agents SDK adapters that enforce safety inside existing LLM/tool calls.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{smartmemo} $|$ \emph{PyTorch, sentence-transformers, FAISS, SQLite} $|$ \href{https://github.com/awesome-pro/smartmemo}{\underline{github.com/awesome-pro/smartmemo}}}{}
+          \resumeItemListStart
+            \resumeItem{Semantic memory/cache for LLM agents where embeddings retrieve candidates and a learned pair-equivalence classifier decides reuse; shipped bundled classifier-v2 trained on 16,576 pairs across 9 domains (+30 precision points at equal recall vs cosine), plus feedback export, implicit bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{orchflow} $|$ \emph{Asyncio, LiteLLM} $|$ \href{https://github.com/awesome-pro/orchflow}{\underline{github.com/awesome-pro/orchflow}}}{}
+          \resumeItemListStart
+            \resumeItem{Dependency-free typed Python framework for readable multi-agent pipelines: sequential/parallel/conditional flows, retries, shared \texttt{StepContext}, flat traces, lifecycle events, human gates, JSON checkpoint/resume, and optional LiteLLM Agent with structured JSON/Pydantic outputs.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{agenteval} $|$ \emph{AsyncIO, OpenAI/Anthropic/LangChain adapters} $|$ \href{https://github.com/awesome-pro/agenteval}{\underline{github.com/awesome-pro/agenteval}}}{}
+          \resumeItemListStart
+            \resumeItem{Agent evaluation toolkit replacing exact-match asserts with repeated-run pass-rate tests; traces tool calls/timing/steps, supports collect-then-raise behavioral assertions, OpenAI/Anthropic/LangChain adapters, and Typer CLI JSON reports for CI gates.}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{ML \& Retrieval}{: PyTorch, Hugging Face, sentence-transformers, embeddings, classifier training, RAG, FAISS, Pinecone, Qdrant, Weaviate, ChromaDB, pgvector} \\
+     \textbf{AI Agents \& Frameworks}{: LangGraph, OpenAI Agents SDK, LangChain, LlamaIndex, CrewAI, AutoGen, Pydantic AI, LiteLLM, MCP / FastMCP, multi-agent orchestration, ReAct, function calling, tool use, CDP-based browser agents} \\
+     \textbf{LLM Engineering}{: Fine-tuning (LoRA, QLoRA, PEFT), RLHF / DPO / GRPO / DAPO / PRM, quantization (AWQ, GPTQ, GGUF), inference engines (vLLM, SGLang, Ollama, TGI), context engineering, KV-cache strategies, streaming} \\
+     \textbf{Observability \& Eval}{: OpenTelemetry, Langfuse, Arize Phoenix, LangSmith, statistical pass-rate evaluation, AIME / GPQA benchmarks} \\
+     \textbf{Cloud \& Infra}{: Docker, GCP (Vertex AI), AWS, Nginx, Redis, PostgreSQL, MongoDB} \\
+     \textbf{Backend}{: FastAPI, Nest.js, Node.js, GraphQL, WebSockets, REST, SSE} \\
+     \textbf{Languages}{: Python, TypeScript, C++, SQL, Bash} \\
+     \textbf{Frontend}{: Next.js, React, Redux, Turbopack, Edge Runtime} \\
+    }}
+ \end{itemize}
+
+%-----------AWARDS-----------
+\section{Awards \& Recognition}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{International Youth Math Challenge Gold Honour} $|$
+     \textbf{Top 1\% TypeScript Engineer Globally} (Algora) $|$
+     \textbf{Amazon ML Summer School 2025} $|$
+     \textbf{Reliance Foundation Scholar} $|$
+     \textbf{HDFC Badhate Kadam Scholar} $|$
+     2nd Place, Outlier AI Hackathon $|$
+    }}
+ \end{itemize}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Dr. APJ Abdul Kalam Technical University}{Nov 2022 -- Apr 2026}
+      {B.Tech, Computer Science}{India}
+  \resumeSubHeadingListEnd
+
+\end{document}

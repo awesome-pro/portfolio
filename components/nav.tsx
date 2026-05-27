@@ -9,6 +9,12 @@ export default function Nav() {
         <Logo />
         <div className="flex items-center gap-6">
           <Link
+            href="/resume"
+            className="text-sm text-ink-muted hover:text-ink transition-colors"
+          >
+            Resume
+          </Link>
+          <Link
             href="/blogs"
             className="text-sm text-ink-muted hover:text-ink transition-colors"
           >

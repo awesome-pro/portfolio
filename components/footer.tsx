@@ -30,14 +30,12 @@ export default function Footer() {
             >
               Mail
             </a>
-            <a
-              href="https://abhinandan.one/resume"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/resume"
               className="hover:text-ink transition-colors"
             >
               Resume
-            </a>
+            </Link>
             <a
               href="https://github.com/awesome-pro"
               target="_blank"
