@@ -2,16 +2,22 @@ import Link from "next/link";
 import { getAllBlogsAdmin } from "@/lib/blogs";
 import { getAllProductOpportunities } from "@/lib/product-opportunities";
 import { getAllRepos } from "@/lib/repos";
+import { getAllContentIdeas } from "@/lib/content-ideas";
 import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
-  const [blogs, repos, opportunities] = await Promise.all([
+  const [blogs, repos, opportunities, contentIdeas] = await Promise.all([
     getAllBlogsAdmin(),
     getAllRepos(),
     getAllProductOpportunities(),
+    getAllContentIdeas(),
   ]);
+
+  const today = new Date().toISOString().split("T")[0];
+  const todayIdeasCount = contentIdeas.filter((i) => i.idea_date === today).length;
+  const selectedIdeasCount = contentIdeas.filter((i) => i.status === "selected").length;
 
   const publishedCount = blogs.filter((b) => b.is_published).length;
   const suggestedCount = repos.filter((r) => (r.status ?? "suggested") === "suggested").length;
@@ -85,6 +91,25 @@ export default async function AdminHub() {
             <p className="font-mono text-xs text-ink-faint">
               {opportunities.length} total · {topOpportunityCount} top score ·{" "}
               {highConfidenceCount} high confidence
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/content-ideas"
+            className="group flex flex-col gap-3 p-6 border border-border rounded-2xl bg-surface hover:border-ink-muted transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted">
+                Content
+              </p>
+              <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight text-ink">
+              Content Ideas
+            </h2>
+            <p className="font-mono text-xs text-ink-faint">
+              {contentIdeas.length} total · {todayIdeasCount} today ·{" "}
+              {selectedIdeasCount} selected
             </p>
           </Link>
         </div>
