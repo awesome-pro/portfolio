@@ -1,8 +1,8 @@
 const STATS = [
-  { value: "2 yrs", label: "founding engineer experience" },
-  { value: "3+", label: "AI products shipped to production" },
-  { value: "[N]", label: "agents in a single pipeline" },
-  { value: "[N]M+", label: "LLM calls monitored in production" },
+  { value: "2+ yrs", label: "AI engineering experience" },
+  { value: "3", label: "AI products shipped to production" },
+  { value: "4", label: "agents in a single pipeline" },
+  { value: "700K+", label: "LLM calls monitored in production" },
 ];
 
 export default function About() {
@@ -12,18 +12,18 @@ export default function About() {
         About
       </p>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-12">
-        ~2 years building at the edge
+        2+ years building at the edge
         <br />
         of what&apos;s possible with AI.
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
         {/* Prose */}
-        <div className="flex flex-col gap-5 text-base sm:text-lg leading-relaxed text-ink-muted">
+        <div className="flex flex-col gap-5 text-base leading-relaxed text-ink-muted">
           <p>
             I joined{" "}
             <span className="text-ink font-medium">
-              [Company/Project Placeholder]
+              BrowzerLabs
             </span>{" "}
             early — before the team had process, before the architecture was
             decided, before anyone was sure it would work. That meant writing
@@ -40,9 +40,6 @@ export default function About() {
             cost models, observability. The parts that don&apos;t make it into
             the demo but determine whether the product survives contact with
             users.
-          </p>
-          <p className="text-sm text-ink-faint mt-2">
-            Currently open to select projects · [CITY_PLACEHOLDER]
           </p>
           <a
             href="[RESUME_URL]"

@@ -14,12 +14,6 @@ export default function Nav() {
           >
             Resume
           </Link>
-          <Link
-            href="/blogs"
-            className="text-sm text-ink-muted hover:text-ink transition-colors"
-          >
-            Blogs
-          </Link>
           <BookCallButton variant="primary" />
         </div>
       </div>

@@ -17,10 +17,10 @@ export default function Logo({ className }: LogoProps) {
     >
       <span
         aria-hidden="true"
-        className="text-primary/70 text-sm"
+        className="text-primary/50 text-sm"
       >
-        <span className="text-primary font-bold">A</span>BH
-        <span className="text-primary font-bold">I</span>NANDAN
+        <span className="text-primary font-bold italic">A</span>BH
+        <span className="text-primary font-bold italic">I</span>NANDAN
       </span>
     </Link>
   );
