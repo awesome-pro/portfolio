@@ -141,4 +141,11 @@
   body {
     font-family: var(--font-inter), system-ui, sans-serif;
   }
+
+  a {
+    color: #2563eb;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 }

@@ -7,7 +7,7 @@ const STATS = [
 
 export default function About() {
   return (
-    <section className="py-20 px-6 max-w-5xl mx-auto border-t border-border">
+    <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
       <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted mb-3">
         About
       </p>

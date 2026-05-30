@@ -91,7 +91,7 @@ function LinkPill({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center font-mono text-xs px-2.5 py-1 rounded-full border border-border text-ink-muted hover:border-ink-muted hover:text-ink transition-colors"
+      className="inline-flex items-center font-mono text-xs px-2.5 py-1 rounded-full border border-border hover:border-blue-400 transition-colors"
     >
       {label} ↗
     </a>

@@ -4,7 +4,7 @@ import VisitorCounter from "@/components/visitor-counter";
 export default function Footer() {
   return (
     <footer className="border-t border-border mt-8">
-      <div className="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         {/* Left */}
         <div>
           <p className="text-sm font-semibold text-ink">Abhinandan © 2026</p>

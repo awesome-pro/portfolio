@@ -1,10 +1,10 @@
 const AWARDS = [
-  { label: "Top 1% TypeScript Engineer Globally · Algora", href: "https://algora.io/profile/awesome-pro" },
-  { label: "HDFC Badhate Kadam Scholar", href: "https://drive.google.com/file/d/17KPdIiC27LJ4wcFIAtoVYwTV9fHQgrCi/view?usp=sharing" },
-  { label: "Reliance Foundation Scholar", href: "https://drive.google.com/file/d/1vFGwoIFeGAxpgHGlwcPJ3qkB48vqx_On/view" },
-  { label: "Amazon ML Summer School 2025", href: null },
-  { label: "2nd Place · Outlier AI Hackathon", href: null },
-  { label: "IYMC Gold Honour", href: "https://drive.google.com/file/d/1yVa7inC4SaJKWa-m0xaY7jZUIMwka792/view?usp=sharing" },
+  { label: "Top 1% TypeScript Engineer Globally", sub: "Algora", href: "https://algora.io/profile/awesome-pro" },
+  { label: "International Youth Math Challenge Gold Honour", sub: "IYMC", href: "https://drive.google.com/file/d/1yVa7inC4SaJKWa-m0xaY7jZUIMwka792/view?usp=sharing" },
+  { label: "Amazon ML Summer School 2025", sub: "Amazon", href: null },
+  { label: "Reliance Foundation Scholar", sub: "Reliance Foundation", href: "https://drive.google.com/file/d/1vFGwoIFeGAxpgHGlwcPJ3qkB48vqx_On/view" },
+  { label: "HDFC Badhate Kadam Scholar", sub: "HDFC Bank", href: "https://drive.google.com/file/d/17KPdIiC27LJ4wcFIAtoVYwTV9fHQgrCi/view?usp=sharing" },
+  { label: "2nd Place · Outlier AI Hackathon", sub: "Outlier AI", href: null },
 ];
 
 interface Experience {
@@ -120,31 +120,34 @@ export default function Experience() {
         ))}
       </div>
 
-      {/* Awards — minimal inline strip */}
-      <div className="mt-10 pt-8 border-t border-border flex flex-wrap gap-2 items-center">
-        <span className="text-[11px] font-semibold tracking-widest uppercase text-ink-faint mr-1">
-          Recognition
-        </span>
-        {AWARDS.map((award) =>
-          award.href ? (
-            <a
+      {/* Achievements */}
+      <div className="mt-2 pt-8 border-t border-border">
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-8">
+          Achievements
+        </h2>
+        <div className="flex flex-col">
+          {AWARDS.map((award, i) => (
+            <div
               key={award.label}
-              href={award.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[11px] px-2.5 py-1 rounded-full border border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
+              className={`flex items-center justify-between py-4 ${i !== 0 ? "border-t border-border" : ""}`}
             >
-              {award.label}
-            </a>
-          ) : (
-            <span
-              key={award.label}
-              className="text-[11px] px-2.5 py-1 rounded-full border border-border text-ink-faint"
-            >
-              {award.label}
-            </span>
-          )
-        )}
+              <div>
+                <p className="text-sm font-medium text-ink">{award.label}</p>
+                <p className="text-xs text-ink-faint mt-0.5">{award.sub}</p>
+              </div>
+              {award.href && (
+                <a
+                  href={award.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-xs shrink-0 ml-6"
+                >
+                  View ↗
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
