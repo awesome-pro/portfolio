@@ -4,22 +4,27 @@ import { getAllProductOpportunities } from "@/lib/product-opportunities";
 import { getAllRepos } from "@/lib/repos";
 import { getAllContentIdeas } from "@/lib/content-ideas";
 import { getAllOpportunitySignals } from "@/lib/opportunity-signals";
+import { getAllArticles } from "@/lib/articles";
 import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
-  const [blogs, repos, opportunities, contentIdeas, signals] = await Promise.all([
+  const [blogs, repos, opportunities, contentIdeas, signals, articles] = await Promise.all([
     getAllBlogsAdmin(),
     getAllRepos(),
     getAllProductOpportunities(),
     getAllContentIdeas(),
     getAllOpportunitySignals(),
+    getAllArticles(),
   ]);
 
   const today = new Date().toISOString().split("T")[0];
   const todayIdeasCount = contentIdeas.filter((i) => i.idea_date === today).length;
   const selectedIdeasCount = contentIdeas.filter((i) => i.status === "selected").length;
+
+  const todayArticle = articles.find((a) => a.article_date === today);
+  const publishedArticlesCount = articles.filter((a) => a.is_published).length;
 
   const activeSignalsCount = signals.filter((s) => s.status !== "closed").length;
   const todaySignalsCount = signals.filter(
@@ -137,6 +142,23 @@ export default async function AdminHub() {
             <p className="font-mono text-xs text-ink-faint">
               {activeSignalsCount} active · {todaySignalsCount} today ·{" "}
               {interviewingCount} interviewing
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/articles"
+            className="group flex flex-col gap-3 p-6 border border-border rounded-2xl bg-surface hover:border-ink-muted transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted">
+                Articles
+              </p>
+              <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight text-ink">Articles</h2>
+            <p className="font-mono text-xs text-ink-faint">
+              {articles.length} total · {publishedArticlesCount} published ·{" "}
+              {todayArticle ? "today ready" : "no article today"}
             </p>
           </Link>
         </div>
