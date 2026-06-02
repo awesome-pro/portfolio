@@ -15,15 +15,15 @@ const PROJECTS: Project[] = [
   {
     title: "AgentFlow-Pro",
     tag: "Agentic RL Research",
-    stack: ["PyTorch", "TRL", "Unsloth", "Qwen3", "Ollama", "SymPy", "FastMCP"],
+    stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agentflow-pro" },
     ],
     bullets: [
-      "Rebuilt the ICLR 2026 AgentFlow paper as a local Qwen3-8B Planner→Executor→Verifier→Memory loop with JSON-schema planning, Tavily web search, and a sandboxed Python/SymPy executor.",
-      "Extended the original with DAPO (replacing GRPO) and a Process Reward Model for step-level reward shaping — two research upgrades not in the paper.",
-      "Built a reproducible eval harness: AIME24 and GPQA-Diamond loaders with decontaminated splits, full trajectory export, and a measured 33% AIME24 baseline on an 8B model.",
-      "Shipped the full RL training pipeline: LLM-judge step labeling → Qwen3-0.6B PRM → DAPO trainer on TRL + Unsloth QLoRA, including a hand-implemented dynamic-sampling stage TRL itself does not provide.",
+      "Rebuilt the ICLR 2026 AgentFlow paper from scratch as a local Qwen3-8B Planner→Executor→Verifier→Memory agent loop — grammar-constrained JSON planning, Tavily web search, and a sandboxed Python/SymPy executor.",
+      "Replaced the paper's outcome-only GRPO with DAPO and a learned Process Reward Model (Qwen3-0.6B regression head trained on DeepSeek-judge step labels) for dense per-step credit assignment — plus a from-scratch dynamic-sampling stage that TRL doesn't implement.",
+      "Ran the full RL pipeline end-to-end on a A40 GPU: collect → judge 531 steps → train PRM → 300-step DAPO LoRA on Qwen3-8B (bf16) → GGUF export → Ollama serving, with leakage-free, quantization-matched before/after evaluation.",
+      "Result: +5.0 pts on GPQA-Diamond (40.0%→45.0%, n=100) — a cross-domain gain from a Planner trained only on AIME math; AIME24 held flat within noise (n=30).",
     ],
   },
   {

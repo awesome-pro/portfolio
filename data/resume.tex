@@ -151,9 +151,9 @@
     \resumeSubHeadingListStart
 
       \resumeProjectHeading
-          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL/Unsloth, Ollama, FastMCP, SymPy} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
+          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, PEFT/LoRA, Ollama, FastMCP} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
           \resumeItemListStart
-            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with JSON-schema planning, Tavily search, sandboxed Python/SymPy tools, AIME24/GPQA trajectory evals, and a planner fine-tuning pipeline for LLM-judge step labels, Qwen3-0.6B PRM, and TRL/Unsloth QLoRA DAPO.}
+            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop (grammar-constrained planning, Tavily search, sandboxed Python/SymPy tools); trained the planner with \textbf{DAPO + a learned Qwen3-0.6B Process Reward Model} (replacing the paper's GRPO) and a hand-built dynamic-sampling stage TRL lacks, then ran the full pipeline on an A40 (DeepSeek-judge step labels $\rightarrow$ PRM $\rightarrow$ bf16 LoRA DAPO $\rightarrow$ GGUF) and measured \textbf{+5.0 pts on GPQA-Diamond (40.0\%$\rightarrow$45.0\%)} under leakage-free, quantization-matched evaluation.}
           \resumeItemListEnd
 
       \resumeProjectHeading
