@@ -124,7 +124,7 @@
   {Etkin.ai}{Remote, Turkiye}
   \resumeItemListStart
     \resumeItem{Built a LangChain + pgvector knowledge base powering AI-assisted document search and retrieval workflows, improving query accuracy by 15\%.}
-    \resumeItem{Developed scalable data-ingestion pipelines using bulk CSV processing and Celery workers, reducing processing time by 40\%.}
+    \resumeItem{Developed scalable data-ingestion pipelines using bulk CSV processing and Celery workers, reducing processing time by 40\%}
     \resumeItem{Engineered a production PDF generation system transforming structured AI outputs and dynamic JSON reports into enterprise-grade documents.}
     \resumeItem{Automated deployment of AI services using Docker, GitHub Actions, and AWS EC2, establishing reliable CI/CD workflows for production environments.}
   \resumeItemListEnd
@@ -151,9 +151,10 @@
     \resumeSubHeadingListStart
 
       \resumeProjectHeading
-          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, PEFT/LoRA, Ollama, FastMCP} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
+          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, PEFT/LoRA, FastMCP} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
           \resumeItemListStart
-            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop (grammar-constrained planning, Tavily search, sandboxed Python/SymPy tools); trained the planner with \textbf{DAPO + a learned Qwen3-0.6B Process Reward Model} (replacing the paper's GRPO) and a hand-built dynamic-sampling stage TRL lacks, then ran the full pipeline on an A40 (DeepSeek-judge step labels $\rightarrow$ PRM $\rightarrow$ bf16 LoRA DAPO $\rightarrow$ GGUF) and measured \textbf{+5.0 pts on GPQA-Diamond (40.0\%$\rightarrow$45.0\%)} under leakage-free, quantization-matched evaluation.}
+            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with grammar-constrained planning, Tavily search, and sandboxed Python/SymPy tools, served locally through Ollama and FastMCP.}
+            \resumeItem{Trained the planner with \textbf{DAPO + a learned Qwen3-0.6B Process Reward Model} (replacing the paper's GRPO) plus a hand-built dynamic-sampling stage TRL lacks, running the full A40 pipeline (DeepSeek-judge step labels $\rightarrow$ PRM $\rightarrow$ bf16 LoRA DAPO $\rightarrow$ GGUF) to measure \textbf{+5.0 pts on GPQA-Diamond (40.0\%$\rightarrow$45.0\%)} under leakage-free, quantization-matched evaluation.}
           \resumeItemListEnd
 
       \resumeProjectHeading
