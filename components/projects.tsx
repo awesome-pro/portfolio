@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 interface ProjectLink {
   label: string;
   url: string;
@@ -91,6 +95,7 @@ function LinkPill({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={(e) => e.stopPropagation()}
       className="inline-flex items-center font-mono text-xs px-2.5 py-1 rounded-full border border-border hover:border-blue-400 transition-colors"
     >
       {label} ↗
@@ -98,34 +103,44 @@ function LinkPill({ href, label }: { href: string; label: string }) {
   );
 }
 
-export default function Projects() {
+function ProjectRow({ project, index }: { project: Project; index: number }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
-      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink">
-        Things I&apos;ve built
-      </h2>
-
-      <div className="flex flex-col">
-        {PROJECTS.map((project, i) => (
-          <div
-            key={project.title}
-            className={`py-8 ${i !== 0 ? "border-t border-border" : ""}`}
+    <div className={index !== 0 ? "border-t border-border" : ""}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full text-left py-5 flex items-center justify-between gap-4 group cursor-pointer"
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="text-base font-semibold text-ink">{project.title}</span>
+          <span className="text-xs text-black/40 truncate">· {project.tag}</span>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap gap-1.5">
+            {project.links.map((link) => (
+              <LinkPill key={link.label} href={link.url} label={link.label} />
+            ))}
+          </div>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            className={`shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           >
-            {/* Top row: title + links */}
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 mb-1">
-              <div className="flex items-center gap-2.5">
-                <span className="text-base font-semibold text-ink">
-                  {project.title}
-                </span>
-                <span className="text-xs text-black/40">· {project.tag}</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5 shrink-0">
-                {project.links.map((link) => (
-                  <LinkPill key={link.label} href={link.url} label={link.label} />
-                ))}
-              </div>
-            </div>
+            <path d="M2.5 5L7 9.5L11.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </button>
 
+      {/* Smooth height animation via grid trick */}
+      <div
+        className="grid transition-[grid-template-rows] duration-200 ease-out"
+        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          <div className="pb-6">
             {/* Stack */}
             <div className="flex flex-wrap gap-1.5 mb-4">
               {project.stack.map((tech) => (
@@ -150,6 +165,22 @@ export default function Projects() {
               ))}
             </ul>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Projects() {
+  return (
+    <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-2">
+        Things I&apos;ve built
+      </h2>
+
+      <div className="flex flex-col">
+        {PROJECTS.map((project, i) => (
+          <ProjectRow key={project.title} project={project} index={i} />
         ))}
       </div>
     </section>

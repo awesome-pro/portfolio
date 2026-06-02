@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 const AWARDS = [
   { label: "Top 1% TypeScript Engineer Globally", sub: "Algora", href: "https://algora.io/profile/awesome-pro" },
   { label: "International Youth Math Challenge Gold Honour", sub: "IYMC", href: "https://drive.google.com/file/d/1yVa7inC4SaJKWa-m0xaY7jZUIMwka792/view?usp=sharing" },
@@ -74,55 +78,82 @@ const EXPERIENCES: Experience[] = [
   },
 ];
 
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      className={`shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+    >
+      <path d="M2.5 5L7 9.5L11.5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ExperienceRow({ exp, index }: { exp: Experience; index: number }) {
+  const [open, setOpen] = useState(false);
+  const hasBullets = exp.bullets.length > 0;
+
+  return (
+    <div className={index !== 0 ? "border-t border-border" : ""}>
+      <button
+        onClick={() => hasBullets && setOpen((v) => !v)}
+        className={`w-full text-left py-5 flex items-center justify-between gap-4 ${hasBullets ? "cursor-pointer" : "cursor-default"}`}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2.5 min-w-0">
+          <div className="flex items-center gap-2.5">
+            <span className="text-base font-semibold text-ink">{exp.company}</span>
+            <span className="text-xs text-black/40">· {exp.location}</span>
+          </div>
+          <span className="text-sm font-medium text-ink-muted">{exp.role}</span>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="font-mono text-xs text-ink-muted">{exp.period}</span>
+          {hasBullets && <Chevron open={open} />}
+        </div>
+      </button>
+
+      {hasBullets && (
+        <div
+          className="grid transition-[grid-template-rows] duration-200 ease-out"
+          style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+        >
+          <div className="overflow-hidden">
+            <ul className="flex flex-col gap-2 pb-6">
+              {exp.bullets.map((bullet) => (
+                <li
+                  key={bullet}
+                  className="text-sm leading-relaxed text-ink-muted pl-4 relative before:content-['+'] before:absolute before:left-0 before:text-ink-faint"
+                >
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Experience() {
   return (
     <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
-      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink">
+      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-2">
         Where I&apos;ve worked
       </h2>
 
       <div className="flex flex-col">
         {EXPERIENCES.map((exp, i) => (
-          <div
-            key={exp.company}
-            className={`py-8 ${i !== 0 ? "border-t border-border" : ""}`}
-          >
-            {/* Top row: company + period */}
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-1">
-              <div className="flex items-center gap-2.5">
-                <span className="text-base font-semibold">
-                  {exp.company}
-                </span>
-                <span className="text-xs text-black/50">· {exp.location}</span>
-              </div>
-              <span className="font-mono text-xs text-ink-muted shrink-0">
-                {exp.period}
-              </span>
-            </div>
-
-            {/* Role */}
-            <p className="text-sm font-medium text-ink mb-4">{exp.role}</p>
-
-            {/* Bullets */}
-            {exp.bullets.length > 0 && (
-              <ul className="flex flex-col gap-2">
-                {exp.bullets.map((bullet) => (
-                  <li
-                    key={bullet}
-                    className="text-sm leading-relaxed text-ink-muted pl-4 relative before:content-['+'] before:absolute before:left-0 before:text-ink-faint"
-                  >
-                    {bullet}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <ExperienceRow key={exp.company} exp={exp} index={i} />
         ))}
       </div>
 
       {/* Achievements */}
       <div className="mt-2 pt-8 border-t border-border">
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-8">
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-2">
           Achievements
         </h2>
         <div className="flex flex-col">
