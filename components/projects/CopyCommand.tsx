@@ -3,14 +3,18 @@
 import { useState } from "react";
 
 /**
- * A block of shell commands with a copy button. Reusable across projects.
+ * A copy-able code block. `shell` (default) prefixes each line with "$ ";
+ * set shell={false} for source code (no prompt, no per-line dimming).
+ * Reusable across projects.
  */
 export default function CopyCommand({
   lines,
   label,
+  shell = true,
 }: {
   lines: string[];
   label?: string;
+  shell?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -39,11 +43,11 @@ export default function CopyCommand({
         >
           {copied ? "copied ✓" : "copy"}
         </button>
-        <pre className="px-4 py-3.5 overflow-x-auto font-mono text-[12.5px] leading-relaxed text-white/85 m-0">
+        <pre className="px-4 py-3.5 overflow-x-auto font-mono text-[12.5px] leading-relaxed text-white/85 m-0 whitespace-pre">
           {lines.map((l, i) => (
             <div key={i}>
-              <span className="text-white/30 select-none">$ </span>
-              {l}
+              {shell && <span className="text-white/30 select-none">$ </span>}
+              {l === "" ? " " : l}
             </div>
           ))}
         </pre>

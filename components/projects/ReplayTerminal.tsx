@@ -8,6 +8,8 @@ export interface TraceStep {
   role: TraceRole;
   /** e.g. "think", "code", "search", "answer" — shown as the action tag. */
   action?: string;
+  /** Override the role's default label (e.g. "RUNTIME", "BUDGET", "LLM"). */
+  label?: string;
   /** Main body text (preserves line breaks). */
   text: string;
 }
@@ -89,7 +91,7 @@ export default function ReplayTerminal({
             <div key={i} className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
                 <span className={`text-[10px] font-semibold tracking-wider ${meta.tone}`}>
-                  {meta.label}
+                  {s.label ?? meta.label}
                 </span>
                 {s.action && (
                   <span className="text-[10px] text-white/30 border border-white/10 rounded px-1.5 py-0.5">

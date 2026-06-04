@@ -37,6 +37,7 @@ const PROJECTS: Project[] = [
   {
     title: "GuardLoop",
     tag: "Production Agent Runtime",
+    caseStudy: "/projects/guardloop",
     stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
@@ -52,6 +53,7 @@ const PROJECTS: Project[] = [
   {
     title: "SmartMemo",
     tag: "Semantic LLM Cache",
+    caseStudy: "/projects/smartmemo",
     stack: ["FAISS", "SentenceTransformers", "PyTorch", "SQLite", "Pydantic"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/smartmemo" },
@@ -66,6 +68,7 @@ const PROJECTS: Project[] = [
   {
     title: "Orchflow",
     tag: "Agent Orchestration Framework",
+    caseStudy: "/projects/orchflow",
     stack: ["AsyncIO", "LiteLLM", "Pydantic"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/orchflow" },
@@ -80,6 +83,7 @@ const PROJECTS: Project[] = [
   {
     title: "agenteval",
     tag: "LLM Evaluation Tooling",
+    caseStudy: "/projects/agenteval",
     stack: ["AsyncIO", "OpenAI SDK", "Anthropic SDK", "LangChain", "Typer"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agenteval" },
