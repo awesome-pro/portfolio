@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 interface ProjectLink {
   label: string;
@@ -13,12 +14,15 @@ interface Project {
   stack: string[];
   links: ProjectLink[];
   bullets: string[];
+  /** Internal route to a dedicated case-study page, if one exists. */
+  caseStudy?: string;
 }
 
 const PROJECTS: Project[] = [
   {
     title: "AgentFlow-Pro",
     tag: "Agentic RL Research",
+    caseStudy: "/projects/agentflow-pro",
     stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agentflow-pro" },
@@ -164,6 +168,15 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
                 </li>
               ))}
             </ul>
+
+            {project.caseStudy && (
+              <Link
+                href={project.caseStudy}
+                className="inline-flex items-center gap-1.5 mt-4 font-mono text-xs text-ink hover:underline underline-offset-4"
+              >
+                Read the full case study →
+              </Link>
+            )}
           </div>
         </div>
       </div>

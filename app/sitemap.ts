@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllSlugsStatic } from "@/lib/blogs";
+import { getAllProjects } from "@/lib/projects";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://abhinandan.one";
@@ -11,6 +12,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 1,
       images: [`${base}/hero.png`, `${base}/hero-photo.jpg`],
+    },
+    {
+      url: `${base}/projects`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
     {
       url: `${base}/blogs`,
@@ -26,6 +33,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Project case-study pages (only those with a dedicated page)
+  const projectRoutes: MetadataRoute.Sitemap = getAllProjects()
+    .filter((p) => p.hasPage)
+    .map((p) => ({
+      url: `${base}/projects/${p.slug}`,
+      lastModified: new Date(p.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.85,
+    }));
+
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
     const slugs = await getAllSlugsStatic();
@@ -39,5 +56,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // If Supabase is unavailable during build, skip blog routes
   }
 
-  return [...staticRoutes, ...blogRoutes];
+  return [...staticRoutes, ...projectRoutes, ...blogRoutes];
 }
