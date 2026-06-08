@@ -9,12 +9,6 @@ export default function Nav() {
         <Logo />
         <div className="flex items-center gap-6">
           <Link
-            href="/projects"
-            className="text-sm text-ink-muted hover:text-ink transition-colors"
-          >
-            Projects
-          </Link>
-          <Link
             href="/resume"
             className="text-sm text-ink-muted hover:text-ink transition-colors"
           >

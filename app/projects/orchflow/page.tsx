@@ -7,21 +7,23 @@ import { getProject } from "@/lib/projects";
 import {
   SectionHeading,
   Chip,
-  Callout,
   Stat,
   LinkBar,
 } from "@/components/projects/shared";
-import PipelineDiagram from "@/components/projects/PipelineDiagram";
-import ReplayTerminal, {
-  type TraceStep,
-} from "@/components/projects/ReplayTerminal";
+import type { TraceStep } from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
+import OrchflowLiveDemo from "@/components/projects/OrchflowLiveDemo";
 
 export const revalidate = 86400; // static content — revalidate daily
 
 const SLUG = "orchflow";
 const project = getProject(SLUG)!;
 const url = `https://abhinandan.one/projects/${SLUG}`;
+const DEMO_REPO_URL = "https://github.com/awesome-pro/portfolio-service";
+const heroLinks = [
+  ...project.links,
+  { label: "Live demo API", url: DEMO_REPO_URL },
+];
 
 export const metadata: Metadata = {
   title: `${project.title} — Dependency-Free Multi-Agent Pipeline Orchestration | Abhinandan`,
@@ -88,20 +90,20 @@ const TRACE: TraceStep[] = [
 
 const HIGHLIGHTS = [
   {
-    title: "Zero runtime dependencies",
-    body: "The core is pure standard-library Python — nothing to pin, audit, or break on upgrade. LiteLLM is pulled in only if you opt into the optional Agent.",
+    title: "Readable orchestration",
+    body: "The running demo is still a normal Flow([...]) list: plan, a parallel group, synthesis, condition, finalizer.",
   },
   {
-    title: "Steps are just functions",
-    body: "An @step is a normal async function taking (input, context). No nodes, no graph DSL — you read the pipeline top to bottom like the code it is.",
+    title: "Parallel work you can inspect",
+    body: "The three research agents share a parallel_group_id, so the UI can prove they fanned out and rejoined.",
   },
   {
-    title: "Flat traces, live events",
-    body: "Every attempt emits a StepTrace; flow_started → step_completed → retry_scheduled → flow_completed stream live via flow.events(...). Observability without a backend.",
+    title: "Resume is visible",
+    body: "Failure mode saves a JSON checkpoint, reloads it, and appends new traces after resume.",
   },
   {
-    title: "Checkpoint, resume, and gate",
-    body: "JsonCheckpointStore saves after each top-level item, so flow.resume() picks up a failed run. human_input() adds a review gate with no separate UI or queue.",
+    title: "Safe live model demo",
+    body: "Visitors can adjust small inputs and model presets, while the backend enforces allowlisted models and rate limits.",
   },
 ];
 
@@ -133,7 +135,7 @@ export default function OrchflowPage() {
       />
       <Nav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-6 py-16">
         <Link
           href="/projects"
           className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
@@ -142,7 +144,7 @@ export default function OrchflowPage() {
         </Link>
 
         {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <header className="mt-6 mb-14">
+        <header className="mt-6 mb-10 max-w-4xl">
           <p className="font-mono text-xs uppercase tracking-widest text-ink-muted mb-4">
             {project.tag}
           </p>
@@ -168,142 +170,24 @@ export default function OrchflowPage() {
             ))}
           </div>
 
-          <LinkBar links={project.links} />
+          <LinkBar links={heroLinks} />
         </header>
 
-        {/* ── TL;DR ─────────────────────────────────────────────────────── */}
-        <section className="mb-16 border-y border-border py-6">
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-            {[
-              "Sequential, parallel, conditional & retryable flows",
-              "Shared StepContext, flat traces, live lifecycle events",
-              "JSON checkpoint / resume + lightweight human-review gates",
-              "Zero core dependencies; optional LiteLLM Agent with structured output",
-            ].map((t) => (
-              <li
-                key={t}
-                className="text-sm leading-relaxed text-ink-muted pl-4 relative before:content-['+'] before:absolute before:left-0 before:text-ink-faint"
-              >
-                {t}
-              </li>
-            ))}
-          </ul>
+        {/* ── Live demo ─────────────────────────────────────────────────── */}
+        <section className="mb-16">
+          <OrchflowLiveDemo fallbackTrace={TRACE} />
         </section>
 
-        {/* ── The problem ───────────────────────────────────────────────── */}
+        {/* ── Proof points ──────────────────────────────────────────────── */}
         <section className="mb-16">
-          <SectionHeading eyebrow="The problem" title="Between fragile function-chaining and heavy graph runtimes" className="mb-6" />
-          <div className="flex flex-col gap-4 text-base leading-relaxed text-ink-muted">
-            <p>
-              Chaining a few async functions is fine — until the pipeline needs{" "}
-              <span className="text-ink font-medium">retries, parallel work,
-              branching, shared state, or traces</span>. Then the glue code grows
-              faster than the logic.
-            </p>
-            <p>
-              Full graph frameworks solve that, but they ask you to rebuild your
-              workflow as nodes and edges in their runtime. Orchflow sits in the
-              middle: you write <span className="text-ink font-medium">normal
-              Python functions</span>, and it handles the orchestration mechanics
-              — with nothing to install but itself.
-            </p>
-          </div>
-        </section>
-
-        {/* ── How it works ──────────────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="How it works" title="Compose functions into a Flow" className="mb-6" />
-          <PipelineDiagram
-            stages={[
-              {
-                kicker: "decorate",
-                title: "@step",
-                detail:
-                  "Write async functions taking (input, context). Add retry= per step. Sync functions run on worker threads.",
-              },
-              {
-                kicker: "compose",
-                title: "Flow([...])",
-                detail:
-                  "List steps to run in order; nest a list to fan out in parallel; use condition() to branch.",
-              },
-              {
-                kicker: "execute",
-                title: "run / resume",
-                detail:
-                  "Run with retries and a checkpoint store; resume() picks up where a failed run stopped.",
-              },
-              {
-                kicker: "observe",
-                title: "FlowResult",
-                detail:
-                  "Get output, shared state, success, and a flat list of StepTrace records — plus live events.",
-              },
-            ]}
+          <SectionHeading
+            eyebrow="What it proves"
+            title="A live case for readable multi-agent workflows"
+            className="mb-6"
           />
-        </section>
-
-        {/* ── The API / readability ─────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="The API" title="The pipeline reads like the work" className="mb-6" />
-          <div className="flex flex-col gap-4">
-            <CopyCommand
-              shell={false}
-              label="a step is a normal async function"
-              lines={[
-                "from orchflow import Flow, StepContext, step, condition",
-                "",
-                '@step(name="research", retry=2)',
-                "async def research(input: str, context: StepContext) -> str:",
-                '    context.state["topic"] = input',
-                '    return f"findings about {input}"',
-              ]}
-            />
-            <CopyCommand
-              shell={false}
-              label="sequential, parallel (nested list), conditional"
-              lines={[
-                "flow = Flow([",
-                "    plan,",
-                "    [web_research, docs_research],   # run concurrently",
-                "    condition(",
-                '        when=lambda ctx: ctx.previous == "technical",',
-                "        then=technical_writer,",
-                "        otherwise=general_writer,",
-                "    ),",
-                "])",
-                'result = await flow.run("transformers vs. RNNs")',
-              ]}
-            />
-          </div>
-          <div className="mt-4">
-            <Callout label="resilience, built in">
-              <span className="text-ink">JsonCheckpointStore</span> saves after
-              each completed item; if a run fails,{" "}
-              <span className="text-ink">await flow.resume(store)</span> continues
-              from there. <span className="text-ink">human_input()</span> drops a
-              review gate into the flow with no separate UI or queue.
-            </Callout>
-          </div>
-        </section>
-
-        {/* ── Demo ──────────────────────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="See it run" title="A parallel flow's live event stream" className="mb-6" />
-          <p className="text-base leading-relaxed text-ink-muted mb-6">
-            <span className="font-mono text-sm text-ink">flow.events(...)</span>{" "}
-            yields lifecycle events as the pipeline executes — plan, a concurrent
-            fan-out, a merge, then synthesis.
-          </p>
-          <ReplayTerminal steps={TRACE} title="orchflow · content-pipeline" />
-        </section>
-
-        {/* ── Engineering highlights ────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="What I built" title="Lightweight on purpose" className="mb-6" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {HIGHLIGHTS.map((h) => (
-              <div key={h.title} className="rounded-xl border border-border bg-surface p-5">
+              <div key={h.title} className="rounded-lg border border-border bg-surface p-5">
                 <p className="text-sm font-semibold text-ink mb-1.5">{h.title}</p>
                 <p className="text-sm leading-relaxed text-ink-muted">{h.body}</p>
               </div>
@@ -311,8 +195,54 @@ export default function OrchflowPage() {
           </div>
         </section>
 
+        {/* ── The API / readability ─────────────────────────────────────── */}
+        <section className="mb-16 grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+          <div>
+            <SectionHeading
+              eyebrow="The API"
+              title="The backend is still plain Python"
+              className="mb-5"
+            />
+            <p className="text-base leading-relaxed text-ink-muted">
+              The portfolio UI is only a viewer. The value comes from Orchflow:
+              step functions stay readable, while the framework handles fan-out,
+              retries, lifecycle events, checkpoints, and resume.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <CopyCommand
+              shell={false}
+              label="real step function"
+              lines={[
+                "from orchflow import Agent, Flow, StepContext, condition, step",
+                "",
+                '@step(name="technical_research", retry=2)',
+                "async def technical_research(input: dict, context: StepContext):",
+                "    return await researcher.run(prompt, context=context)",
+              ]}
+            />
+            <CopyCommand
+              shell={false}
+              label="same flow shape the demo runs"
+              lines={[
+                "flow = Flow([",
+                "    plan,",
+                "    [market_research, technical_research, risk_review],",
+                "    synthesize,",
+                "    condition(",
+                '        when=lambda ctx: ctx.previous["quality_score"] >= 0.8,',
+                "        then=publish_ready,",
+                "        otherwise=revise,",
+                "    ),",
+                "    finalize,",
+                "])",
+              ]}
+            />
+          </div>
+        </section>
+
         {/* ── Install ───────────────────────────────────────────────────── */}
-        <section className="mb-16">
+        <section className="mb-16 max-w-4xl">
           <SectionHeading eyebrow="Get started" title="Install from PyPI" className="mb-6" />
           <CopyCommand
             label="pip"
@@ -325,7 +255,7 @@ export default function OrchflowPage() {
 
         {/* ── Footer links ──────────────────────────────────────────────── */}
         <section className="border-t border-border pt-8">
-          <LinkBar links={project.links} />
+          <LinkBar links={heroLinks} />
           <Link
             href="/projects"
             className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-muted hover:text-ink transition-colors mt-6"

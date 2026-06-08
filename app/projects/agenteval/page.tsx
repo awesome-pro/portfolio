@@ -12,10 +12,9 @@ import {
   LinkBar,
 } from "@/components/projects/shared";
 import PipelineDiagram from "@/components/projects/PipelineDiagram";
-import ReplayTerminal, {
-  type TraceStep,
-} from "@/components/projects/ReplayTerminal";
+import type { TraceStep } from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
+import AgentEvalLiveDemo from "@/components/projects/AgentEvalLiveDemo";
 
 export const revalidate = 86400; // static content — revalidate daily
 
@@ -284,12 +283,15 @@ export default function AgentEvalPage() {
 
         {/* ── Demo ──────────────────────────────────────────────────────── */}
         <section className="mb-16">
-          <SectionHeading eyebrow="See it run" title="A pass-rate gate in CI" className="mb-6" />
+          <SectionHeading eyebrow="See it run" title="A real pass-rate gate over repeated agent runs" className="mb-6" />
           <p className="text-base leading-relaxed text-ink-muted mb-6">
-            Twenty runs, a 0.85 threshold. Three runs fail an assertion — but the
-            suite still passes the gate, and you get the failing traces to debug.
+            This demo runs a refund-support agent through the actual{" "}
+            <span className="font-mono text-sm text-ink">agenteval-py</span>{" "}
+            package using live OpenAI or Anthropic model calls. Healthy mode
+            clears the pass-rate threshold; regression mode fails the same
+            contract and surfaces the exact traces that broke.
           </p>
-          <ReplayTerminal steps={TRACE} title="agenteval · run tests/" />
+          <AgentEvalLiveDemo fallbackTrace={TRACE} />
         </section>
 
         {/* ── CLI ───────────────────────────────────────────────────────── */}

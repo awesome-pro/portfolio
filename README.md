@@ -93,6 +93,7 @@ pnpm resume:build
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | All Supabase clients (public, safe for client) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public read operations (client + SSR) |
+| `NEXT_PUBLIC_DEMOS_API_URL` | Public Railway/FastAPI backend URL for interactive project demos |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only admin operations, bypasses RLS |
 | `BLOG_API_KEY` | Internal API route authentication for write operations |
 
