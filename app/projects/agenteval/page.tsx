@@ -12,7 +12,6 @@ import {
   LinkBar,
 } from "@/components/projects/shared";
 import PipelineDiagram from "@/components/projects/PipelineDiagram";
-import type { TraceStep } from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
 import AgentEvalLiveDemo from "@/components/projects/AgentEvalLiveDemo";
 
@@ -40,46 +39,6 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: url },
 };
-
-/* ── Demo trace — a pass-rate gate over N concurrent runs.
-      Representative; swap with a real captured run anytime. ─────────────── */
-const TRACE: TraceStep[] = [
-  {
-    role: "user",
-    label: "RUN",
-    text: "agenteval run tests/ --n 20 --threshold 0.85",
-  },
-  {
-    role: "verifier",
-    label: "RUNNER",
-    action: "concurrent",
-    text: "test_agent — executing 20 runs concurrently, gate ≥ 85%",
-  },
-  {
-    role: "tool",
-    label: "RUNS ✓",
-    action: "17 passed",
-    text: "called web_search · ≤3 calls · 4 steps avg · no errors · schema ok",
-  },
-  {
-    role: "verifier",
-    label: "RUNS ✗",
-    action: "3 failed",
-    text: 'runs 7, 12, 19 → response_contains("Python") failed\n(model omitted the keyword that pass) — collected, not crashed',
-  },
-  {
-    role: "planner",
-    label: "TRACE",
-    action: "per run",
-    text: "tool_calls · duration_seconds · total_steps · token_usage · assertion_errors",
-  },
-  {
-    role: "answer",
-    label: "RESULT",
-    text: `17/20 passed (85%)  ≥  threshold 0.85   →   PASS
-exit code 0 · report.json written for CI`,
-  },
-];
 
 const HIGHLIGHTS = [
   {
@@ -127,7 +86,7 @@ export default function AgentEvalPage() {
       />
       <Nav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-6 py-16">
         <Link
           href="/projects"
           className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
@@ -136,7 +95,7 @@ export default function AgentEvalPage() {
         </Link>
 
         {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <header className="mt-6 mb-14">
+        <header className="mt-6 mb-14 max-w-4xl">
           <p className="font-mono text-xs uppercase tracking-widest text-ink-muted mb-4">
             {project.tag}
           </p>
@@ -184,8 +143,14 @@ export default function AgentEvalPage() {
           </ul>
         </section>
 
+        {/* ── Demo ──────────────────────────────────────────────────────── */}
+        <section className="mb-16 w-full">
+          <SectionHeading eyebrow="Live demo" title="Run a real pass-rate gate" className="mb-6" />
+          <AgentEvalLiveDemo />
+        </section>
+
         {/* ── The problem ───────────────────────────────────────────────── */}
-        <section className="mb-16">
+        <section className="mb-16 max-w-4xl">
           <SectionHeading eyebrow="The problem" title="Exact-match assertions don't survive non-determinism" className="mb-6" />
           <div className="flex flex-col gap-4 text-base leading-relaxed text-ink-muted">
             <p>
@@ -279,19 +244,6 @@ export default function AgentEvalPage() {
               expectation that broke, not just the first one.
             </Callout>
           </div>
-        </section>
-
-        {/* ── Demo ──────────────────────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="See it run" title="A real pass-rate gate over repeated agent runs" className="mb-6" />
-          <p className="text-base leading-relaxed text-ink-muted mb-6">
-            This demo runs a refund-support agent through the actual{" "}
-            <span className="font-mono text-sm text-ink">agenteval-py</span>{" "}
-            package using live OpenAI or Anthropic model calls. Healthy mode
-            clears the pass-rate threshold; regression mode fails the same
-            contract and surfaces the exact traces that broke.
-          </p>
-          <AgentEvalLiveDemo fallbackTrace={TRACE} />
         </section>
 
         {/* ── CLI ───────────────────────────────────────────────────────── */}
