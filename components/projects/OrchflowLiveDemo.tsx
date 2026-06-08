@@ -123,9 +123,7 @@ interface DemoOutput {
   };
 }
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_DEMOS_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 const DEMO_REPO_URL = "https://github.com/awesome-pro/portfolio-service";
 const DEFAULT_TOPIC = "AI code review assistant";
 const DEFAULT_AUDIENCE = "engineering managers";

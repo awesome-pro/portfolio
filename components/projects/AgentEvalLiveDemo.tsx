@@ -89,8 +89,7 @@ interface DemoEvent {
   final_result?: DemoResult;
 }
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_DEMOS_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
 const DEFAULT_MESSAGE = "I want a refund for order A1007";
 
