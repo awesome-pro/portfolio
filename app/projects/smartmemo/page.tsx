@@ -13,10 +13,8 @@ import {
 } from "@/components/projects/shared";
 import PipelineDiagram from "@/components/projects/PipelineDiagram";
 import ComparisonTable from "@/components/projects/ComparisonTable";
-import ReplayTerminal, {
-  type TraceStep,
-} from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
+import SmartMemoLiveDemo from "@/components/projects/SmartMemoLiveDemo";
 
 export const revalidate = 86400; // static content — revalidate daily
 
@@ -42,51 +40,6 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: url },
 };
-
-/* ── Demo trace — the canonical false-positive the classifier prevents.
-      Representative; swap with a real captured run anytime. ─────────────── */
-const TRACE: TraceStep[] = [
-  {
-    role: "user",
-    label: "PROMPT",
-    text: 'cache.get_or_call("Approve the customer\'s refund request")',
-  },
-  {
-    role: "tool",
-    label: "FAISS",
-    action: "search",
-    text: "no candidate above threshold → MISS",
-  },
-  {
-    role: "answer",
-    label: "RESULT",
-    text: "called LLM, stored response   (query_id = q1)",
-  },
-  {
-    role: "user",
-    label: "PROMPT",
-    text: 'cache.get_or_call("Deny the customer\'s refund request")',
-  },
-  {
-    role: "tool",
-    label: "FAISS",
-    action: "search",
-    text: 'candidate q1 "Approve the…"   cosine = 0.913   ✓ above threshold',
-  },
-  {
-    role: "verifier",
-    label: "CLASSIFIER",
-    action: "pairwise",
-    text: "equivalence score = 0.04   →   NOT equivalent. Reject reuse.",
-  },
-  {
-    role: "answer",
-    label: "RESULT",
-    text: `cache MISS → called LLM with the correct (deny) context.
-A cosine-only cache (0.913 > threshold) would have returned
-the *approve* answer. That's the false positive this prevents.`,
-  },
-];
 
 const HIGHLIGHTS = [
   {
@@ -134,7 +87,7 @@ export default function SmartMemoPage() {
       />
       <Nav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-6 py-16">
         <Link
           href="/projects"
           className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
@@ -143,7 +96,7 @@ export default function SmartMemoPage() {
         </Link>
 
         {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <header className="mt-6 mb-14">
+        <header className="mt-6 mb-14 max-w-4xl">
           <p className="font-mono text-xs uppercase tracking-widest text-ink-muted mb-4">
             {project.tag}
           </p>
@@ -189,6 +142,16 @@ export default function SmartMemoPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        {/* ── Live demo ─────────────────────────────────────────────────── */}
+        <section className="mb-16">
+          <SectionHeading
+            eyebrow="Live demo"
+            title="Watch SmartMemo block an unsafe cache hit"
+            className="mb-6"
+          />
+          <SmartMemoLiveDemo />
         </section>
 
         {/* ── The problem ───────────────────────────────────────────────── */}
@@ -253,16 +216,6 @@ export default function SmartMemoPage() {
               — local-paraphraser positives and templated hard negatives.
             </Callout>
           </div>
-        </section>
-
-        {/* ── Demo ──────────────────────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="See it run" title="The false positive it refuses to make" className="mb-6" />
-          <p className="text-base leading-relaxed text-ink-muted mb-6">
-            Two prompts a hair apart in embedding space, opposite in meaning. The
-            classifier catches what the cosine threshold can&apos;t.
-          </p>
-          <ReplayTerminal steps={TRACE} title="smartmemo · approve vs. deny" />
         </section>
 
         {/* ── Results ───────────────────────────────────────────────────── */}
