@@ -12,10 +12,8 @@ import {
   LinkBar,
 } from "@/components/projects/shared";
 import PipelineDiagram from "@/components/projects/PipelineDiagram";
-import ReplayTerminal, {
-  type TraceStep,
-} from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
+import GuardLoopLiveDemo from "@/components/projects/GuardLoopLiveDemo";
 
 export const revalidate = 86400; // static content — revalidate daily
 
@@ -41,54 +39,6 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: url },
 };
-
-/* ── Demo trace — a runaway agent stopped by the cost budget.
-      Representative; swap with a real captured run anytime. ─────────────── */
-const TRACE: TraceStep[] = [
-  {
-    role: "user",
-    label: "RUNTIME",
-    action: "budget",
-    text: `runtime = GuardLoop(budget=BudgetConfig(
-    cost_limit_usd="0.10", tool_call_limit=20,
-))
-await runtime.run(agent, "scrape every page and summarize")`,
-  },
-  {
-    role: "planner",
-    label: "LLM",
-    action: "call 1",
-    text: "gpt-5.2 → $0.018  ·  cumulative $0.018 / $0.10  ✓",
-  },
-  {
-    role: "tool",
-    action: "web.fetch",
-    text: "tool call 3/20  ·  ok",
-  },
-  {
-    role: "planner",
-    label: "LLM",
-    action: "call 4",
-    text: "model keeps re-fetching the same page in a loop…\ncumulative $0.092 / $0.10  ✓",
-  },
-  {
-    role: "verifier",
-    label: "BUDGET",
-    action: "pre-flight",
-    text: `next call est. +$0.021 → would reach $0.113 > $0.10.
-Verdict: DENY. Stop before the call executes.`,
-  },
-  {
-    role: "answer",
-    label: "RESULT",
-    text: `RunResult(
-    success=False,
-    terminated_reason="cost_limit_exceeded",
-    cost_usd=Decimal("0.092"),
-    tokens_used=7184,
-)`,
-  },
-];
 
 const BUDGETS = [
   { k: "Cost", v: "USD ceiling, Decimal-precise" },
@@ -143,7 +93,7 @@ export default function GuardLoopPage() {
       />
       <Nav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
+      <main className="max-w-6xl mx-auto px-6 py-16">
         <Link
           href="/projects"
           className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
@@ -198,6 +148,11 @@ export default function GuardLoopPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        {/* ── Live demo ─────────────────────────────────────────────────── */}
+        <section className="mb-16">
+          <GuardLoopLiveDemo />
         </section>
 
         {/* ── The problem ───────────────────────────────────────────────── */}
@@ -260,17 +215,6 @@ export default function GuardLoopPage() {
               </div>
             ))}
           </div>
-        </section>
-
-        {/* ── Demo ──────────────────────────────────────────────────────── */}
-        <section className="mb-16">
-          <SectionHeading eyebrow="See it run" title="A runaway agent, stopped" className="mb-6" />
-          <p className="text-base leading-relaxed text-ink-muted mb-6">
-            An agent stuck re-fetching the same page would burn through its
-            budget. GuardLoop denies the call that <em>would</em> cross the
-            ceiling and returns a typed result instead.
-          </p>
-          <ReplayTerminal steps={TRACE} title="guardloop · cost_limit_exceeded" />
         </section>
 
         {/* ── Drop-in API ───────────────────────────────────────────────── */}
