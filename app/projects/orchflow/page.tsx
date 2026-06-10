@@ -20,8 +20,15 @@ const SLUG = "orchflow";
 const project = getProject(SLUG)!;
 const url = `https://abhinandan.one/projects/${SLUG}`;
 const DEMO_REPO_URL = "https://github.com/awesome-pro/portfolio-service";
+const ORCHFLOW_VIDEO_ID = "vmhhG8_w__I";
+const ORCHFLOW_VIDEO_URL = `https://youtu.be/${ORCHFLOW_VIDEO_ID}`;
+const ORCHFLOW_VIDEO_EMBED_URL =
+  `https://www.youtube-nocookie.com/embed/${ORCHFLOW_VIDEO_ID}` +
+  `?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1` +
+  `&loop=1&playlist=${ORCHFLOW_VIDEO_ID}`;
 const heroLinks = [
   ...project.links,
+  { label: "Video demo", url: ORCHFLOW_VIDEO_URL },
   { label: "Live demo API", url: DEMO_REPO_URL },
 ];
 
@@ -120,6 +127,14 @@ const jsonLd = {
   softwareVersion: "0.5.0",
   author: { "@type": "Person", name: "Abhinandan", url: "https://abhinandan.one" },
   mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  subjectOf: {
+    "@type": "VideoObject",
+    name: "Orchflow Demo",
+    description:
+      "A walkthrough of Orchflow as a readable, observable, and recoverable multi-agent Python pipeline.",
+    embedUrl: `https://www.youtube.com/embed/${ORCHFLOW_VIDEO_ID}`,
+    url: ORCHFLOW_VIDEO_URL,
+  },
 };
 
 export default function OrchflowPage() {
@@ -176,6 +191,41 @@ export default function OrchflowPage() {
         {/* ── Live demo ─────────────────────────────────────────────────── */}
         <section className="mb-16">
           <OrchflowLiveDemo fallbackTrace={TRACE} />
+        </section>
+
+        {/* ── Video walkthrough ─────────────────────────────────────────── */}
+        <section className="mb-16">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <SectionHeading
+              eyebrow="Video walkthrough"
+              title="Watch the complete Orchflow demo"
+            />
+            <a
+              href={ORCHFLOW_VIDEO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-ink-muted transition-colors hover:text-ink"
+            >
+              Open on YouTube ↗
+            </a>
+          </div>
+          <p className="mb-5 max-w-3xl text-base leading-relaxed text-ink-muted">
+            A six-minute walkthrough of the same project story: readable Python
+            steps, parallel branches, live events, retries, traces, and JSON
+            checkpoint resume.
+          </p>
+          <div className="overflow-hidden rounded-lg border border-border bg-surface">
+            <div className="aspect-video w-full bg-background">
+              <iframe
+                className="h-full w-full"
+                src={ORCHFLOW_VIDEO_EMBED_URL}
+                title="Orchflow demo video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </section>
 
         {/* ── Proof points ──────────────────────────────────────────────── */}

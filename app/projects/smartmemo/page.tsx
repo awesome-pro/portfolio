@@ -21,6 +21,13 @@ export const revalidate = 86400; // static content — revalidate daily
 const SLUG = "smartmemo";
 const project = getProject(SLUG)!;
 const url = `https://abhinandan.one/projects/${SLUG}`;
+const SMARTMEMO_VIDEO_ID = "UoHwsRx7J-I";
+const SMARTMEMO_VIDEO_URL = `https://youtu.be/${SMARTMEMO_VIDEO_ID}`;
+const SMARTMEMO_VIDEO_EMBED_URL =
+  `https://www.youtube-nocookie.com/embed/${SMARTMEMO_VIDEO_ID}` +
+  `?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1` +
+  `&loop=1&playlist=${SMARTMEMO_VIDEO_ID}`;
+const heroLinks = [...project.links, { label: "Video demo", url: SMARTMEMO_VIDEO_URL }];
 
 export const metadata: Metadata = {
   title: `${project.title} — A Semantic LLM Cache That Knows When Reuse Is Unsafe | Abhinandan`,
@@ -72,6 +79,14 @@ const jsonLd = {
   runtimePlatform: "Python 3.11+",
   author: { "@type": "Person", name: "Abhinandan", url: "https://abhinandan.one" },
   mainEntityOfPage: { "@type": "WebPage", "@id": url },
+  subjectOf: {
+    "@type": "VideoObject",
+    name: "SmartMemo Demo",
+    description:
+      "A walkthrough of SmartMemo as a semantic cache for LLM agents that uses a classifier gate to block unsafe reuse while preserving safe cache hits.",
+    embedUrl: `https://www.youtube.com/embed/${SMARTMEMO_VIDEO_ID}`,
+    url: SMARTMEMO_VIDEO_URL,
+  },
 };
 
 export default function SmartMemoPage() {
@@ -122,7 +137,7 @@ export default function SmartMemoPage() {
             ))}
           </div>
 
-          <LinkBar links={project.links} />
+          <LinkBar links={heroLinks} />
         </header>
 
         {/* ── TL;DR ─────────────────────────────────────────────────────── */}
@@ -144,7 +159,7 @@ export default function SmartMemoPage() {
           </ul>
         </section>
 
-        {/* ── Live demo ─────────────────────────────────────────────────── */}
+          {/* ── Live demo ─────────────────────────────────────────────────── */}
         <section className="mb-16">
           <SectionHeading
             eyebrow="Live demo"
@@ -152,6 +167,42 @@ export default function SmartMemoPage() {
             className="mb-6"
           />
           <SmartMemoLiveDemo />
+        </section>
+
+        {/* ── Video walkthrough ─────────────────────────────────────────── */}
+        <section className="mb-16">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <SectionHeading
+              eyebrow="Video walkthrough"
+              title="Watch the complete SmartMemo demo"
+            />
+            <a
+              href={SMARTMEMO_VIDEO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-ink-muted transition-colors hover:text-ink"
+            >
+              Open on YouTube ↗
+            </a>
+          </div>
+          <p className="mb-5 max-w-3xl text-base leading-relaxed text-ink-muted">
+            An eight-minute walkthrough of the project story: why cosine-only
+            semantic caching fails, how the classifier gate blocks unsafe reuse,
+            how the live demo works, and how bad-hit feedback becomes retraining
+            data.
+          </p>
+          <div className="overflow-hidden rounded-lg border border-border bg-surface">
+            <div className="aspect-video w-full bg-background">
+              <iframe
+                className="h-full w-full"
+                src={SMARTMEMO_VIDEO_EMBED_URL}
+                title="SmartMemo demo video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </section>
 
         {/* ── The problem ───────────────────────────────────────────────── */}
