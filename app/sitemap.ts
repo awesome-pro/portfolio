@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projectRoutes: MetadataRoute.Sitemap = getAllProjects()
     .filter((p) => p.hasPage)
     .map((p) => ({
-      url: `${base}/projects/${p.slug}`,
+      url: `${base}/${p.slug}`,
       lastModified: new Date(p.date),
       changeFrequency: "monthly" as const,
       priority: 0.85,

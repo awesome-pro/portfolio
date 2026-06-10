@@ -22,7 +22,6 @@ const PROJECTS: Project[] = [
   {
     title: "AgentFlow-Pro",
     tag: "Agentic RL Research",
-    caseStudy: "/projects/agentflow-pro",
     stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agentflow-pro" },
@@ -37,11 +36,10 @@ const PROJECTS: Project[] = [
   {
     title: "GuardLoop",
     tag: "Production Agent Runtime",
-    caseStudy: "/projects/guardloop",
     stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
-      { label: "PyPI", url: "https://pypi.org/project/guardloop/" },
+      { label: "Demo", url: "https://abhinandan.one/guardloop/" },
     ],
     bullets: [
       "Pre-flight Decimal-precise caps on cost, tokens, time, and tool calls — stops runaway agent loops before the next risky call executes.",
@@ -53,11 +51,10 @@ const PROJECTS: Project[] = [
   {
     title: "SmartMemo",
     tag: "Semantic LLM Cache",
-    caseStudy: "/projects/smartmemo",
     stack: ["FAISS", "SentenceTransformers", "PyTorch", "SQLite", "Pydantic"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/smartmemo" },
-      { label: "PyPI", url: "https://pypi.org/project/smartmemo/" },
+      { label: "Demo", url: "https://abhinandan.one/smartmemo/" },
     ],
     bullets: [
       "Semantic cache for LLM agents: embeddings retrieve candidates, a learned pairwise classifier decides reuse — so \"approve this refund\" and \"deny this refund\" never share a cached answer.",
@@ -68,11 +65,10 @@ const PROJECTS: Project[] = [
   {
     title: "Orchflow",
     tag: "Agent Orchestration Framework",
-    caseStudy: "/projects/orchflow",
     stack: ["AsyncIO", "LiteLLM", "Pydantic"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/orchflow" },
-      { label: "PyPI", url: "https://pypi.org/project/orchflow/" },
+      { label: "Demo", url: "https://abhinandan.one/orchflow/" },
     ],
     bullets: [
       "Dependency-free Python 3.11+ framework for readable multi-agent pipelines: sequential, parallel, conditional, and retryable flows with shared StepContext.",
@@ -83,11 +79,10 @@ const PROJECTS: Project[] = [
   {
     title: "agenteval",
     tag: "LLM Evaluation Tooling",
-    caseStudy: "/projects/agenteval",
     stack: ["AsyncIO", "OpenAI SDK", "Anthropic SDK", "LangChain", "Typer"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agenteval" },
-      { label: "PyPI", url: "https://pypi.org/project/agenteval-py/" },
+      { label: "Demo", url: "https://abhinandan.one/agenteval/" },
     ],
     bullets: [
       "Replaces brittle exact-match assertions with repeated-run pass-rate scoring — tests how reliably an agent behaves, not just whether one run looks right.",
