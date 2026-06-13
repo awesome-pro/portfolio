@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "resume:build": "bash scripts/build-resume.sh",
+    "resume:build:agentic": "bash scripts/build-resume.sh resume",
+    "resume:build:ml": "bash scripts/build-resume.sh ml_resume",
+    "resume:build:fde": "bash scripts/build-resume.sh forward_deployed_resume",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

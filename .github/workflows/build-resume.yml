@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - data/resume.tex
+      - data/ml_resume.tex
+      - data/forward_deployed_resume.tex
       - scripts/build-resume.sh
       - .github/workflows/build-resume.yml
   workflow_dispatch:
@@ -17,19 +19,77 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine resume variants
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          all_variants="resume ml_resume forward_deployed_resume"
+          all_pdfs="public/resume.pdf public/ml_resume.pdf public/forward_deployed_resume.pdf"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "variants=${all_variants}" >> "$GITHUB_OUTPUT"
+            echo "pdfs=${all_pdfs}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+
+          if [[ "$before" =~ ^0+$ ]]; then
+            changed_files="$(git diff-tree --no-commit-id --name-only -r "$after")"
+          else
+            changed_files="$(git diff --name-only "$before" "$after")"
+          fi
+
+          echo "Changed files:"
+          printf '%s\n' "$changed_files"
+
+          if grep -Fxq "scripts/build-resume.sh" <<< "$changed_files" || grep -Fxq ".github/workflows/build-resume.yml" <<< "$changed_files"; then
+            echo "variants=${all_variants}" >> "$GITHUB_OUTPUT"
+            echo "pdfs=${all_pdfs}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          variants=()
+          pdfs=()
+
+          if grep -Fxq "data/resume.tex" <<< "$changed_files"; then
+            variants+=("resume")
+            pdfs+=("public/resume.pdf")
+          fi
+
+          if grep -Fxq "data/ml_resume.tex" <<< "$changed_files"; then
+            variants+=("ml_resume")
+            pdfs+=("public/ml_resume.pdf")
+          fi
+
+          if grep -Fxq "data/forward_deployed_resume.tex" <<< "$changed_files"; then
+            variants+=("forward_deployed_resume")
+            pdfs+=("public/forward_deployed_resume.pdf")
+          fi
+
+          echo "variants=${variants[*]}" >> "$GITHUB_OUTPUT"
+          echo "pdfs=${pdfs[*]}" >> "$GITHUB_OUTPUT"
 
       - name: Build PDF from LaTeX
-        run: bash scripts/build-resume.sh
+        if: steps.changes.outputs.variants != ''
+        run: bash scripts/build-resume.sh ${{ steps.changes.outputs.variants }}
 
       - name: Commit generated PDF
+        if: steps.changes.outputs.pdfs != ''
         run: |
-          if [ -z "$(git status --porcelain -- public/resume.pdf)" ]; then
-            echo "public/resume.pdf is already up to date."
+          if [ -z "$(git status --porcelain -- ${{ steps.changes.outputs.pdfs }})" ]; then
+            echo "Generated resume PDFs are already up to date."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/resume.pdf
-          git commit -m "chore: update resume pdf"
+          git add ${{ steps.changes.outputs.pdfs }}
+          git commit -m "chore: update resume pdfs"
           git push
