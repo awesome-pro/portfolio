@@ -5,18 +5,28 @@ import { getAllRepos } from "@/lib/repos";
 import { getAllContentIdeas } from "@/lib/content-ideas";
 import { getAllOpportunitySignals } from "@/lib/opportunity-signals";
 import { getAllArticles } from "@/lib/articles";
+import { getAllArtifactsAdmin } from "@/lib/artifacts";
 import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
-  const [blogs, repos, opportunities, contentIdeas, signals, articles] = await Promise.all([
+  const [
+    blogs,
+    repos,
+    opportunities,
+    contentIdeas,
+    signals,
+    articles,
+    artifacts,
+  ] = await Promise.all([
     getAllBlogsAdmin(),
     getAllRepos(),
     getAllProductOpportunities(),
     getAllContentIdeas(),
     getAllOpportunitySignals(),
     getAllArticles(),
+    getAllArtifactsAdmin(),
   ]);
 
   const today = new Date().toISOString().split("T")[0];
@@ -25,6 +35,8 @@ export default async function AdminHub() {
 
   const todayArticle = articles.find((a) => a.article_date === today);
   const publishedArticlesCount = articles.filter((a) => a.is_published).length;
+  const publicArtifactsCount = artifacts.filter((a) => a.status !== "draft").length;
+  const buildingArtifactsCount = artifacts.filter((a) => a.status === "building").length;
 
   const activeSignalsCount = signals.filter((s) => s.status !== "closed").length;
   const todaySignalsCount = signals.filter(
@@ -69,6 +81,23 @@ export default async function AdminHub() {
             <h2 className="text-lg font-bold tracking-tight text-ink">All Posts</h2>
             <p className="font-mono text-xs text-ink-faint">
               {blogs.length} total · {publishedCount} published
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/artifacts"
+            className="group flex flex-col gap-3 p-6 border border-border rounded-2xl bg-surface hover:border-ink-muted transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted">
+                Artifacts
+              </p>
+              <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight text-ink">Build Traces</h2>
+            <p className="font-mono text-xs text-ink-faint">
+              {artifacts.length} total · {publicArtifactsCount} public ·{" "}
+              {buildingArtifactsCount} building
             </p>
           </Link>
 
