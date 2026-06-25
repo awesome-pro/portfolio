@@ -105,19 +105,20 @@
       \resumeItemListStart
         \resumeItem{Built Browzer's Chrome MV3 recorder + CDP-native browser automation agent, achieving 95\%+ precise AX/DOM element capture with cross-iframe support, obstruction checks, and real mouse/key/upload execution.}
         \resumeItem{Built a smart streaming ReAct loop across FastAPI + extension with SSE tool execution, multi-tab orchestration, safe parallelism, abort/continue, and audit logs.}
-        \resumeItem{Cut automation LLM spend by roughly 67\% using compact recording traces, context-window compression, prompt caching, and model-routing across GPT-5, Claude Sonnet \& Haiku.}
+        \resumeItem{Reduced automation LLM spend by roughly 67\% using compact recording traces, context-window compression, prompt caching, and model-routing across GPT-5, Claude Sonnet \& Haiku.}
         \resumeItem{Shipped a zero-LLM replay engine: recordings run as variable-driven tool-call templates, with a stateful AI fallback that resumes mid-run on failure.}
-        \resumeItem{Shipped self-healing docs that auto-repair on UI drift --- Haiku $\rightarrow$ Sonnet diff triage, LLM-free replay of intact steps, and a CDP agent that fixes only what changed.}
+        \resumeItem{Shipped self-healing docs that auto-repair on UI drift. Haiku $\rightarrow$ Sonnet diff triage, LLM-free replay of intact steps, and a CDP agent that fixes only what changed.}
       \resumeItemListEnd
 
     \resumeSubheading
       {Founding Software Engineer}{Jan 2025 -- Jul 2025}
       {Cynos Nexus}{Noida, India}
       \resumeItemListStart
-        \resumeItem{Shipped core features of an AI-powered real estate platform using Next.js, Nest.js, GraphQL, Redis, and GCP.}
         \resumeItem{Built the AI knowledge base service using FastAPI, LangChain, and vector retrieval pipelines, powering customer-facing search workflows.}
         \resumeItem{Developed document-ingestion pipelines using Google Cloud Vision, XLSX processing, and BullMQ workers, enabling automated extraction of customer data from spreadsheets and scanned records.}
-        \resumeItem{Automated containerized CI/CD infrastructure via Docker, GitHub Actions, and Nginx for reverse proxy/load balancing.}\resumeItemListEnd
+        \resumeItem{Implemented backend infrastructure for retrieval-augmented AI workflows, including document ingestion, structured data processing, asynchronous workers, Redis-backed queues, and production API serving.}
+        \resumeItem{Automated containerized deployment and CI/CD workflows for AI services using Docker, GitHub Actions, Nginx reverse proxying, and cloud infrastructure.}
+      \resumeItemListEnd
 
       \resumeSubheading
   {Contract Software Engineer}{Sept 2024 -- Dec 2024}
@@ -153,26 +154,16 @@
       \resumeProjectHeading
           {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, PEFT/LoRA, FastMCP} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
           \resumeItemListStart
-            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with grammar-constrained planning, Tavily search, and sandboxed Python/SymPy tools, served locally through Ollama and FastMCP.}
-            \resumeItem{Trained the planner with \textbf{DAPO + a learned Qwen3-0.6B Process Reward Model} (replacing the paper's GRPO) plus a hand-built dynamic-sampling stage TRL lacks, running the full A40 pipeline (DeepSeek-judge step labels $\rightarrow$ PRM $\rightarrow$ bf16 LoRA DAPO $\rightarrow$ GGUF) to measure \textbf{+5.0 pts on GPQA-Diamond (40.0\%$\rightarrow$45.0\%)} under leakage-free, quantization-matched evaluation.}
-          \resumeItemListEnd
-
-      \resumeProjectHeading
-          {\textbf{guardloop} $|$ \emph{OpenAI/Anthropic SDKs, OpenTelemetry, LangGraph} $|$ \href{https://github.com/awesome-pro/guardloop}{\underline{github.com/awesome-pro/guardloop}}}{}
-          \resumeItemListStart
-            \resumeItem{Production guardrail runtime for async agents: pre-flight Decimal cost/token/time/tool-call budgets, per-tool circuit breakers, verifier feedback retry loop, OpenTelemetry GenAI spans, and no-rewrite LangGraph/OpenAI Agents SDK adapters that enforce safety inside existing LLM/tool calls.}
+            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with grammar-constrained planning, Tavily search, and sandboxed Python/SymPy tools.}
+            \resumeItem{Trained the planner with DAPO + a learned Qwen3-0.6B Process Reward Model, replacing the paper’s GRPO setup with a custom dynamic-sampling stage and full A40 training pipeline.}
+            \resumeItem{Built a leakage-free, quantization-matched evaluation flow and measured +5.0 pts on GPQA-Diamond, improving from 40.0\% to 45.0\%.}
           \resumeItemListEnd
 
       \resumeProjectHeading
           {\textbf{smartmemo} $|$ \emph{PyTorch, sentence-transformers, FAISS, SQLite} $|$ \href{https://github.com/awesome-pro/smartmemo}{\underline{github.com/awesome-pro/smartmemo}}}{}
           \resumeItemListStart
-            \resumeItem{Semantic memory/cache for LLM agents where embeddings retrieve candidates and a learned pair-equivalence classifier decides reuse; shipped bundled classifier-v2 trained on 16,576 pairs across 9 domains (+30 precision points at equal recall vs cosine), plus feedback export, implicit bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
-          \resumeItemListEnd
-
-      \resumeProjectHeading
-          {\textbf{orchflow} $|$ \emph{Asyncio, LiteLLM} $|$ \href{https://github.com/awesome-pro/orchflow}{\underline{github.com/awesome-pro/orchflow}}}{}
-          \resumeItemListStart
-            \resumeItem{Dependency-free typed Python framework for readable multi-agent pipelines: sequential/parallel/conditional flows, retries, shared \texttt{StepContext}, flat traces, lifecycle events, human gates, JSON checkpoint/resume, and optional LiteLLM Agent with structured JSON/Pydantic outputs.}
+            \resumeItem{Built a semantic memory/cache for LLM agents where embedding retrieval proposes candidates and a learned pair-equivalence classifier decides whether memory reuse is safe.}
+            \resumeItem{Trained classifier-v2 on 16,576 pairs across 9 domains, improving precision by +30 points at equal recall versus cosine similarity, with feedback export, bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
           \resumeItemListEnd
 
       \resumeProjectHeading
@@ -180,20 +171,24 @@
           \resumeItemListStart
             \resumeItem{Agent evaluation toolkit replacing exact-match asserts with repeated-run pass-rate tests; traces tool calls/timing/steps, supports collect-then-raise behavioral assertions, OpenAI/Anthropic/LangChain adapters, and Typer CLI JSON reports for CI gates.}
           \resumeItemListEnd
+        
+      \resumeProjectHeading
+          {\textbf{guardloop} $|$ \emph{OpenAI/Anthropic SDKs, OpenTelemetry, LangGraph} $|$ \href{https://github.com/awesome-pro/guardloop}{\underline{github.com/awesome-pro/guardloop}}}{}
+          \resumeItemListStart
+            \resumeItem{Production guardrail runtime for async agents: pre-flight Decimal cost/token/time/tool-call budgets, per-tool circuit breakers, verifier feedback retry loop, OpenTelemetry GenAI spans, and no-rewrite LangGraph/OpenAI Agents SDK adapters.}
+          \resumeItemListEnd
     \resumeSubHeadingListEnd
 
 %-----------TECHNICAL SKILLS-----------
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
-     \textbf{ML \& Retrieval}{: PyTorch, Hugging Face, sentence-transformers, embeddings, classifier training, RAG, FAISS, Pinecone, Qdrant, Weaviate, ChromaDB, pgvector} \\
-     \textbf{AI Agents \& Frameworks}{: LangGraph, OpenAI Agents SDK, LangChain, LlamaIndex, CrewAI, AutoGen, Pydantic AI, LiteLLM, MCP / FastMCP, multi-agent orchestration, ReAct, function calling, tool use, CDP-based browser agents} \\
-     \textbf{LLM Engineering}{: Fine-tuning (LoRA, QLoRA, PEFT), RLHF / DPO / GRPO / DAPO / PRM, quantization (AWQ, GPTQ, GGUF), inference engines (vLLM, SGLang, Ollama, TGI), context engineering, KV-cache strategies, streaming} \\
-     \textbf{Observability \& Eval}{: OpenTelemetry, Langfuse, Arize Phoenix, LangSmith, statistical pass-rate evaluation, AIME / GPQA benchmarks} \\
-     \textbf{Cloud \& Infra}{: Docker, GCP (Vertex AI), AWS, Nginx, Redis, PostgreSQL, MongoDB} \\
-     \textbf{Backend}{: FastAPI, Nest.js, Node.js, GraphQL, WebSockets, REST, SSE} \\
-     \textbf{Languages}{: Python, TypeScript, C++, SQL, Bash} \\
-     \textbf{Frontend}{: Next.js, React, Redux, Turbopack, Edge Runtime} \\
+     \textbf{ML Engineering}{: PyTorch, Hugging Face, sentence-transformers, embeddings, classifier training, RAG, FAISS, Pinecone, Qdrant, ChromaDB, pgvector} \\
+     \textbf{Agents \& Frameworks}{: LangGraph, OpenAI Agents SDK, LangChain, LlamaIndex, CrewAI, MCP} \\
+     \textbf{LLM Engineering}{: Fine-tuning (LoRA, QLoRA, PEFT), RLHF / DPO / GRPO / DAPO / PRM, quantization (AWQ, GPTQ, GGUF), inference engines (vLLM, SGLang, Ollama, TGI), context engineering, KV-cache strategies} \\
+     \textbf{Evals \& Reliability}{: OpenTelemetry, Langfuse, Arize Phoenix, LangSmith, statistical pass-rate evaluation, AIME / GPQA benchmarks} \\
+     \textbf{Backend \& Infrastructure}{: FastAPI, Node.js, GraphQL, WebSockets, AWS, GCP, Docker, Redis, PostgreSQL} \\
+     \textbf{Languages}{: Python, TypeScript, C++, Bash} \\
     }}
  \end{itemize}
 
