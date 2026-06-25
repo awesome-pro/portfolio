@@ -1,11 +1,9 @@
 import Nav from "@/components/nav";
 import Hero from "@/components/hero";
-import Skills from "@/components/skills";
 import Projects from "@/components/projects";
 import Experience from "@/components/experience";
 import About from "@/components/about";
-import Proof from "@/components/proof";
-import LatestBlogs from "@/components/blogs/LatestBlogs";
+import LatestArtifacts from "@/components/artifacts/LatestArtifacts";
 import Footer from "@/components/footer";
 
 export default function Home() {
@@ -17,8 +15,7 @@ export default function Home() {
         <About />
         <Projects />
         <Experience />
-        <Skills />
-        <LatestBlogs />
+        <LatestArtifacts />
       </main>
       <Footer />
     </div>

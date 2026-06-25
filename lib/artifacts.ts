@@ -149,6 +149,20 @@ export async function getPublicArtifacts(): Promise<Artifact[]> {
   return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
 }
 
+export async function getLatestArtifacts(limit = 3): Promise<Artifact[]> {
+  const supabase = createStaticClient();
+  const { data, error } = await supabase
+    .from("artifacts")
+    .select("*")
+    .in("status", PUBLIC_ARTIFACT_STATUSES)
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("serial_number", { ascending: false })
+    .limit(limit);
+
+  if (error) return [];
+  return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
+}
+
 export async function getArtifactBySlugStatic(
   slug: string
 ): Promise<Artifact | null> {
