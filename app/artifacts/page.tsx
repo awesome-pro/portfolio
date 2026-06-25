@@ -63,7 +63,7 @@ function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number })
             </span>
           </div>
           <h2 className="text-lg font-semibold text-ink group-hover:underline underline-offset-4 decoration-ink-faint">
-            Reliable Browser Workflow Replay {artifact.artifact_name}
+            {artifact.artifact_name}
           </h2>
           {artifact.tagline && (
             <p className="text-sm leading-relaxed text-ink-muted mt-2 max-w-2xl">
@@ -98,7 +98,7 @@ export default async function ArtifactsPage() {
     url,
     hasPart: artifacts.map((artifact) => ({
       "@type": "CreativeWork",
-      name: `Reliable Browser Workflow Replay ${artifact.artifact_name}`,
+      name: `${artifact.artifact_name}`,
       url: `${url}/${artifact.slug}`,
       datePublished: artifact.published_at,
     })),

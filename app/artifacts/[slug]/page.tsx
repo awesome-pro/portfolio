@@ -378,7 +378,7 @@ export default async function ArtifactDetailPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    name: `Reliable Browser Workflow Replay ${artifact.artifact_name}`,
+    name: `${artifact.artifact_name}`,
     description: artifact.tagline,
     url: `https://abhinandan.one/artifacts/${artifact.slug}`,
     datePublished: artifact.published_at,
@@ -426,7 +426,7 @@ export default async function ArtifactDetailPage({
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink leading-[1.05] mb-5">
-            Reliable Browser Workflow Replay {artifact.artifact_name}
+            {artifact.artifact_name}
           </h1>
 
           {artifact.tagline && (
