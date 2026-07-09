@@ -32,7 +32,7 @@ function ArtifactCard({ artifact }: { artifact: Artifact }) {
       className="group bg-surface border border-border rounded-2xl p-5 flex flex-col gap-3 hover:border-ink-muted transition-colors"
     >
       <span className="font-mono text-xs text-ink-faint">
-        Build Trace #{artifact.serial_number}
+        Build Artifact #{artifact.serial_number}
       </span>
 
       <h3 className="text-base font-semibold text-ink leading-snug line-clamp-2 group-hover:underline underline-offset-4 decoration-ink-faint">
@@ -57,7 +57,7 @@ function ArtifactCard({ artifact }: { artifact: Artifact }) {
         {artifact.published_at && (
           <span>{formatPublishedDate(artifact.published_at)}</span>
         )}
-        <span className="ml-auto text-ink">Open trace -&gt;</span>
+        <span className="ml-auto text-ink">Open artifact -&gt;</span>
       </div>
     </Link>
   );
@@ -77,11 +77,8 @@ export default async function LatestArtifacts() {
     <section className="py-20 px-6  max-w-6xl mx-auto border-t border-border">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted mb-3">
-            Build traces
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink">
-            Latest artifacts
+          <h2 className="text-4xl font-bold tracking-tight text-ink">
+            <span className="text-primary">Artifacts </span>that I have built
           </h2>
         </div>
         <Link

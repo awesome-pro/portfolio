@@ -186,9 +186,9 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
 
 export default function Projects() {
   return (
-    <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
-      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-2">
-        Things I&apos;ve built
+    <section className="py-10 px-6 max-w-6xl mx-auto border-t border-border">
+      <h2 className="text-3xl font-bold tracking-tight text-ink mb-2">
+        <span className="text-primary">Projects </span>I have crafted
       </h2>
 
       <div className="flex flex-col">

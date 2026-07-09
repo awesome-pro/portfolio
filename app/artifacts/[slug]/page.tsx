@@ -38,7 +38,7 @@ export async function generateMetadata({
     return { title: "Artifact Not Found - Abhinandan" };
   }
 
-  const title = `Build Trace #${artifact.serial_number}: ${artifact.artifact_name} - Abhinandan`;
+  const title = `Build Artifact #${artifact.serial_number}: ${artifact.artifact_name} - Abhinandan`;
   const description =
     artifact.tagline ??
     "A production-minded artifact with demo, architecture, implementation details, failure cases, and evals.";
@@ -414,7 +414,7 @@ export default async function ArtifactDetailPage({
         <header className="mt-6 mb-12 max-w-4xl">
           <div className="mb-4 flex flex-wrap items-center gap-2.5">
             <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-              Build Trace #{artifact.serial_number}
+              Build Artifact #{artifact.serial_number}
             </p>
             <span
               className={`font-mono text-[11px] px-2 py-0.5 rounded-full border ${statusClasses(

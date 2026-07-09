@@ -3,12 +3,9 @@
 import { useState } from "react";
 
 const AWARDS = [
-  { label: "Top 1% TypeScript Engineer Globally", sub: "Algora", href: "https://algora.io/profile/awesome-pro" },
-  { label: "International Youth Math Challenge Gold Honour", sub: "IYMC", href: "https://drive.google.com/file/d/1yVa7inC4SaJKWa-m0xaY7jZUIMwka792/view?usp=sharing" },
-  { label: "Amazon ML Summer School 2025", sub: "Amazon", href: null },
-  { label: "Reliance Foundation Scholar", sub: "Reliance Foundation", href: "https://drive.google.com/file/d/1vFGwoIFeGAxpgHGlwcPJ3qkB48vqx_On/view" },
-  { label: "HDFC Badhate Kadam Scholar", sub: "HDFC Bank", href: "https://drive.google.com/file/d/17KPdIiC27LJ4wcFIAtoVYwTV9fHQgrCi/view?usp=sharing" },
-  { label: "2nd Place · Outlier AI Hackathon", sub: "Outlier AI", href: null },
+  { label: "Top 1% TypeScript Engineer Globally", sub: "Algora"},
+  { label: "International Youth Math Challenge Gold Honour", sub: "IYMC"},
+  { label: "Amazon ML Summer School 2025", sub: "Amazon"},
 ];
 
 interface Experience {
@@ -141,8 +138,8 @@ function ExperienceRow({ exp, index }: { exp: Experience; index: number }) {
 export default function Experience() {
   return (
     <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
-      <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-2">
-        Where I&apos;ve worked
+      <h2 className="text-4xl font-bold tracking-tight text-ink mb-2">
+        <span className="text-primary">Where </span>I&apos;ve worked
       </h2>
 
       <div className="flex flex-col">
@@ -153,28 +150,15 @@ export default function Experience() {
 
       {/* Achievements */}
       <div className="mt-2 pt-8 border-t border-border">
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-2">
-          Achievements
+        <h2 className="text-2xl font-bold tracking-tight text-ink mb-2">
+          <span className="text-primary">Achievements</span>
         </h2>
-        <div className="flex flex-col">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-y-2">
           {AWARDS.map((award, i) => (
-            <div
-              key={award.label}
-              className={`flex items-center justify-between py-4 ${i !== 0 ? "border-t border-border" : ""}`}
-            >
-              <div>
-                <p className="text-sm font-medium text-ink">{award.label}</p>
-                <p className="text-xs text-ink-faint mt-0.5">{award.sub}</p>
-              </div>
-              {award.href && (
-                <a
-                  href={award.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-mono text-xs shrink-0 ml-6"
-                >
-                  View ↗
-                </a>
+            <div key={award.label} className="flex items-center">
+              <p className="text-sm font-medium text-ink">{award.label}</p>
+              {i !== AWARDS.length - 1 && (
+                <span className="hidden sm:inline mx-3 text-ink-faint">|</span>
               )}
             </div>
           ))}

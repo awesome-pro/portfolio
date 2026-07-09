@@ -10,11 +10,11 @@ const url = "https://abhinandan.one/artifacts";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Artifacts - Build Traces | Abhinandan",
+  title: "Artifacts - Build Artifacts | Abhinandan",
   description:
-    "Build traces for production-minded agentic AI systems: demos, architecture, implementation notes, failure cases, and evals.",
+    "Build artifacts for production-minded agentic AI systems: demos, architecture, implementation notes, failure cases, and evals.",
   openGraph: {
-    title: "Artifacts - Build Traces",
+    title: "Artifacts - Build Artifacts",
     description:
       "Production-minded agentic AI build traces with demos, architecture, implementation notes, failure cases, and evals.",
     url,
@@ -52,7 +52,7 @@ function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number })
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5 mb-2">
             <span className="font-mono text-xs text-ink-faint">
-              Build Trace #{artifact.serial_number}
+              Build Artifact #{artifact.serial_number}
             </span>
             <span
               className={`font-mono text-[11px] px-2 py-0.5 rounded-full border ${statusClasses(
@@ -80,7 +80,7 @@ function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number })
         {artifact.tools_libraries.slice(0, 6).map((tool) => (
           <Chip key={tool}>{tool}</Chip>
         ))}
-        <span className="font-mono text-xs text-ink ml-auto">Open trace -&gt;</span>
+        <span className="font-mono text-xs text-ink ml-auto">Open artifact -&gt;</span>
       </div>
     </Link>
   );
@@ -94,7 +94,7 @@ export default async function ArtifactsPage() {
     "@type": "CollectionPage",
     name: "Artifacts",
     description:
-      "Build traces for production-minded agentic AI systems by Abhinandan.",
+      "Build artifacts for production-minded agentic AI systems by Abhinandan.",
     url,
     hasPart: artifacts.map((artifact) => ({
       "@type": "CreativeWork",
@@ -117,7 +117,7 @@ export default async function ArtifactsPage() {
       <main className="max-w-5xl mx-auto px-6 py-20">
         <div className="mb-12">
           <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted mb-3">
-            Build traces
+            Build artifacts
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-4">
             Artifacts

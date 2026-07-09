@@ -94,7 +94,7 @@ export default async function AdminHub() {
               </p>
               <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
             </div>
-            <h2 className="text-lg font-bold tracking-tight text-ink">Build Traces</h2>
+            <h2 className="text-lg font-bold tracking-tight text-ink">Build Artifacts</h2>
             <p className="font-mono text-xs text-ink-faint">
               {artifacts.length} total · {publicArtifactsCount} public ·{" "}
               {buildingArtifactsCount} building
