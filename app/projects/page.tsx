@@ -120,7 +120,7 @@ export default function ProjectsPage() {
             }`;
 
             return p.hasPage ? (
-              <Link key={p.slug} href={`/projects/${p.slug}`} className={className}>
+              <Link key={p.slug} href={`/${p.slug}`} className={className}>
                 {inner}
               </Link>
             ) : (

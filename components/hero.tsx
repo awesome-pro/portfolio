@@ -10,16 +10,12 @@ export default function Hero() {
           Agentic AI Engineer
         </Badge>
 
-        <h1 className="mt-5 mb-6 text-5xl leading-none font-bold tracking-tight text-ink sm:text-6xl lg:text-7xl">
+        <h1 className="mt-5 mb-12 text-5xl leading-none font-bold tracking-tight text-ink sm:text-6xl lg:text-7xl">
           I build the infrastructure
           <br />
           <span className="text-ink-muted font-semibold">AI products run on.</span>
         </h1>
 
-        <p className="text-lg sm:text-xl leading-relaxed text-ink-muted max-w-2xl mb-10">
-          Multi-agent systems, LLM inference pipelines, and the unglamorous
-          production work that separates demos from products.
-        </p>
 
         <div className="flex flex-col sm:flex-row gap-3">
           <BookCallButton variant="primary" className="w-full sm:w-auto justify-center" />

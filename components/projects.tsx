@@ -21,31 +21,32 @@ interface Project {
 const PROJECTS: Project[] = [
   {
     title: "AgentFlow-Pro",
-    tag: "Agentic RL Research",
+    tag: "Agent RL Research",
     stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agentflow-pro" },
+      { label: "Details", url: "https://abhinandan.one/agentflow-pro/" },
     ],
     bullets: [
-      "Rebuilt the ICLR 2026 AgentFlow paper from scratch as a local Qwen3-8B Planner→Executor→Verifier→Memory agent loop — grammar-constrained JSON planning, Tavily web search, and a sandboxed Python/SymPy executor.",
-      "Replaced the paper's outcome-only GRPO with DAPO and a learned Process Reward Model (Qwen3-0.6B regression head trained on DeepSeek-judge step labels) for dense per-step credit assignment — plus a from-scratch dynamic-sampling stage that TRL doesn't implement.",
-      "Ran the full RL pipeline end-to-end on a A40 GPU: collect → judge 531 steps → train PRM → 300-step DAPO LoRA on Qwen3-8B (bf16) → GGUF export → Ollama serving, with leakage-free, quantization-matched before/after evaluation.",
-      "Result: +5.0 pts on GPQA-Diamond (40.0%→45.0%, n=100) — a cross-domain gain from a Planner trained only on AIME math; AIME24 held flat within noise (n=30).",
+      "Reimplementation of the ICLR 2026 AgentFlow paper as a local Qwen3-8B Planner, Executor, Verifier, Memory loop. Grammar-constrained JSON planning, Tavily search, and a sandboxed Python + SymPy executor.",
+      "Swapped the paper's outcome-only GRPO for DAPO plus a learned Process Reward Model (Qwen3-0.6B regression head, trained on 531 DeepSeek-judged step labels) to get dense per-step credit. TRL ships no dynamic-sampling stage, so I wrote one.",
+      "Full pipeline on a single A40: trajectory collection, step judging, PRM training, 300-step DAPO LoRA on Qwen3-8B (bf16), GGUF export, Ollama serving.",
+      "Evaluation is leakage-free & quantization-matched: trained in bf16, scored on the served GGUF. GPQA-Diamond moved 40.0% to 45.0% (n=100), a directional cross-domain gain from a planner trained only on AIME math. AIME24 held flat (n=30).",
     ],
   },
   {
     title: "GuardLoop",
-    tag: "Production Agent Runtime",
+    tag: "Agent Guardrail Runtime",
     stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
       { label: "Demo", url: "https://abhinandan.one/guardloop/" },
     ],
     bullets: [
-      "Pre-flight Decimal-precise caps on cost, tokens, time, and tool calls — stops runaway agent loops before the next risky call executes.",
-      "Per-tool circuit breakers and a verifier feedback retry loop that feeds corrections back into the agent under one shared budget.",
-      "OpenTelemetry GenAI spans for every protected call with structured RunResult failure types for downstream handling.",
-      "Drop-in adapters for LangGraph graphs and OpenAI Agents SDK runs — no agent rewrite required.",
+      "Enforces budgets on an agent before it acts. Decimal-precise caps on cost, tokens, wall time, and tool calls, checked pre-flight, so a runaway loop halts before the next expensive call rather than after it.",
+      "Per-tool circuit breakers, and a verifier retry loop that feeds corrections back to the agent under the same shared budget.",
+      "OpenTelemetry GenAI spans on every protected call. Failures return typed RunResult objects instead of raising, so callers can branch on the reason.",
+      "Adapters for LangGraph and the OpenAI Agents SDK. Existing agents wrap without touching their code.",
     ],
   },
   {
@@ -57,37 +58,37 @@ const PROJECTS: Project[] = [
       { label: "Demo", url: "https://abhinandan.one/smartmemo/" },
     ],
     bullets: [
-      "Semantic cache for LLM agents: embeddings retrieve candidates, a learned pairwise classifier decides reuse — so \"approve this refund\" and \"deny this refund\" never share a cached answer.",
-      "Ships a pretrained classifier-v2 trained on 16,576 labeled pairs across 9 domains — +30 precision points at equal recall vs a tuned cosine baseline.",
-      "FAISS vector search, WAL-backed SQLite persistence, implicit bad-hit detection, gated manual retraining, and CI across Python 3.11–3.14.",
+      "Semantic cache for LLM agents. Embedding retrieval proposes candidates, then a learned pairwise classifier decides whether reuse is safe. \"Approve this refund\" never returns the cached answer for \"deny this refund.\"",
+      "Ships a pretrained classifier (v2) trained on 16,576 labeled pairs across 9 domains. At equal recall it holds 30 more precision points than a tuned cosine-similarity baseline.",
+      "FAISS index, WAL-backed SQLite persistence, implicit bad-hit detection from downstream signals, gated retraining, CI across Python 3.11 through 3.14.",
     ],
   },
   {
     title: "Orchflow",
-    tag: "Agent Orchestration Framework",
+    tag: "Multi-Agent Orchestration",
     stack: ["AsyncIO", "LiteLLM", "Pydantic"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/orchflow" },
       { label: "Demo", url: "https://abhinandan.one/orchflow/" },
     ],
     bullets: [
-      "Dependency-free Python 3.11+ framework for readable multi-agent pipelines: sequential, parallel, conditional, and retryable flows with shared StepContext.",
-      "Built-in lifecycle events, flat execution traces, human review gates, and JSON checkpoint/resume.",
-      "Optional LiteLLM Agent with structured Pydantic outputs; shipped through v0.5.0 with tag-based PyPI releases.",
+      "Multi-agent pipeline framework for Python 3.11+ with no required dependencies. Sequential, parallel, conditional, and retryable steps share one typed StepContext.",
+      "Lifecycle events, flat execution traces, human review gates, and JSON checkpoint/resume for runs that outlive the process.",
+      "Optional LiteLLM-backed Agent with structured Pydantic outputs. Shipped through v0.5.0 on PyPI",
     ],
   },
   {
     title: "agenteval",
-    tag: "LLM Evaluation Tooling",
+    tag: "Agent Evaluation Toolkit",
     stack: ["AsyncIO", "OpenAI SDK", "Anthropic SDK", "LangChain", "Typer"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agenteval" },
       { label: "Demo", url: "https://abhinandan.one/agenteval/" },
     ],
     bullets: [
-      "Replaces brittle exact-match assertions with repeated-run pass-rate scoring — tests how reliably an agent behaves, not just whether one run looks right.",
-      "Traces tool calls, timing, and steps; supports collect-then-raise behavioral assertions (call ordering, schema validation, latency bounds).",
-      "OpenAI, Anthropic, and LangChain adapters; Typer CLI with JSON reports for CI gates.",
+      "Scores agents on pass rate over repeated runs rather than a single exact-match assertion. Agents are stochastic, so one green run is a sample of size one.",
+      "Traces tool calls, step counts, and timing. Behavioral assertions collect and raise at the end: call ordering, argument schemas, latency bounds.",
+      "Adapters for OpenAI, Anthropic, and LangChain. Typer CLI emits JSON reports that gate CI.",
     ],
   },
 ];

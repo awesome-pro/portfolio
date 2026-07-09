@@ -1,5 +1,4 @@
 const STATS = [
-  { value: "2+ yrs", label: "AI engineering experience" },
   { value: "3", label: "AI products shipped to production" },
   { value: "4", label: "agents in a single pipeline" },
   { value: "700K+", label: "LLM calls monitored in production" },
@@ -8,47 +7,22 @@ const STATS = [
 export default function About() {
   return (
     <section className="py-20 px-6 max-w-6xl mx-auto border-t border-border">
-      <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted mb-3">
-        About
-      </p>
       <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-12">
-        2+ years building at the edge
-        <br />
-        of what&apos;s possible with AI.
+        Building at the edge with <span className="text-primary">Artificial Intelligence</span>
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
         {/* Prose */}
         <div className="flex flex-col gap-5 text-base leading-relaxed text-ink-muted">
           <p>
-            I joined{" "}
-            <span className="text-ink font-medium">
-              BrowzerLabs
-            </span>{" "}
-            early — before the team had process, before the architecture was
-            decided, before anyone was sure it would work. That meant writing
-            production code and making calls that stuck.
+            I join the teams early, when the team is still figuring out the process, the architecture, and whether the whole thing would actually work. So I don't just write code. I make product and engineering calls that have to hold up later.
           </p>
           <p>
-            Most of my work lives at the intersection of language models and
-            real software: figuring out where a model&apos;s reasoning breaks
-            down, designing systems that degrade gracefully when it does, and
-            shipping things that work on a Tuesday at 3am.
+            Most of my work sits between language models and real software: understanding where model reasoning breaks, building systems that fail safely when it does, and shipping things that still work when users hit them in messy ways.
           </p>
           <p>
-            I care about the unsexy parts — latency budgets, error surfaces,
-            cost models, observability. The parts that don&apos;t make it into
-            the demo but determine whether the product survives contact with
-            users.
+            I care a lot about the boring parts: latency, error surfaces, cost, retries, observability, and all the small details that never show up in a demo but decide whether the product actually survives in production.
           </p>
-          <a
-            href="[RESUME_URL]"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium text-accent hover:text-accent-hover transition-colors self-start mt-1"
-          >
-            View Resume →
-          </a>
         </div>
 
         {/* Stats */}
