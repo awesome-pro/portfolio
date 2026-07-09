@@ -21,7 +21,7 @@ const EXPERIENCES: Experience[] = [
   {
     company: "Browzer",
     role: "Founding Software Engineer",
-    location: "Remote",
+    location: "Remote, San Francisco",
     period: "Sept 2025 – Present",
     current: true,
     bullets: [
@@ -97,7 +97,7 @@ function ExperienceRow({ exp, index }: { exp: Experience; index: number }) {
     <div className={index !== 0 ? "border-t border-border" : ""}>
       <button
         onClick={() => hasBullets && setOpen((v) => !v)}
-        className={`w-full text-left py-5 flex items-center justify-between gap-4 ${hasBullets ? "cursor-pointer" : "cursor-default"}`}
+        className={`w-full text-left py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 ${hasBullets ? "cursor-pointer" : "cursor-default"}`}
       >
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2.5 min-w-0">
           <div className="flex items-center gap-2.5">
@@ -106,7 +106,7 @@ function ExperienceRow({ exp, index }: { exp: Experience; index: number }) {
           </div>
           <span className="text-sm font-medium text-ink-muted">{exp.role}</span>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center justify-between gap-3 sm:justify-end sm:shrink-0">
           <span className="font-mono text-xs text-ink-muted">{exp.period}</span>
           {hasBullets && <Chevron open={open} />}
         </div>
@@ -153,16 +153,19 @@ export default function Experience() {
         <h2 className="text-2xl font-bold tracking-tight text-ink mb-2">
           <span className="text-primary">Achievements</span>
         </h2>
-        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-y-2">
-          {AWARDS.map((award, i) => (
-            <div key={award.label} className="flex items-center">
-              <p className="text-sm font-medium text-ink">{award.label}</p>
-              {i !== AWARDS.length - 1 && (
-                <span className="hidden sm:inline mx-3 text-ink-faint">|</span>
-              )}
-            </div>
+        <ul className="flex flex-col gap-3">
+          {AWARDS.map((award) => (
+            <li
+              key={award.label}
+              className="flex flex-wrap items-center gap-2.5 text-sm leading-relaxed text-ink pl-4 relative before:content-['+'] before:absolute before:left-0 before:text-ink-faint"
+            >
+              <span className="font-medium">{award.label}</span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-background border border-border text-ink-faint">
+                {award.sub}
+              </span>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

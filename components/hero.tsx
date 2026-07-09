@@ -1,6 +1,8 @@
 import Image from "next/image";
 import BookCallButton from "@/components/book-call-button";
 import { Badge } from "./ui/badge";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 export default function Hero() {
   return (
@@ -18,7 +20,12 @@ export default function Hero() {
 
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <BookCallButton variant="primary" className="w-full sm:w-auto justify-center" />
+          <Link
+            href="/artifacts"
+            className="inline-flex items-center justify-center gap-1.5 text-white bg-primary px-5 py-2.5 rounded-full text-sm font-medium transition-colors w-full sm:w-auto"
+          >
+            View Artifacts
+          </Link>
           <a
             href="mailto:abhinandan@abhinandan.one"
             className="inline-flex items-center justify-center gap-1.5 border border-border text-ink px-5 py-2.5 rounded-full text-sm font-medium hover:border-ink transition-colors w-full sm:w-auto"

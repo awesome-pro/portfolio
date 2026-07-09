@@ -20,7 +20,7 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
-    title: "AgentFlow-Pro",
+    title: "AgentFlow",
     tag: "Agent RL Research",
     stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [

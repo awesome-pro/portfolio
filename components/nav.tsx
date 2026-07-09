@@ -1,5 +1,4 @@
 import Link from "next/link";
-import BookCallButton from "@/components/book-call-button";
 import Logo from "@/components/logo";
 
 export default function Nav() {
@@ -7,15 +6,12 @@ export default function Nav() {
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         <Logo />
-        <div className="flex items-center gap-6">
-          <Link
-            href="/resume"
-            className="text-sm text-ink-muted hover:text-ink transition-colors"
-          >
-            Resume
-          </Link>
-          <BookCallButton variant="primary" />
-        </div>
+        <Link
+          href="/artifacts"
+          className="inline-flex text-sm font-medium transition-colors"
+        >
+          Artifacts
+        </Link>
       </div>
     </header>
   );
