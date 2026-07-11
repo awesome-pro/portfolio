@@ -6,10 +6,10 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const siteUrl = "https://abhinandan.one";
-const siteName = "Abhinandan";
-const siteTitle = "Abhinandan | Agentic AI Engineer & ML Engineer";
+const siteName = "abhinandan";
+const siteTitle = "abhinandan | agentic ai engineer & ml engineer";
 const siteDescription =
-  "Agentic AI engineer and ML engineer building multi-agent systems, LLM inference pipelines, and production AI infrastructure for real products.";
+  "agentic ai engineer and ml engineer building multi-agent systems,llm inference pipelines, and production ai infrastructure.";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
