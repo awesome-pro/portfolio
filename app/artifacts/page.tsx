@@ -32,16 +32,6 @@ function formatPublishedDate(dateStr: string | null): string {
   });
 }
 
-function statusClasses(status: ArtifactStatus) {
-  if (status === "shipped") {
-    return "border-green-200 bg-green-50 text-green-700";
-  }
-  if (status === "building") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
-  }
-  return "border-border bg-surface text-ink-muted";
-}
-
 function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number }) {
   return (
     <Link
@@ -50,19 +40,10 @@ function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number })
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2.5 mb-2">
-            <span className="font-mono text-xs text-ink-faint">
-              Build Artifact #{artifact.serial_number}
-            </span>
-            <span
-              className={`font-mono text-[11px] px-2 py-0.5 rounded-full border ${statusClasses(
-                artifact.status
-              )}`}
-            >
-              {artifact.status}
-            </span>
-          </div>
           <h2 className="text-lg font-semibold text-ink group-hover:underline underline-offset-4 decoration-ink-faint">
+            <span className="font-normal">
+              #{artifact.serial_number}
+            </span>{" "}
             {artifact.artifact_name}
           </h2>
           {artifact.tagline && (
@@ -74,13 +55,6 @@ function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number })
         <span className="font-mono text-xs text-ink-muted shrink-0 mt-1">
           Published {formatPublishedDate(artifact.published_at)}
         </span>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        {artifact.tools_libraries.slice(0, 6).map((tool) => (
-          <Chip key={tool}>{tool}</Chip>
-        ))}
-        <span className="font-mono text-xs text-ink ml-auto">Open artifact -&gt;</span>
       </div>
     </Link>
   );
@@ -115,18 +89,9 @@ export default async function ArtifactsPage() {
       <Nav />
 
       <main className="max-w-5xl mx-auto px-6 py-20">
-        <div className="mb-12">
-          <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted mb-3">
-            Build artifacts
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-4">
-            Artifacts
-          </h1>
-          <p className="text-ink-muted max-w-xl leading-relaxed">
-            Detailed records of systems I built: demo, production problem,
-            architecture, implementation choices, failure cases, and evals.
-          </p>
-        </div>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-4">
+          <span className="text-primary">artifacts</span> that i crafted
+        </h1>
 
         {artifacts.length === 0 ? (
           <div className="py-24 text-center border border-dashed border-border rounded-lg">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "@/components/logo";
+import { ArrowRight } from "lucide-react";
 
 export default function Nav() {
   return (
@@ -8,9 +9,9 @@ export default function Nav() {
         <Logo />
         <Link
           href="/artifacts"
-          className="inline-flex text-sm font-medium transition-colors"
+          className="flex items-center justify text-sm font-medium gap-1 transition-all text-ink-muted hover:text-ink"
         >
-          Artifacts
+          Artifacts <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     </header>

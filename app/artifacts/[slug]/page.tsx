@@ -88,16 +88,6 @@ function formatPublishedDate(dateStr: string | null): string {
   });
 }
 
-function statusClasses(status: ArtifactStatus) {
-  if (status === "shipped") {
-    return "border-green-200 bg-green-50 text-green-700";
-  }
-  if (status === "building") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
-  }
-  return "border-border bg-surface text-ink-muted";
-}
-
 function Section({
   eyebrow,
   title,
@@ -403,27 +393,11 @@ export default async function ArtifactDetailPage({
       />
       <Nav />
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
-        <Link
-          href="/artifacts"
-          className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
-        >
-          &lt;- Artifacts
-        </Link>
-
+      <main className="max-w-6xl mx-auto px-6 py-5">
         <header className="mt-6 mb-12 max-w-4xl">
-          <div className="mb-4 flex flex-wrap items-center gap-2.5">
-            <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-              Build Artifact #{artifact.serial_number}
-            </p>
-            <span
-              className={`font-mono text-[11px] px-2 py-0.5 rounded-full border ${statusClasses(
-                artifact.status
-              )}`}
-            >
-              {artifact.status}
-            </span>
-          </div>
+          <p className="font-mono text-xs tracking-widest text-ink-muted">
+            Build Artifact #{artifact.serial_number}
+          </p>
 
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink leading-[1.05] mb-5">
             {artifact.artifact_name}
@@ -438,14 +412,6 @@ export default async function ArtifactDetailPage({
           {artifact.published_at && (
             <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-ink-faint mb-6">
               <span>Published {formatPublishedDate(artifact.published_at)}</span>
-            </div>
-          )}
-
-          {artifact.tools_libraries.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-6">
-              {artifact.tools_libraries.map((tool) => (
-                <Chip key={tool}>{tool}</Chip>
-              ))}
             </div>
           )}
 
