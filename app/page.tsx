@@ -5,6 +5,7 @@ import Experience from "@/components/experience";
 import About from "@/components/about";
 import LatestArtifacts from "@/components/artifacts/LatestArtifacts";
 import Footer from "@/components/footer";
+import Fav from "@/components/fav";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <LatestArtifacts />
         <Projects />
         <Experience />
+        <Fav />
       </main>
       <Footer />
     </div>
