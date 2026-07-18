@@ -37,7 +37,7 @@ export default function Hero() {
 
       <div className="relative aspect-[3/4] w-full max-w-sm justify-self-center overflow-hidden rounded-2xl shadow-lg transition-shadow hover:shadow-xl sm:max-w-md lg:w-[22rem] lg:max-w-none lg:justify-self-end xl:w-[24rem]">
         <Image
-          src="/hero.png"
+          src="/hero.jpg"
           alt="Abhinandan"
           fill
           className="object-cover object-center"
