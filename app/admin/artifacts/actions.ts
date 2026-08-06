@@ -7,39 +7,17 @@ import {
   extractYouTubeId,
   slugifyArtifact,
   type Artifact,
-  type ArtifactCodeSnippet,
-  type ArtifactFailureCase,
   type ArtifactImage,
   type ArtifactLink,
-  type ArtifactMetric,
-  type ArtifactStatus,
-  type ArtifactTradeoff,
 } from "@/lib/artifacts";
 
 export interface SaveArtifactInput {
   artifact_name: string;
   slug: string;
-  tagline: string | null;
-  status: ArtifactStatus;
   demo_youtube_url: string | null;
-  demo_summary: string | null;
-  what_to_watch_for: string[];
-  problem_markdown: string | null;
-  what_i_built_markdown: string | null;
-  architecture_markdown: string | null;
-  implementation_markdown: string | null;
+  story_markdown: string | null;
   github_links: ArtifactLink[];
-  related_links: ArtifactLink[];
   architecture_images: ArtifactImage[];
-  architecture_components: string[];
-  data_flow: string[];
-  llm_used_for: string[];
-  llm_not_used_for: string[];
-  metrics: ArtifactMetric[];
-  failure_cases: ArtifactFailureCase[];
-  tradeoffs: ArtifactTradeoff[];
-  code_snippets: ArtifactCodeSnippet[];
-  tools_libraries: string[];
 }
 
 async function requireAdminUser() {
@@ -54,10 +32,6 @@ async function requireAdminUser() {
   }
 
   return user;
-}
-
-function cleanStrings(values: string[]) {
-  return values.map((value) => value.trim()).filter(Boolean);
 }
 
 function cleanLinks(values: ArtifactLink[]) {
@@ -79,46 +53,6 @@ function cleanImages(values: ArtifactImage[]) {
     .filter((image) => image.url);
 }
 
-function cleanMetrics(values: ArtifactMetric[]) {
-  return values
-    .map((metric) => ({
-      label: metric.label.trim(),
-      value: metric.value.trim(),
-      note: metric.note?.trim() || undefined,
-    }))
-    .filter((metric) => metric.label && metric.value);
-}
-
-function cleanFailureCases(values: ArtifactFailureCase[]) {
-  return values
-    .map((failure) => ({
-      title: failure.title.trim(),
-      detail: failure.detail.trim(),
-      recovery: failure.recovery?.trim() || undefined,
-    }))
-    .filter((failure) => failure.title && failure.detail);
-}
-
-function cleanTradeoffs(values: ArtifactTradeoff[]) {
-  return values
-    .map((tradeoff) => ({
-      title: tradeoff.title.trim(),
-      upside: tradeoff.upside?.trim() || undefined,
-      cost: tradeoff.cost.trim(),
-    }))
-    .filter((tradeoff) => tradeoff.title && tradeoff.cost);
-}
-
-function cleanCodeSnippets(values: ArtifactCodeSnippet[]) {
-  return values
-    .map((snippet) => ({
-      label: snippet.label.trim(),
-      language: snippet.language.trim() || "text",
-      code: snippet.code.trim(),
-    }))
-    .filter((snippet) => snippet.label && snippet.code);
-}
-
 function nullableText(value: string | null | undefined) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
@@ -126,40 +60,17 @@ function nullableText(value: string | null | undefined) {
 
 function normalizeInput(input: SaveArtifactInput, existing?: Artifact | null) {
   const slug = slugifyArtifact(input.slug || input.artifact_name);
-  const status = input.status;
   const demoYoutubeUrl = nullableText(input.demo_youtube_url);
-  const architectureImages = cleanImages(input.architecture_images);
-  const architectureComponents = cleanStrings(input.architecture_components);
-  const dataFlow = cleanStrings(input.data_flow);
   const now = new Date().toISOString();
-  const publishedAt =
-    status === "draft" ? null : existing?.published_at ?? now;
 
   const payload = {
     artifact_name: input.artifact_name.trim(),
     slug,
-    tagline: nullableText(input.tagline),
-    status,
-    published_at: publishedAt,
+    published_at: existing?.published_at ?? now,
     demo_youtube_url: demoYoutubeUrl,
-    demo_summary: nullableText(input.demo_summary),
-    what_to_watch_for: cleanStrings(input.what_to_watch_for),
-    problem_markdown: nullableText(input.problem_markdown),
-    what_i_built_markdown: nullableText(input.what_i_built_markdown),
-    architecture_markdown: nullableText(input.architecture_markdown),
-    implementation_markdown: nullableText(input.implementation_markdown),
+    story_markdown: nullableText(input.story_markdown),
     github_links: cleanLinks(input.github_links),
-    related_links: cleanLinks(input.related_links),
-    architecture_images: architectureImages,
-    architecture_components: architectureComponents,
-    data_flow: dataFlow,
-    llm_used_for: cleanStrings(input.llm_used_for),
-    llm_not_used_for: cleanStrings(input.llm_not_used_for),
-    metrics: cleanMetrics(input.metrics),
-    failure_cases: cleanFailureCases(input.failure_cases),
-    tradeoffs: cleanTradeoffs(input.tradeoffs),
-    code_snippets: cleanCodeSnippets(input.code_snippets),
-    tools_libraries: cleanStrings(input.tools_libraries),
+    architecture_images: cleanImages(input.architecture_images),
     updated_at: now,
   };
 
@@ -170,15 +81,8 @@ function normalizeInput(input: SaveArtifactInput, existing?: Artifact | null) {
 function validatePayload(payload: {
   artifact_name: string;
   slug: string;
-  status: ArtifactStatus;
   demo_youtube_url: string | null;
-  problem_markdown: string | null;
-  what_i_built_markdown: string | null;
-  architecture_markdown: string | null;
-  implementation_markdown: string | null;
-  architecture_images: ArtifactImage[];
-  architecture_components: string[];
-  data_flow: string[];
+  story_markdown: string | null;
 }) {
   if (!payload.artifact_name) {
     throw new Error("Artifact name is required.");
@@ -187,30 +91,14 @@ function validatePayload(payload: {
     throw new Error("Slug is required.");
   }
 
-  if (payload.status === "draft") return;
-
   const missing = [
     ["YouTube demo URL", payload.demo_youtube_url],
-    ["problem", payload.problem_markdown],
-    ["what I built", payload.what_i_built_markdown],
-    ["implementation details", payload.implementation_markdown],
+    ["how it was implemented", payload.story_markdown],
   ].filter(([, value]) => !value);
-
-  const hasArchitecture =
-    payload.architecture_markdown ||
-    payload.architecture_images.length > 0 ||
-    payload.architecture_components.length > 0 ||
-    payload.data_flow.length > 0;
-
-  if (!hasArchitecture) {
-    missing.push(["architecture", null]);
-  }
 
   if (missing.length > 0) {
     throw new Error(
-      `Cannot publish/build yet. Missing: ${missing
-        .map(([label]) => label)
-        .join(", ")}.`
+      `Cannot save yet. Missing: ${missing.map(([label]) => label).join(", ")}.`
     );
   }
 

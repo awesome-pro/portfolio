@@ -33,15 +33,13 @@ export default async function EditArtifactPage({
             </h1>
           </div>
           <div className="flex items-center gap-4">
-            {artifact.status !== "draft" && (
-              <Link
-                href={`/artifacts/${artifact.slug}`}
-                target="_blank"
-                className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
-              >
-                View artifact
-              </Link>
-            )}
+            <Link
+              href={`/artifacts/${artifact.slug}`}
+              target="_blank"
+              className="font-mono text-xs text-ink-muted hover:text-ink transition-colors"
+            >
+              View artifact
+            </Link>
             <SignOutButton />
           </div>
         </div>

@@ -1,10 +1,5 @@
 import Link from "next/link";
-import { Chip } from "@/components/projects/shared";
-import {
-  getLatestArtifacts,
-  type Artifact,
-  type ArtifactStatus,
-} from "@/lib/artifacts";
+import { getLatestArtifacts, type Artifact } from "@/lib/artifacts";
 
 function formatPublishedDate(dateStr: string | null): string {
   if (!dateStr) return "";
@@ -13,16 +8,6 @@ function formatPublishedDate(dateStr: string | null): string {
     month: "short",
     day: "numeric",
   });
-}
-
-function statusClasses(status: ArtifactStatus) {
-  if (status === "shipped") {
-    return "border-green-200 bg-green-50 text-green-700";
-  }
-  if (status === "building") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
-  }
-  return "border-border bg-surface text-ink-muted";
 }
 
 function ArtifactCard({ artifact }: { artifact: Artifact }) {
@@ -35,23 +20,9 @@ function ArtifactCard({ artifact }: { artifact: Artifact }) {
         Build Artifact #{artifact.serial_number}
       </span>
 
-      <h3 className="text-base font-semibold text-ink leading-snug line-clamp-2 group-hover:underline underline-offset-4 decoration-ink-faint">
+      <h3 className="text-base font-semibold text-ink leading-snug line-clamp-2 group-hover:underline underline-offset-4 decoration-ink-faint flex-1">
         {artifact.artifact_name}
       </h3>
-
-      {artifact.tagline && (
-        <p className="text-sm text-ink-muted leading-relaxed line-clamp-3 flex-1">
-          {artifact.tagline}
-        </p>
-      )}
-
-      {artifact.tools_libraries.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {artifact.tools_libraries.slice(0, 3).map((tool) => (
-            <Chip key={tool}>{tool}</Chip>
-          ))}
-        </div>
-      )}
 
       <div className="flex items-center gap-2 pt-2 border-t border-border font-mono text-xs text-ink-faint mt-auto">
         {artifact.published_at && (

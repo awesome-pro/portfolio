@@ -10,22 +10,7 @@ import {
   uploadArtifactImage,
   type SaveArtifactInput,
 } from "@/app/admin/artifacts/actions";
-import type {
-  Artifact,
-  ArtifactCodeSnippet,
-  ArtifactFailureCase,
-  ArtifactImage,
-  ArtifactLink,
-  ArtifactMetric,
-  ArtifactStatus,
-  ArtifactTradeoff,
-} from "@/lib/artifacts";
-
-const STATUS_OPTIONS: { value: ArtifactStatus; label: string }[] = [
-  { value: "draft", label: "Draft" },
-  { value: "building", label: "Building" },
-  { value: "shipped", label: "Shipped" },
-];
+import type { Artifact, ArtifactImage, ArtifactLink } from "@/lib/artifacts";
 
 function Label({
   children,
@@ -90,13 +75,6 @@ function Textarea({
   );
 }
 
-function splitLines(value: string) {
-  return value
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
 function slugifyArtifactInput(value: string) {
   return value
     .toLowerCase()
@@ -118,30 +96,6 @@ function FieldBlock({
       <h2 className="text-sm font-semibold text-ink">{title}</h2>
       {children}
     </section>
-  );
-}
-
-function TextListField({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      <Textarea
-        value={value}
-        onChange={onChange}
-        rows={4}
-        placeholder={placeholder ?? "One item per line"}
-      />
-    </div>
   );
 }
 
@@ -268,13 +222,24 @@ function ImageArrayField({
               onChange={(value) => update(index, { caption: value })}
               placeholder="Caption"
             />
-            <button
-              type="button"
-              onClick={() => onChange(values.filter((_, current) => current !== index))}
-              className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-destructive hover:border-destructive/40 transition-colors"
-            >
-              Remove image
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  navigator.clipboard?.writeText(`![${image.alt}](${image.url})`)
+                }
+                className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-ink hover:border-ink-muted transition-colors"
+              >
+                Copy markdown
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange(values.filter((_, current) => current !== index))}
+                className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-destructive hover:border-destructive/40 transition-colors"
+              >
+                Remove image
+              </button>
+            </div>
           </div>
         </div>
       ))}
@@ -298,234 +263,6 @@ function ImageArrayField({
   );
 }
 
-function MetricArrayField({
-  values,
-  onChange,
-}: {
-  values: ArtifactMetric[];
-  onChange: (values: ArtifactMetric[]) => void;
-}) {
-  function update(index: number, patch: Partial<ArtifactMetric>) {
-    onChange(
-      values.map((value, current) =>
-        current === index ? { ...value, ...patch } : value
-      )
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Label>Evals / metrics</Label>
-      {values.map((metric, index) => (
-        <div key={index} className="grid grid-cols-1 gap-2 rounded-lg border border-border bg-surface p-3 sm:grid-cols-3">
-          <Input
-            value={metric.label}
-            onChange={(value) => update(index, { label: value })}
-            placeholder="Replay success rate"
-          />
-          <Input
-            value={metric.value}
-            onChange={(value) => update(index, { value })}
-            placeholder="94%"
-          />
-          <Input
-            value={metric.note ?? ""}
-            onChange={(value) => update(index, { note: value })}
-            placeholder="n=50 recorded tasks"
-          />
-          <button
-            type="button"
-            onClick={() => onChange(values.filter((_, current) => current !== index))}
-            className="self-start text-xs font-mono text-ink-faint hover:text-destructive transition-colors"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => onChange([...values, { label: "", value: "", note: "" }])}
-        className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
-      >
-        + Add metric
-      </button>
-    </div>
-  );
-}
-
-function FailureArrayField({
-  values,
-  onChange,
-}: {
-  values: ArtifactFailureCase[];
-  onChange: (values: ArtifactFailureCase[]) => void;
-}) {
-  function update(index: number, patch: Partial<ArtifactFailureCase>) {
-    onChange(
-      values.map((value, current) =>
-        current === index ? { ...value, ...patch } : value
-      )
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Label>Failure cases</Label>
-      {values.map((failure, index) => (
-        <div key={index} className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-3">
-          <Input
-            value={failure.title}
-            onChange={(value) => update(index, { title: value })}
-            placeholder="Wrong selector replay"
-          />
-          <Textarea
-            value={failure.detail}
-            onChange={(value) => update(index, { detail: value })}
-            placeholder="What fails and why"
-            rows={3}
-          />
-          <Input
-            value={failure.recovery ?? ""}
-            onChange={(value) => update(index, { recovery: value })}
-            placeholder="Recovery or mitigation"
-          />
-          <button
-            type="button"
-            onClick={() => onChange(values.filter((_, current) => current !== index))}
-            className="self-start text-xs font-mono text-ink-faint hover:text-destructive transition-colors"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => onChange([...values, { title: "", detail: "", recovery: "" }])}
-        className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
-      >
-        + Add failure case
-      </button>
-    </div>
-  );
-}
-
-function TradeoffArrayField({
-  values,
-  onChange,
-}: {
-  values: ArtifactTradeoff[];
-  onChange: (values: ArtifactTradeoff[]) => void;
-}) {
-  function update(index: number, patch: Partial<ArtifactTradeoff>) {
-    onChange(
-      values.map((value, current) =>
-        current === index ? { ...value, ...patch } : value
-      )
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Label>Tradeoffs</Label>
-      {values.map((tradeoff, index) => (
-        <div key={index} className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-3">
-          <Input
-            value={tradeoff.title}
-            onChange={(value) => update(index, { title: value })}
-            placeholder="Deterministic replay over general automation"
-          />
-          <Input
-            value={tradeoff.upside ?? ""}
-            onChange={(value) => update(index, { upside: value })}
-            placeholder="Upside"
-          />
-          <Textarea
-            value={tradeoff.cost}
-            onChange={(value) => update(index, { cost: value })}
-            placeholder="Cost"
-            rows={3}
-          />
-          <button
-            type="button"
-            onClick={() => onChange(values.filter((_, current) => current !== index))}
-            className="self-start text-xs font-mono text-ink-faint hover:text-destructive transition-colors"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => onChange([...values, { title: "", upside: "", cost: "" }])}
-        className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
-      >
-        + Add tradeoff
-      </button>
-    </div>
-  );
-}
-
-function CodeSnippetArrayField({
-  values,
-  onChange,
-}: {
-  values: ArtifactCodeSnippet[];
-  onChange: (values: ArtifactCodeSnippet[]) => void;
-}) {
-  function update(index: number, patch: Partial<ArtifactCodeSnippet>) {
-    onChange(
-      values.map((value, current) =>
-        current === index ? { ...value, ...patch } : value
-      )
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Label>Important code snippets</Label>
-      {values.map((snippet, index) => (
-        <div key={index} className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-3">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_160px]">
-            <Input
-              value={snippet.label}
-              onChange={(value) => update(index, { label: value })}
-              placeholder="Approval gate"
-            />
-            <Input
-              value={snippet.language}
-              onChange={(value) => update(index, { language: value })}
-              placeholder="ts"
-            />
-          </div>
-          <Textarea
-            value={snippet.code}
-            onChange={(value) => update(index, { code: value })}
-            placeholder="Paste code..."
-            rows={8}
-            mono
-          />
-          <button
-            type="button"
-            onClick={() => onChange(values.filter((_, current) => current !== index))}
-            className="self-start text-xs font-mono text-ink-faint hover:text-destructive transition-colors"
-          >
-            Remove
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() =>
-          onChange([...values, { label: "", language: "ts", code: "" }])
-        }
-        className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
-      >
-        + Add snippet
-      </button>
-    </div>
-  );
-}
-
 export default function ArtifactForm({ initial }: { initial?: Artifact }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -534,55 +271,17 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
 
   const [artifactName, setArtifactName] = useState(initial?.artifact_name ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
-  const [tagline, setTagline] = useState(initial?.tagline ?? "");
-  const [status, setStatus] = useState<ArtifactStatus>(initial?.status ?? "draft");
-  const [demoYoutubeUrl, setDemoYoutubeUrl] = useState(initial?.demo_youtube_url ?? "");
-  const [demoSummary, setDemoSummary] = useState(initial?.demo_summary ?? "");
-  const [whatToWatchFor, setWhatToWatchFor] = useState(
-    (initial?.what_to_watch_for ?? []).join("\n")
-  );
-  const [problemMarkdown, setProblemMarkdown] = useState(initial?.problem_markdown ?? "");
-  const [whatIBuiltMarkdown, setWhatIBuiltMarkdown] = useState(
-    initial?.what_i_built_markdown ?? ""
-  );
-  const [architectureMarkdown, setArchitectureMarkdown] = useState(
-    initial?.architecture_markdown ?? ""
-  );
-  const [implementationMarkdown, setImplementationMarkdown] = useState(
-    initial?.implementation_markdown ?? ""
-  );
-  const [toolsLibraries, setToolsLibraries] = useState(
-    (initial?.tools_libraries ?? []).join("\n")
-  );
-  const [architectureComponents, setArchitectureComponents] = useState(
-    (initial?.architecture_components ?? []).join("\n")
-  );
-  const [dataFlow, setDataFlow] = useState((initial?.data_flow ?? []).join("\n"));
-  const [llmUsedFor, setLlmUsedFor] = useState(
-    (initial?.llm_used_for ?? []).join("\n")
-  );
-  const [llmNotUsedFor, setLlmNotUsedFor] = useState(
-    (initial?.llm_not_used_for ?? []).join("\n")
-  );
 
-  const [githubLinks, setGithubLinks] = useState<ArtifactLink[]>(
-    initial?.github_links?.length ? initial.github_links : [{ label: "GitHub", url: "" }]
-  );
-  const [relatedLinks, setRelatedLinks] = useState<ArtifactLink[]>(
-    initial?.related_links ?? []
-  );
+  const [demoYoutubeUrl, setDemoYoutubeUrl] = useState(initial?.demo_youtube_url ?? "");
+
   const [architectureImages, setArchitectureImages] = useState<ArtifactImage[]>(
     initial?.architecture_images ?? []
   );
-  const [metrics, setMetrics] = useState<ArtifactMetric[]>(initial?.metrics ?? []);
-  const [failureCases, setFailureCases] = useState<ArtifactFailureCase[]>(
-    initial?.failure_cases ?? []
-  );
-  const [tradeoffs, setTradeoffs] = useState<ArtifactTradeoff[]>(
-    initial?.tradeoffs ?? []
-  );
-  const [codeSnippets, setCodeSnippets] = useState<ArtifactCodeSnippet[]>(
-    initial?.code_snippets ?? []
+
+  const [storyMarkdown, setStoryMarkdown] = useState(initial?.story_markdown ?? "");
+
+  const [githubLinks, setGithubLinks] = useState<ArtifactLink[]>(
+    initial?.github_links?.length ? initial.github_links : [{ label: "GitHub", url: "" }]
   );
 
   function handleArtifactNameChange(value: string) {
@@ -590,42 +289,24 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
     if (!initial) setSlug(slugifyArtifactInput(value));
   }
 
-  function buildInput(nextStatus: ArtifactStatus): SaveArtifactInput {
+  function buildInput(): SaveArtifactInput {
     return {
       artifact_name: artifactName,
       slug,
-      tagline,
-      status: nextStatus,
       demo_youtube_url: demoYoutubeUrl || null,
-      demo_summary: demoSummary || null,
-      what_to_watch_for: splitLines(whatToWatchFor),
-      problem_markdown: problemMarkdown || null,
-      what_i_built_markdown: whatIBuiltMarkdown || null,
-      architecture_markdown: architectureMarkdown || null,
-      implementation_markdown: implementationMarkdown || null,
+      story_markdown: storyMarkdown || null,
       github_links: githubLinks,
-      related_links: relatedLinks,
       architecture_images: architectureImages,
-      architecture_components: splitLines(architectureComponents),
-      data_flow: splitLines(dataFlow),
-      llm_used_for: splitLines(llmUsedFor),
-      llm_not_used_for: splitLines(llmNotUsedFor),
-      metrics,
-      failure_cases: failureCases,
-      tradeoffs,
-      code_snippets: codeSnippets,
-      tools_libraries: splitLines(toolsLibraries),
     };
   }
 
-  function handleSave(nextStatus = status) {
+  function handleSave() {
     setError(null);
     setSaved(false);
-    setStatus(nextStatus);
 
     startTransition(async () => {
       try {
-        const input = buildInput(nextStatus);
+        const input = buildInput();
         const result = initial?.id
           ? await updateArtifact(initial.id, input)
           : await createArtifact(input);
@@ -646,29 +327,13 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
   return (
     <div className="flex flex-col gap-8">
       <FieldBlock title="Identity">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label required>Artifact name</Label>
-            <Input
-              value={artifactName}
-              onChange={handleArtifactNameChange}
-              placeholder="Checkout Replay"
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label required>Status</Label>
-            <select
-              value={status}
-              onChange={(event) => setStatus(event.target.value as ArtifactStatus)}
-              className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink-muted transition-colors"
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex flex-col gap-1.5">
+          <Label required>Artifact name</Label>
+          <Input
+            value={artifactName}
+            onChange={handleArtifactNameChange}
+            placeholder="Checkout Replay"
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -687,27 +352,11 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
             />
           </div>
         </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label>Tagline</Label>
-          <Input
-            value={tagline}
-            onChange={setTagline}
-            placeholder="A small agentic workflow system that records a browser task..."
-          />
-        </div>
-
-        <TextListField
-          label="Tools / libraries"
-          value={toolsLibraries}
-          onChange={setToolsLibraries}
-          placeholder={"Playwright\nSupabase\nNext.js"}
-        />
       </FieldBlock>
 
       <FieldBlock title="Demo">
         <div className="flex flex-col gap-1.5">
-          <Label>YouTube URL</Label>
+          <Label required>YouTube URL</Label>
           <Input
             value={demoYoutubeUrl}
             onChange={setDemoYoutubeUrl}
@@ -715,109 +364,34 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
             type="url"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label>Demo summary (optional)</Label>
-          <Textarea
-            value={demoSummary}
-            onChange={setDemoSummary}
-            rows={3}
-            placeholder="Optional short context for the 60-120 second demo."
-          />
-        </div>
-        <TextListField
-          label="What to watch for"
-          value={whatToWatchFor}
-          onChange={setWhatToWatchFor}
-        />
       </FieldBlock>
 
-      <FieldBlock title="Narrative">
-        <div className="flex flex-col gap-1.5">
-          <Label>Problem (Markdown)</Label>
-          <Textarea
-            value={problemMarkdown}
-            onChange={setProblemMarkdown}
-            rows={8}
-            mono
-            placeholder="A real production problem..."
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <Label>What I built (Markdown)</Label>
-          <Textarea
-            value={whatIBuiltMarkdown}
-            onChange={setWhatIBuiltMarkdown}
-            rows={8}
-            mono
-            placeholder="Keep this concrete..."
-          />
-        </div>
-      </FieldBlock>
-
-      <FieldBlock title="Architecture">
+      <FieldBlock title="Architecture images">
         <ImageArrayField
           artifactName={artifactName}
           slug={slug}
           values={architectureImages}
           onChange={setArchitectureImages}
         />
-        <div className="flex flex-col gap-1.5">
-          <Label>Architecture notes (Markdown)</Label>
-          <Textarea
-            value={architectureMarkdown}
-            onChange={setArchitectureMarkdown}
-            rows={7}
-            mono
-            placeholder="Explain the diagram and main system boundaries."
-          />
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <TextListField
-            label="Components"
-            value={architectureComponents}
-            onChange={setArchitectureComponents}
-          />
-          <TextListField
-            label="Data flow"
-            value={dataFlow}
-            onChange={setDataFlow}
-          />
-          <TextListField
-            label="LLM used for"
-            value={llmUsedFor}
-            onChange={setLlmUsedFor}
-          />
-          <TextListField
-            label="LLM intentionally not used for"
-            value={llmNotUsedFor}
-            onChange={setLlmNotUsedFor}
-          />
-        </div>
       </FieldBlock>
 
-      <FieldBlock title="Implementation">
+      <FieldBlock title="Story">
         <div className="flex flex-col gap-1.5">
-          <Label>Implementation details (Markdown)</Label>
+          <Label required>How it was implemented (Markdown)</Label>
           <Textarea
-            value={implementationMarkdown}
-            onChange={setImplementationMarkdown}
-            rows={12}
+            value={storyMarkdown}
+            onChange={setStoryMarkdown}
+            rows={24}
             mono
-            placeholder="Key design choices, data model, constraints, snippets context..."
+            placeholder={
+              "Write it as one continuous piece. ## headings, lists, and ```fenced code``` all render inline.\n\nTo place an architecture image inside the story, upload it above and paste its markdown (![alt](url)) wherever it belongs in the text."
+            }
           />
         </div>
-        <CodeSnippetArrayField values={codeSnippets} onChange={setCodeSnippets} />
-      </FieldBlock>
-
-      <FieldBlock title="Proof">
-        <MetricArrayField values={metrics} onChange={setMetrics} />
-        <FailureArrayField values={failureCases} onChange={setFailureCases} />
-        <TradeoffArrayField values={tradeoffs} onChange={setTradeoffs} />
       </FieldBlock>
 
       <FieldBlock title="Links">
         <LinkArrayField label="GitHub links" values={githubLinks} onChange={setGithubLinks} />
-        <LinkArrayField label="Related links" values={relatedLinks} onChange={setRelatedLinks} />
       </FieldBlock>
 
       <div className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-4 border-t border-border bg-background/90 py-4 backdrop-blur-sm">
@@ -828,15 +402,7 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => handleSave("draft")}
-            disabled={isPending || !artifactName || !slug}
-            className="px-4 py-2 text-sm font-medium border border-border text-ink-muted rounded-xl hover:border-ink-muted hover:text-ink transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Save draft
-          </button>
-          <button
-            type="button"
-            onClick={() => handleSave(status)}
+            onClick={() => handleSave()}
             disabled={isPending || !artifactName || !slug}
             className="px-4 py-2 text-sm font-semibold bg-ink text-background rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >

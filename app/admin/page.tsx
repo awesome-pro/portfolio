@@ -35,8 +35,6 @@ export default async function AdminHub() {
 
   const todayArticle = articles.find((a) => a.article_date === today);
   const publishedArticlesCount = articles.filter((a) => a.is_published).length;
-  const publicArtifactsCount = artifacts.filter((a) => a.status !== "draft").length;
-  const buildingArtifactsCount = artifacts.filter((a) => a.status === "building").length;
 
   const activeSignalsCount = signals.filter((s) => s.status !== "closed").length;
   const todaySignalsCount = signals.filter(
@@ -95,10 +93,7 @@ export default async function AdminHub() {
               <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
             </div>
             <h2 className="text-lg font-bold tracking-tight text-ink">Build Artifacts</h2>
-            <p className="font-mono text-xs text-ink-faint">
-              {artifacts.length} total · {publicArtifactsCount} public ·{" "}
-              {buildingArtifactsCount} building
-            </p>
+            <p className="font-mono text-xs text-ink-faint">{artifacts.length} total</p>
           </Link>
 
           <Link

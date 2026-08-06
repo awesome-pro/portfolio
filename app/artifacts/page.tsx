@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
-import { Chip } from "@/components/projects/shared";
-import { getPublicArtifacts, type Artifact, type ArtifactStatus } from "@/lib/artifacts";
+import { getPublicArtifacts, type Artifact } from "@/lib/artifacts";
 
 const url = "https://abhinandan.one/artifacts";
 
@@ -46,11 +45,6 @@ function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number })
             </span>{" "}
             {artifact.artifact_name}
           </h2>
-          {artifact.tagline && (
-            <p className="text-sm leading-relaxed text-ink-muted mt-2 max-w-2xl">
-              {artifact.tagline}
-            </p>
-          )}
         </div>
         <span className="font-mono text-xs text-ink-muted shrink-0 mt-1">
           Published {formatPublishedDate(artifact.published_at)}
@@ -96,7 +90,7 @@ export default async function ArtifactsPage() {
         {artifacts.length === 0 ? (
           <div className="py-24 text-center border border-dashed border-border rounded-lg">
             <p className="text-ink-faint font-mono text-sm">
-              No shipped or building artifacts yet.
+              No artifacts yet.
             </p>
           </div>
         ) : (
