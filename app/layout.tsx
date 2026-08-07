@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter, Source_Serif_4 } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -22,6 +23,11 @@ const geistMono = Geist_Mono({
 });
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-reading",
   subsets: ["latin"],
 });
 
@@ -142,16 +148,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${sourceSerif.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-ink">
+      <body className="min-h-screen bg-background text-ink font-serif">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
           }}
         />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
         <GoogleAnalytics gaId="G-F68MYYBRLW" />

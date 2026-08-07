@@ -45,6 +45,10 @@
 
 .dark {
   --background: oklch(0.141 0.005 285.823);
+  --surface:      var(--background);
+  --ink:          #f2f2ee;
+  --ink-muted:    #a8a89f;
+  --ink-faint:    #6e6e64;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
@@ -89,6 +93,7 @@
   --color-border:       var(--border);
   --font-sans:      var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-reading);
   --font-heading:      var(--font-sans);
   --color-sidebar-ring:      var(--sidebar-ring);
   --color-sidebar-border:      var(--sidebar-border);
