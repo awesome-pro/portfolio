@@ -21,9 +21,6 @@ export default function Footer() {
         {/* Right */}
         <div className="text-xs text-ink-muted flex flex-col gap-1 sm:text-right">
           <div className="flex gap-3 sm:justify-end">
-            <Link href="/blogs" className="hover:text-ink transition-colors">
-              Blog
-            </Link>
             <a
               href="mailto:abhinandan@abhinandan.one"
               className="hover:text-ink transition-colors"

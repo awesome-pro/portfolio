@@ -11,17 +11,14 @@
 ![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)
 
 ## What's inside
-### Blog platform
+### Build artifacts
 
-- **Editor** — [Tiptap](https://tiptap.dev) with code blocks (lowlight syntax highlighting), YouTube embeds, image uploads, placeholder hints, and link handling. All extensions are wired and typesafe.
-- **Rendering** — Markdown → HTML via `react-markdown` with `remark-gfm` and `rehype-highlight`. Reading time calculated at runtime.
 - **Data access** — Three Supabase client variants, each for a different rendering context:
   - `server` — for SSR routes (uses cookies)
   - `static` — for build-time generation / ISR (no cookies, safe in `generateStaticParams`)
   - `service` — for admin operations requiring elevated access
-- **Engagement** — Views and likes tracked via API routes (`/api/blog-stats/[slug]`), written to Supabase on each visit
-- **OG images** — Dynamic per-post Open Graph image generated at `app/blogs/[slug]/opengraph-image.tsx`
-- **Sitemap** — Auto-generated at build time from all published blog slugs
+- **Rendering** — Markdown story content via `react-markdown` with `remark-gfm` and `rehype-highlight`
+- **Sitemap** — Auto-generated at build time from all artifact slugs
 
 ### Resume
 
@@ -33,8 +30,7 @@
 
 All admin routes protected by a middleware proxy (`proxy.ts`) that validates the Supabase JWT session server-side and redirects unauthenticated requests to `/admin/login`.
 
-- Blog CRUD — create, edit, publish/unpublish drafts, delete
-- Image uploads to Supabase Storage via `/api/upload` (multipart, with public URL returned)
+- Build artifact CRUD — create, edit, delete, image uploads to Supabase Storage
 - Contribution repo tracker — a personal tool for tracking open-source targets, backed by a Postgres table with status workflow and indexed queries (schema in `migrations/`)
 ### CI/CD
 
@@ -95,7 +91,6 @@ pnpm resume:build
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public read operations (client + SSR) |
 | `NEXT_PUBLIC_DEMOS_API_URL` | Public Railway/FastAPI backend URL for interactive project demos |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only admin operations, bypasses RLS |
-| `BLOG_API_KEY` | Internal API route authentication for write operations |
 
 Copy `.env.example` to `.env.local` and fill in values. The public site routes work with only the anon key; admin and write operations require the service role key and API key.
 
@@ -107,7 +102,7 @@ Migrations live in `migrations/`. Apply them in the Supabase SQL editor or via t
 
 | Table | Purpose |
 |---|---|
-| `blogs` | Published posts, drafts, tags, views, likes |
+| `artifacts` | Build artifacts — story, demo video, architecture images |
 | `contribution_targets` | Personal open-source contribution tracker |
 
 ---

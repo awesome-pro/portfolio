@@ -2,6 +2,8 @@ import Link from "next/link";
 import ArtifactForm from "@/components/admin/ArtifactForm";
 import SignOutButton from "@/components/admin/SignOutButton";
 
+export const dynamic = "force-dynamic";
+
 export default function NewArtifactPage() {
   return (
     <div className="min-h-screen bg-background">

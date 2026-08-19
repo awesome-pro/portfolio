@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { getAllSlugsStatic } from "@/lib/blogs";
 import { getAllArtifactSlugsStatic } from "@/lib/artifacts";
 import { getAllProjects } from "@/lib/projects";
 
@@ -18,12 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${base}/projects`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${base}/blogs`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
       priority: 0.9,
     },
     {
@@ -62,19 +55,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     }));
 
-  let blogRoutes: MetadataRoute.Sitemap = [];
-  try {
-    const slugs = await getAllSlugsStatic();
-    blogRoutes = slugs.map((slug) => ({
-      url: `${base}/blogs/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    }));
-  } catch {
-    // If Supabase is unavailable during build, skip blog routes
-  }
-
   let artifactRoutes: MetadataRoute.Sitemap = [];
   try {
     const slugs = await getAllArtifactSlugsStatic();
@@ -88,5 +68,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // If Supabase is unavailable during build, skip artifact routes
   }
 
-  return [...staticRoutes, ...projectRoutes, ...blogRoutes, ...artifactRoutes];
+  return [...staticRoutes, ...projectRoutes, ...artifactRoutes];
 }

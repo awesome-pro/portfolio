@@ -91,10 +91,9 @@ function validatePayload(payload: {
     throw new Error("Slug is required.");
   }
 
-  const missing = [
-    ["YouTube demo URL", payload.demo_youtube_url],
-    ["how it was implemented", payload.story_markdown],
-  ].filter(([, value]) => !value);
+  const missing = [["how it was implemented", payload.story_markdown]].filter(
+    ([, value]) => !value
+  );
 
   if (missing.length > 0) {
     throw new Error(
@@ -102,7 +101,7 @@ function validatePayload(payload: {
     );
   }
 
-  if (!extractYouTubeId(payload.demo_youtube_url)) {
+  if (payload.demo_youtube_url && !extractYouTubeId(payload.demo_youtube_url)) {
     throw new Error("Use a valid YouTube URL or 11-character YouTube video ID.");
   }
 }

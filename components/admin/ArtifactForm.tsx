@@ -356,11 +356,11 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
 
       <FieldBlock title="Demo">
         <div className="flex flex-col gap-1.5">
-          <Label required>YouTube URL</Label>
+          <Label>YouTube URL (optional)</Label>
           <Input
             value={demoYoutubeUrl}
             onChange={setDemoYoutubeUrl}
-            placeholder="https://youtu.be/..."
+            placeholder="https://youtu.be/... (leave blank if there's no demo video)"
             type="url"
           />
         </div>

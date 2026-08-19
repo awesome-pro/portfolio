@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { getAllBlogsAdmin } from "@/lib/blogs";
 import { getAllProductOpportunities } from "@/lib/product-opportunities";
 import { getAllRepos } from "@/lib/repos";
 import { getAllContentIdeas } from "@/lib/content-ideas";
@@ -12,7 +11,6 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
   const [
-    blogs,
     repos,
     opportunities,
     contentIdeas,
@@ -20,7 +18,6 @@ export default async function AdminHub() {
     articles,
     artifacts,
   ] = await Promise.all([
-    getAllBlogsAdmin(),
     getAllRepos(),
     getAllProductOpportunities(),
     getAllContentIdeas(),
@@ -42,7 +39,6 @@ export default async function AdminHub() {
   ).length;
   const interviewingCount = signals.filter((s) => s.status === "interviewing").length;
 
-  const publishedCount = blogs.filter((b) => b.is_published).length;
   const suggestedCount = repos.filter((r) => (r.status ?? "suggested") === "suggested").length;
   const startedCount = repos.filter((r) => r.status === "started").length;
   const topOpportunityCount = opportunities.filter(
@@ -66,22 +62,6 @@ export default async function AdminHub() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Link
-            href="/admin/blogs"
-            className="group flex flex-col gap-3 p-6 border border-border rounded-2xl bg-surface hover:border-ink-muted transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted">
-                Blog
-              </p>
-              <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
-            </div>
-            <h2 className="text-lg font-bold tracking-tight text-ink">All Posts</h2>
-            <p className="font-mono text-xs text-ink-faint">
-              {blogs.length} total · {publishedCount} published
-            </p>
-          </Link>
-
           <Link
             href="/admin/artifacts"
             className="group flex flex-col gap-3 p-6 border border-border rounded-2xl bg-surface hover:border-ink-muted transition-colors"
