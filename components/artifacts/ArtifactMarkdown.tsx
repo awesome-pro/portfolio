@@ -1,9 +1,45 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { isValidElement, useState, type ReactElement, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import { youtubeEmbedUrl } from "@/lib/artifacts";
+
+const VIDEO_FILE_PATTERN = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i;
+
+function soleChild(children: ReactNode): ReactNode | null {
+  const kids = (Array.isArray(children) ? children : [children]).filter(
+    (child) => !(typeof child === "string" && child.trim() === "")
+  );
+  return kids.length === 1 ? kids[0] : null;
+}
+
+function hrefOf(node: ReactNode): string | null {
+  if (!isValidElement(node)) return null;
+  const href = (node as ReactElement<{ href?: string }>).props.href;
+  return typeof href === "string" ? href : null;
+}
+
+function YouTubeEmbed({ url }: { url: string }) {
+  const embedUrl = youtubeEmbedUrl(url);
+  if (!embedUrl) return null;
+
+  return (
+    <div className="my-8 overflow-hidden rounded-xl border border-border bg-surface">
+      <div className="aspect-video w-full bg-background">
+        <iframe
+          className="h-full w-full"
+          src={embedUrl}
+          title="Embedded video"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  );
+}
 
 function getNodeText(node: ReactNode): string {
   if (node === null || node === undefined || typeof node === "boolean") return "";
@@ -84,11 +120,18 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
               {children}
             </p>
           ),
-          p: ({ children }) => (
-            <p className="text-[1.0625rem] leading-[1.8] text-ink-muted mb-6">
-              {children}
-            </p>
-          ),
+          p: ({ children }) => {
+            const only = soleChild(children);
+            const href = hrefOf(only);
+            if (href && youtubeEmbedUrl(href)) {
+              return <YouTubeEmbed url={href} />;
+            }
+            return (
+              <p className="text-[1.0625rem] leading-[1.8] text-ink-muted mb-6">
+                {children}
+              </p>
+            );
+          },
           a: ({ href, children }) => (
             <a
               href={href}
@@ -121,16 +164,28 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
             </blockquote>
           ),
           hr: () => <hr className="border-border my-12" />,
-          img: ({ src, alt }) => (
+          img: ({ src, alt }) => {
+            const url = typeof src === "string" ? src : "";
+            if (VIDEO_FILE_PATTERN.test(url)) {
+              return (
+                <video
+                  src={url}
+                  controls
+                  className="my-8 w-full rounded-xl border border-border bg-surface"
+                />
+              );
+            }
             // Markdown image syntax renders as a plain <img>: src/alt are dynamic
             // strings from arbitrary content, which next/image can't size ahead of time.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={src ?? ""}
-              alt={alt ?? ""}
-              className="my-8 w-full rounded-xl border border-border bg-surface object-contain"
-            />
-          ),
+            return (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={url}
+                alt={alt ?? ""}
+                className="my-8 w-full rounded-xl border border-border bg-surface object-contain"
+              />
+            );
+          },
           pre: CodeBlock,
           code: ({ className, children, ...props }) => (
             <code className={`font-mono text-[0.875em] ${className ?? ""}`} {...props}>
