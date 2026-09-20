@@ -33,7 +33,7 @@ export default async function RepoDetailPage({
           </h1>
         </div>
 
-        {/* Agent-generated info — read only */}
+        {/* Agent-generated info, read only */}
         <div className="flex flex-col gap-5 mb-10 p-6 border border-border rounded-2xl bg-surface">
           <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted">
             Agent Info

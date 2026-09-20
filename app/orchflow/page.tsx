@@ -14,7 +14,7 @@ import type { TraceStep } from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
 import OrchflowLiveDemo from "@/components/projects/OrchflowLiveDemo";
 
-export const revalidate = 86400; // static content — revalidate daily
+export const revalidate = 86400; // static content, revalidate daily
 
 const SLUG = "orchflow";
 const project = getProject(SLUG)!;
@@ -33,11 +33,11 @@ const heroLinks = [
 ];
 
 export const metadata: Metadata = {
-  title: `${project.title} — Dependency-Free Multi-Agent Pipeline Orchestration | Abhinandan`,
+  title: `${project.title}: Dependency-Free Multi-Agent Pipeline Orchestration | Abhinandan`,
   description: project.oneLiner,
   keywords: project.keywords,
   openGraph: {
-    title: `${project.title} — Dependency-Free Multi-Agent Pipeline Orchestration`,
+    title: `${project.title}: Dependency-Free Multi-Agent Pipeline Orchestration`,
     description: project.oneLiner,
     url,
     type: "article",
@@ -45,13 +45,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${project.title} — Dependency-Free Pipeline Orchestration`,
+    title: `${project.title}: Dependency-Free Pipeline Orchestration`,
     description: project.oneLiner,
   },
   alternates: { canonical: url },
 };
 
-/* ── Demo trace — a parallel fan-out flow's live event stream.
+/* ── Demo trace: a parallel fan-out flow's live event stream.
       Representative; swap with a real captured run anytime. ─────────────── */
 const TRACE: TraceStep[] = [
   {
@@ -98,19 +98,19 @@ const TRACE: TraceStep[] = [
 const HIGHLIGHTS = [
   {
     title: "Readable orchestration",
-    body: "The running demo is still a normal Flow([...]) list: plan, a parallel group, synthesis, condition, finalizer.",
+    body: "The live demo is still a plain Flow([...]) list: plan, a parallel group, synthesis, a condition, a finalizer.",
   },
   {
     title: "Parallel work you can inspect",
-    body: "The three research agents share a parallel_group_id, so the UI can prove they fanned out and rejoined.",
+    body: "All three research agents share a parallel_group_id, so the UI can show they fanned out and came back together.",
   },
   {
     title: "Resume is visible",
-    body: "Failure mode saves a JSON checkpoint, reloads it, and appends new traces after resume.",
+    body: "The failure mode writes a JSON checkpoint, reloads it, and appends new traces after the resume.",
   },
   {
     title: "Safe live model demo",
-    body: "Visitors can adjust small inputs and model presets, while the backend enforces allowlisted models and rate limits.",
+    body: "You can tweak small inputs and model presets. The backend still enforces allowlisted models and rate limits.",
   },
 ];
 
@@ -131,7 +131,7 @@ const jsonLd = {
     "@type": "VideoObject",
     name: "Orchflow Demo",
     description:
-      "A walkthrough of Orchflow as a readable, observable, and recoverable multi-agent Python pipeline.",
+      "A walkthrough of Orchflow, a multi-agent Python pipeline that stays readable and can pick up where it left off.",
     embedUrl: `https://www.youtube.com/embed/${ORCHFLOW_VIDEO_ID}`,
     url: ORCHFLOW_VIDEO_URL,
   },
@@ -210,9 +210,9 @@ export default function OrchflowPage() {
             </a>
           </div>
           <p className="mb-5 max-w-3xl text-base leading-relaxed text-ink-muted">
-            A six-minute walkthrough of the same project story: readable Python
-            steps, parallel branches, live events, retries, traces, and JSON
-            checkpoint resume.
+            A six-minute walkthrough of the same project. Readable Python steps,
+            parallel branches, live events, retries, traces, and JSON checkpoint
+            resume.
           </p>
           <div className="overflow-hidden rounded-lg border border-border bg-surface">
             <div className="aspect-video w-full bg-background">
@@ -232,7 +232,7 @@ export default function OrchflowPage() {
         <section className="mb-16">
           <SectionHeading
             eyebrow="What it proves"
-            title="A live case for readable multi-agent workflows"
+            title="A live look at readable multi-agent workflows"
             className="mb-6"
           />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -254,9 +254,9 @@ export default function OrchflowPage() {
               className="mb-5"
             />
             <p className="text-base leading-relaxed text-ink-muted">
-              The portfolio UI is only a viewer. The value comes from Orchflow:
-              step functions stay readable, while the framework handles fan-out,
-              retries, lifecycle events, checkpoints, and resume.
+              The UI here is only a viewer. Your step functions stay readable,
+              and the framework handles fan-out, retries, lifecycle events,
+              checkpoints, and resume.
             </p>
           </div>
           <div className="flex flex-col gap-4">

@@ -3,7 +3,7 @@ import { getProject } from "@/lib/projects";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "GuardLoop — a guardrail runtime for production AI agents";
+export const alt = "GuardLoop: a guardrail runtime for production AI agents";
 
 export default function OGImage() {
   const project = getProject("guardloop")!;

@@ -1,19 +1,18 @@
 import Link from "next/link";
 import Logo from "@/components/logo";
 import ThemeToggle from "@/components/theme-toggle";
-import { ArrowRight } from "lucide-react";
 
 export default function Nav() {
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
+      <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-4 px-6">
         <Logo />
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           <Link
             href="/artifacts"
-            className="flex items-center justify text-sm font-medium gap-1 transition-all text-ink-muted hover:text-ink"
+            className="font-mono text-xs text-ink-muted transition-colors hover:text-ink"
           >
-            Artifacts <ArrowRight className="w-4 h-4" />
+            artifacts
           </Link>
           <ThemeToggle />
         </div>

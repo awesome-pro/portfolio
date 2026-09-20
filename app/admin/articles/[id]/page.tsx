@@ -105,7 +105,7 @@ export default async function ArticleDetailPage({
 
         <div className="flex flex-col gap-6">
 
-          {/* Thread teaser — first because it's the Twitter opener */}
+          {/* Thread teaser, first because it's the Twitter opener */}
           {article.thread_teaser && (
             <div className="flex flex-col gap-3 p-5 border border-border rounded-2xl bg-surface">
               <SectionHeader
@@ -119,7 +119,7 @@ export default async function ArticleDetailPage({
             </div>
           )}
 
-          {/* Body — the main content */}
+          {/* Body, the main content */}
           <div className="flex flex-col gap-3 p-5 border border-border rounded-2xl bg-surface">
             <SectionHeader
               title="Article Body"

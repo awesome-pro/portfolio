@@ -1,50 +1,39 @@
-import Image from "next/image";
-import BookCallButton from "@/components/book-call-button";
-import { Badge } from "./ui/badge";
-import Link from "next/link";
-import { Button } from "./ui/button";
+const LINKS = [
+  { label: "x", href: "https://x.com/abhibuilds" },
+  { label: "email", href: "mailto:abhinandan@abhinandan.one" },
+  { label: "github", href: "https://github.com/awesome-pro" },
+  { label: "youtube", href: "https://youtube.com/@0xAbhinandan" },
+];
 
 export default function Hero() {
   return (
-    <section className="mx-auto grid min-h-[90vh] max-w-6xl grid-cols-1 items-center gap-10 px-6 py-16 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] lg:gap-16 lg:py-20">
-      <div className="max-w-3xl">
-        <Badge>
-          Agentic AI Engineer
-        </Badge>
+    <section className="mx-auto w-full max-w-3xl px-6 pt-20 pb-16 sm:pt-24">
+  
+      <h1 className="mt-6 text-4xl leading-[1.05] font-semibold tracking-tight text-ink sm:text-5xl">
+        Abhinandan
+      </h1>
 
-        <h1 className="mt-5 mb-12 text-5xl leading-none font-bold tracking-tight text-ink sm:text-6xl lg:text-7xl">
-          I build the infrastructure
-          <br />
-          <span className="text-ink-muted font-semibold">AI products run on.</span>
-        </h1>
+      <p className="mt-7 text-base leading-relaxed text-ink-muted">
+        I do RL post-training on reasoning models, and build
+        the inference systems that serve them. And I usually write my thoughts in my artifacts.
+      </p>
 
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            href="/artifacts"
-            className="inline-flex items-center justify-center gap-1.5 text-white bg-primary px-5 py-2.5 rounded-full text-sm font-medium transition-colors w-full sm:w-auto"
-          >
-            View Artifacts
-          </Link>
+      <nav
+        aria-label="Elsewhere"
+        className="mt-10 flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs"
+      >
+        {LINKS.map((link) => (
           <a
-            href="mailto:abhinandan@abhinandan.one"
-            className="inline-flex items-center justify-center gap-1.5 border border-border text-ink px-5 py-2.5 rounded-full text-sm font-medium hover:border-ink transition-colors w-full sm:w-auto"
+            key={link.label}
+            href={link.href}
+            target={link.href.startsWith("http") ? "_blank" : undefined}
+            rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            className="text-ink-muted transition-colors hover:text-ink"
           >
-            abhinandan@abhinandan.one
+            {link.label}
           </a>
-        </div>
-      </div>
-
-      <div className="relative aspect-[3/4] w-full max-w-sm justify-self-center overflow-hidden rounded-2xl shadow-lg transition-shadow hover:shadow-xl sm:max-w-md lg:w-[22rem] lg:max-w-none lg:justify-self-end xl:w-[24rem]">
-        <Image
-          src="/hero.jpg"
-          alt="Abhinandan"
-          fill
-          className="object-cover object-center"
-          sizes="(max-width: 640px) calc(100vw - 3rem), (max-width: 1024px) 28rem, 24rem"
-          preload
-        />
-      </div>
+        ))}
+      </nav>
     </section>
   );
 }

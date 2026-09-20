@@ -3,7 +3,7 @@ import { getProject } from "@/lib/projects";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "agenteval — pass-rate behavioral testing for LLM agents";
+export const alt = "agenteval: pass-rate behavioral testing for LLM agents";
 
 export default function OGImage() {
   const project = getProject("agenteval")!;

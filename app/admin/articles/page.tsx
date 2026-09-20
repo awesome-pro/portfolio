@@ -67,7 +67,7 @@ export default async function ArticlesAdminPage() {
         ) : (
           <div className="flex items-center gap-3 p-5 mb-8 border border-dashed border-border rounded-2xl">
             <p className="text-sm font-mono text-ink-faint">
-              No article for today yet — the agent will add it soon.
+              No article for today yet. The agent will add it soon.
             </p>
           </div>
         )}

@@ -1,14 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="10" fill="#111110" />
-  <text
-    x="50%"
-    y="52%"
-    dominant-baseline="middle"
-    text-anchor="middle"
-    font-family="Avenir Next, Arial, Helvetica, sans-serif"
-    font-size="30"
-    font-weight="800"
-  >
-    <tspan fill="#ffffff">A</tspan><tspan fill="#60a5fa">I</tspan>
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#111110" />
+  <g fill="none" stroke="#f2f2ee" stroke-width="7">
+    <circle cx="32" cy="32" r="16.5" />
+    <path d="M48.5 12 V52" stroke-linecap="butt" />
+  </g>
 </svg>

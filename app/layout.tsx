@@ -8,9 +8,9 @@ import "./globals.css";
 
 const siteUrl = "https://abhinandan.one";
 const siteName = "abhinandan";
-const siteTitle = "abhinandan | agentic ai engineer & ml engineer";
+const siteTitle = "abhinandan | inference & rl";
 const siteDescription =
-  "agentic ai engineer and ml engineer building multi-agent systems,llm inference pipelines, and production ai infrastructure.";
+  "RL post-training on reasoning models, plus the inference stack that serves them.";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,15 +42,14 @@ export const metadata: Metadata = {
   category: "technology",
   keywords: [
     "Abhinandan",
-    "agentic AI engineer",
-    "AI engineer",
-    "ML engineer",
-    "machine learning engineer",
-    "multi-agent systems",
+    "inference engineer",
+    "reinforcement learning",
+    "RL post-training",
+    "reasoning models",
     "LLM inference",
-    "AI infrastructure",
-    "production AI systems",
-    "AI product engineer",
+    "model serving",
+    "ML engineer",
+    "agentic AI",
   ],
   alternates: {
     canonical: "/",
@@ -76,7 +75,7 @@ export const metadata: Metadata = {
         url: "/hero-photo.jpg",
         width: 2610,
         height: 3480,
-        alt: "Abhinandan, agentic AI engineer and ML engineer",
+        alt: "Abhinandan, inference and reinforcement learning engineer",
       },
     ],
     locale: "en_US",
@@ -89,7 +88,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/hero-photo.jpg",
-        alt: "Abhinandan, agentic AI engineer and ML engineer",
+        alt: "Abhinandan, inference and reinforcement learning engineer",
       },
     ],
   },
@@ -104,15 +103,19 @@ const jsonLd = {
       name: siteName,
       url: siteUrl,
       image: `${siteUrl}/hero-photo.jpg`,
-      jobTitle: ["Agentic AI Engineer", "AI Engineer", "ML Engineer"],
+      jobTitle: [
+        "Inference Engineer",
+        "Reinforcement Learning Engineer",
+        "ML Engineer",
+      ],
       description: siteDescription,
       knowsAbout: [
-        "Agentic AI",
-        "Machine learning engineering",
-        "Multi-agent systems",
+        "Reinforcement learning post-training",
+        "Reasoning models",
         "LLM inference",
-        "AI infrastructure",
-        "Production AI systems",
+        "Model serving",
+        "Agentic AI",
+        "Evaluation methodology",
       ],
     },
     {

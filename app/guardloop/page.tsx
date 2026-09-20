@@ -15,18 +15,18 @@ import PipelineDiagram from "@/components/projects/PipelineDiagram";
 import CopyCommand from "@/components/projects/CopyCommand";
 import GuardLoopLiveDemo from "@/components/projects/GuardLoopLiveDemo";
 
-export const revalidate = 86400; // static content — revalidate daily
+export const revalidate = 86400; // static content, revalidate daily
 
 const SLUG = "guardloop";
 const project = getProject(SLUG)!;
 const url = `https://abhinandan.one/projects/${SLUG}`;
 
 export const metadata: Metadata = {
-  title: `${project.title} — A Guardrail Runtime for Production AI Agents | Abhinandan`,
+  title: `${project.title}: A Guardrail Runtime for Production AI Agents | Abhinandan`,
   description: project.oneLiner,
   keywords: project.keywords,
   openGraph: {
-    title: `${project.title} — A Guardrail Runtime for Production AI Agents`,
+    title: `${project.title}: A Guardrail Runtime for Production AI Agents`,
     description: project.oneLiner,
     url,
     type: "article",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${project.title} — A Guardrail Runtime for Production AI Agents`,
+    title: `${project.title}: A Guardrail Runtime for Production AI Agents`,
     description: project.oneLiner,
   },
   alternates: { canonical: url },
@@ -50,7 +50,7 @@ const BUDGETS = [
 const HIGHLIGHTS = [
   {
     title: "Pre-flight, not post-mortem",
-    body: "Budgets are checked before the next risky call executes — Decimal-precise cost math means the runtime stops you at $0.092, not after the bill arrives at $0.13.",
+    body: "Budgets get checked before the next risky call runs, and the cost math is Decimal-precise. The runtime stops you at $0.092, not after the bill arrives at $0.13.",
   },
   {
     title: "Per-tool circuit breakers",
@@ -58,7 +58,7 @@ const HIGHLIGHTS = [
   },
   {
     title: "Verifier feedback loop",
-    body: "Output verifiers can reject a result and inject feedback via ctx.retry_feedback; the agent retries under the same shared budget — bounded self-correction, not infinite retries.",
+    body: "Output verifiers can reject a result and inject feedback via ctx.retry_feedback. The agent retries under the same shared budget. That's bounded self-correction, not infinite retries.",
   },
   {
     title: "OpenTelemetry GenAI spans",
@@ -160,7 +160,7 @@ export default function GuardLoopPage() {
           <SectionHeading eyebrow="The problem" title="An agent is a loop around a probabilistic system" className="mb-6" />
           <div className="flex flex-col gap-4 text-base leading-relaxed text-ink-muted">
             <p>
-              When an agent goes wrong, it doesn&apos;t crash — it{" "}
+              When an agent goes wrong, it doesn&apos;t crash. It{" "}
               <span className="text-ink font-medium">keeps going</span>. It calls
               the same model again, retries the same dead tool, and spends real
               money doing it. By the time you notice, the failure is in the
@@ -168,8 +168,8 @@ export default function GuardLoopPage() {
             </p>
             <p>
               GuardLoop wraps the model clients and tools an agent already uses
-              and enforces hard limits <em>around</em> them — so a runaway loop
-              is stopped before the next expensive call, not explained after the
+              and enforces hard limits <em>around</em> them. A runaway loop gets
+              stopped before the next expensive call, not explained after the
               fact. <span className="text-ink font-medium">No agent rewrite.</span>
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function GuardLoopPage() {
                 kicker: "pre-flight",
                 title: "Budget check",
                 detail:
-                  "Before each LLM/tool call: would it exceed the cost, token, time, or tool-call ceiling? If so, deny and stop.",
+                  "Before each LLM or tool call, it asks: would this blow past the cost, token, time, or tool-call ceiling? If yes, it denies and stops.",
               },
               {
                 kicker: "guarded",
@@ -196,13 +196,13 @@ export default function GuardLoopPage() {
                 kicker: "verify",
                 title: "Verifier",
                 detail:
-                  "Check the output. On failure, inject feedback and retry under the same shared budget — up to max_retries.",
+                  "Check the output. On failure, inject feedback and retry under the same shared budget, up to max_retries.",
               },
               {
                 kicker: "typed",
                 title: "RunResult",
                 detail:
-                  "Return success, cost_usd, tokens_used, and terminated_reason — plus OpenTelemetry spans for the whole run.",
+                  "Return success, cost_usd, tokens_used, and terminated_reason, plus OpenTelemetry spans for the whole run.",
               },
             ]}
           />
@@ -223,7 +223,7 @@ export default function GuardLoopPage() {
           <p className="text-base leading-relaxed text-ink-muted mb-6">
             Configure budgets and breakers once, then run any async agent
             function through the runtime. Existing LangGraph graphs and OpenAI
-            Agents SDK runs work through thin adapters — no rewrite.
+            Agents SDK runs work through thin adapters. No rewrite.
           </p>
           <div className="flex flex-col gap-4">
             <CopyCommand
@@ -243,7 +243,7 @@ export default function GuardLoopPage() {
             />
             <CopyCommand
               shell={false}
-              label="adapt an existing LangGraph graph — no rewrite"
+              label="adapt an existing LangGraph graph, no rewrite"
               lines={[
                 "from guardloop.adapters.langgraph import guarded_graph",
                 "",
@@ -256,7 +256,7 @@ export default function GuardLoopPage() {
             <Callout label="bounded self-correction">
               A verifier can reject an output and pass feedback back to the agent
               via <span className="text-ink">ctx.retry_feedback</span>. The retry
-              runs under the <span className="text-ink">same</span> budget — so
+              runs under the <span className="text-ink">same</span> budget, so
               self-correction can&apos;t become an infinite, expensive loop.
             </Callout>
           </div>

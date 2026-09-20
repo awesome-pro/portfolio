@@ -15,13 +15,7 @@ export default function Logo({ className }: LogoProps) {
         className,
       )}
     >
-      <span
-        aria-hidden="true"
-        className="text-primary/50 text-sm"
-      >
-        <span className="text-primary font-bold italic">A</span>BH
-        <span className="text-primary font-bold italic">I</span>NANDAN
-      </span>
+      <span className="font-mono text-sm tracking-tight">abhinandan</span>
     </Link>
   );
 }

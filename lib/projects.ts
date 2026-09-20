@@ -11,7 +11,7 @@ export interface ProjectMeta {
   slug: string;
   title: string;
   tag: string;
-  /** One-line thesis — also used as the meta description for the card/index. */
+  /** One-line thesis, also used as the meta description for the card/index. */
   oneLiner: string;
   /** Big number shown on cards + hero. */
   headlineStat?: { value: string; label: string };
@@ -31,7 +31,7 @@ export const PROJECTS: ProjectMeta[] = [
     title: "AgentFlow-Pro",
     tag: "Agentic RL Research",
     oneLiner:
-      "Process-supervised RL that taught an 8B model to reason better — and the gain transferred to a domain it never trained on.",
+      "Process-supervised RL that made an 8B model reason better, and the gain carried over to a domain it never trained on.",
     headlineStat: { value: "+5.0 pts", label: "GPQA-Diamond · 40.0 → 45.0%" },
     stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [
@@ -60,8 +60,8 @@ export const PROJECTS: ProjectMeta[] = [
     title: "GuardLoop",
     tag: "Production Agent Runtime",
     oneLiner:
-      "A guardrail runtime for async agents: pre-flight cost/token/time budgets, per-tool circuit breakers, and OpenTelemetry spans — no agent rewrite.",
-    headlineStat: { value: "0", label: "agent rewrites — drop-in adapters" },
+      "A guardrail runtime for async agents. Pre-flight cost, token and time budgets, per-tool circuit breakers, and OpenTelemetry spans. Your agent code stays as it is.",
+    headlineStat: { value: "0 rewrites", label: "drop-in adapters" },
     stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
@@ -87,7 +87,7 @@ export const PROJECTS: ProjectMeta[] = [
     title: "SmartMemo",
     tag: "Semantic LLM Cache",
     oneLiner:
-      "A semantic cache for LLM agents where a learned classifier — not raw cosine similarity — decides when a cached answer is safe to reuse.",
+      "A semantic cache for LLM agents where a trained classifier decides if a cached answer is safe to reuse, instead of raw cosine similarity.",
     headlineStat: { value: "+30 pts", label: "precision at equal recall vs. cosine" },
     stack: ["FAISS", "SentenceTransformers", "PyTorch", "SQLite", "Pydantic"],
     links: [
@@ -171,7 +171,7 @@ export function getProject(slug: string): ProjectMeta | undefined {
   return PROJECTS.find((p) => p.slug === slug);
 }
 
-/** Slugs that have a dedicated case-study page — used for the sitemap. */
+/** Slugs that have a dedicated case-study page, used for the sitemap. */
 export function getPagedProjectSlugs(): string[] {
   return PROJECTS.filter((p) => p.hasPage).map((p) => p.slug);
 }

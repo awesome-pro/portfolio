@@ -16,7 +16,7 @@ import {
 export const revalidate = 3600;
 
 const DEFAULT_DESCRIPTION =
-  "A production-minded artifact with demo, architecture, and implementation notes.";
+  "A build artifact. What I built, how I tested it, and where it broke.";
 
 export async function generateStaticParams() {
   const slugs = await getAllArtifactSlugsStatic();
@@ -35,15 +35,14 @@ export async function generateMetadata({
     return { title: "Artifact Not Found - Abhinandan" };
   }
 
-  const title = `Build Artifact #${artifact.serial_number}: ${artifact.artifact_name} - Abhinandan`;
-  const description = DEFAULT_DESCRIPTION;
+  const title = `Artifact #${artifact.serial_number}: ${artifact.artifact_name} | Abhinandan`;
 
   return {
     title,
-    description,
+    description: DEFAULT_DESCRIPTION,
     openGraph: {
       title,
-      description,
+      description: DEFAULT_DESCRIPTION,
       url: `https://abhinandan.one/artifacts/${slug}`,
       type: "article",
       publishedTime: artifact.published_at ?? undefined,
@@ -63,7 +62,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description,
+      description: DEFAULT_DESCRIPTION,
       images: artifact.architecture_images[0]
         ? [artifact.architecture_images[0].url]
         : [],
@@ -143,7 +142,7 @@ export default async function ArtifactDetailPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    name: `${artifact.artifact_name}`,
+    name: artifact.artifact_name,
     description: DEFAULT_DESCRIPTION,
     url: `https://abhinandan.one/artifacts/${artifact.slug}`,
     datePublished: artifact.published_at,
@@ -168,37 +167,41 @@ export default async function ArtifactDetailPage({
       />
       <Nav />
 
-      <main className="max-w-3xl mx-auto px-6 py-16">
-        <header className="mb-12">
-          <p className="font-mono text-xs tracking-widest text-ink-faint mb-4">
-            Build Artifact #{artifact.serial_number}
-          </p>
-
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink leading-[1.1] mb-5">
-            {artifact.artifact_name}
-          </h1>
-
-          {artifact.published_at && (
-            <p className="font-mono text-xs text-ink-faint mb-5">
-              {formatPublishedDate(artifact.published_at)}
+      <main className="mx-auto w-full max-w-3xl px-6 py-14">
+        <div>
+          <header className="mb-12">
+            <p className="mb-4 font-mono text-xs tracking-[0.25em] text-ink-faint uppercase">
+              Artifact {String(artifact.serial_number).padStart(2, "0")}
             </p>
-          )}
 
-          {artifact.github_links.length > 0 && <LinkBar links={artifact.github_links} />}
-        </header>
+            <h1 className="mb-5 text-3xl leading-[1.1] font-semibold tracking-tight text-ink sm:text-4xl">
+              {artifact.artifact_name}
+            </h1>
 
-        <DemoSection artifact={artifact} />
-        <ArchitectureGallery artifact={artifact} />
+            {artifact.published_at && (
+              <p className="mb-5 font-mono text-xs text-ink-faint">
+                {formatPublishedDate(artifact.published_at)}
+              </p>
+            )}
 
-        <ArtifactMarkdown content={artifact.story_markdown} />
+            {artifact.github_links.length > 0 && (
+              <LinkBar links={artifact.github_links} />
+            )}
+          </header>
 
-        <div className="mt-16 border-t border-border pt-8">
-          <Link
-            href="/artifacts"
-            className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-muted hover:text-ink transition-colors"
-          >
-            &lt;- All artifacts
-          </Link>
+          <DemoSection artifact={artifact} />
+          <ArchitectureGallery artifact={artifact} />
+
+          <ArtifactMarkdown content={artifact.story_markdown} />
+
+          <div className="mt-16 border-t border-border pt-8">
+            <Link
+              href="/artifacts"
+              className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-muted transition-colors hover:text-ink"
+            >
+              &lt;- all artifacts
+            </Link>
+          </div>
         </div>
       </main>
 

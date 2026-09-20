@@ -3,7 +3,7 @@ import { getProject } from "@/lib/projects";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "AgentFlow-Pro — process-supervised RL for agentic reasoning";
+export const alt = "AgentFlow-Pro: process-supervised RL for agentic reasoning";
 
 export default function OGImage() {
   const project = getProject("agentflow-pro")!;

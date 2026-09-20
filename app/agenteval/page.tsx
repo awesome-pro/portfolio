@@ -15,18 +15,18 @@ import PipelineDiagram from "@/components/projects/PipelineDiagram";
 import CopyCommand from "@/components/projects/CopyCommand";
 import AgentEvalLiveDemo from "@/components/projects/AgentEvalLiveDemo";
 
-export const revalidate = 86400; // static content — revalidate daily
+export const revalidate = 86400; // static content, revalidate daily
 
 const SLUG = "agenteval";
 const project = getProject(SLUG)!;
 const url = `https://abhinandan.one/projects/${SLUG}`;
 
 export const metadata: Metadata = {
-  title: `${project.title} — Pass-Rate Behavioral Testing for LLM Agents | Abhinandan`,
+  title: `${project.title}: Pass-Rate Behavioral Testing for LLM Agents | Abhinandan`,
   description: project.oneLiner,
   keywords: project.keywords,
   openGraph: {
-    title: `${project.title} — Pass-Rate Behavioral Testing for LLM Agents`,
+    title: `${project.title}: Pass-Rate Behavioral Testing for LLM Agents`,
     description: project.oneLiner,
     url,
     type: "article",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${project.title} — Pass-Rate Behavioral Testing for LLM Agents`,
+    title: `${project.title}: Pass-Rate Behavioral Testing for LLM Agents`,
     description: project.oneLiner,
   },
   alternates: { canonical: url },
@@ -47,11 +47,11 @@ const HIGHLIGHTS = [
   },
   {
     title: "Collect-then-raise assertions",
-    body: "A fluent assert_that() chain gathers every failure across the run before raising — so one failed expectation doesn't hide the other three. You see the whole picture per run, not just the first crash.",
+    body: "A fluent assert_that() chain gathers every failure across the run before it raises. So one failed expectation doesn't hide the other three. You see the whole picture for each run, not only the first crash.",
   },
   {
     title: "Behavioral, not string-matching",
-    body: "Assert on what the agent did: called_tool, tool_call_count(min/max), completed_within_steps/seconds, response_matches_schema, no_errors — the trace, not the exact wording.",
+    body: "Assert on what the agent actually did: called_tool, tool_call_count(min/max), completed_within_steps/seconds, response_matches_schema, no_errors. It checks the trace, not the exact wording.",
   },
   {
     title: "CI-native, framework-agnostic",
@@ -130,7 +130,7 @@ export default function AgentEvalPage() {
             {[
               "Run a test N times; pass if the success rate clears a threshold",
               "Collect-then-raise behavioral assertions on the agent's trace",
-              "Traces every tool call — name, args, result, timing, steps",
+              "Traces every tool call: name, args, result, timing, steps",
               "Typer CLI with JSON reports + exit codes for CI gates",
             ].map((t) => (
               <li
@@ -157,13 +157,13 @@ export default function AgentEvalPage() {
               The same prompt gives an agent different tool sequences, wording,
               and conclusions on every run. So the moment you write{" "}
               <span className="font-mono text-sm text-ink">assert result == &quot;expected&quot;</span>
-              , you&apos;ve already lost — the test is flaky by construction.
+              , you&apos;ve already lost. The test is flaky by construction.
             </p>
             <p>
-              Real agents are reliable <em>statistically</em>: right 85% of the
-              time, not always. agenteval tests for exactly that —{" "}
+              Real agents are reliable <em>statistically</em>. They&apos;re right
+              85% of the time, not always. agenteval tests for exactly that:{" "}
               <span className="text-ink font-medium">a pass rate over repeated
-              runs</span> — which turns &ldquo;it felt worse this week&rdquo; into
+              runs</span>. That turns &ldquo;it felt worse this week&rdquo; into
               a number you can gate a CI pipeline on.
             </p>
           </div>
@@ -178,7 +178,7 @@ export default function AgentEvalPage() {
                 kicker: "instrument",
                 title: "Tracer",
                 detail:
-                  "Wrap tools with tracer.wrap() / @tracer.tool — records name, args, result, timing, exceptions per call.",
+                  "Wrap tools with tracer.wrap() / @tracer.tool. It records name, args, result, timing, and exceptions for each call.",
               },
               {
                 kicker: "repeat",
@@ -190,7 +190,7 @@ export default function AgentEvalPage() {
                 kicker: "judge",
                 title: "Assertions",
                 detail:
-                  "A fluent chain collects every failure before raising — behavioral checks on the trace, not the string.",
+                  "A fluent chain collects every failure before it raises, and the checks are behavioral: they look at the trace, not the string.",
               },
               {
                 kicker: "gate",
@@ -239,9 +239,9 @@ export default function AgentEvalPage() {
           </div>
           <div className="mt-4">
             <Callout label="collect-then-raise">
-              The chain doesn&apos;t fail on the first error — it gathers all of
-              them, so a single run tells you <span className="text-ink">every</span>{" "}
-              expectation that broke, not just the first one.
+              The chain doesn&apos;t fail on the first error. It gathers all of
+              them, so one run tells you <span className="text-ink">every</span>{" "}
+              expectation that broke.
             </Callout>
           </div>
         </section>
@@ -257,7 +257,7 @@ export default function AgentEvalPage() {
             ]}
           />
           <p className="text-sm text-ink-faint mt-3">
-            Exit codes: 0 pass · 1 fail · 2 error — drop it straight into a CI step.
+            Exit codes: 0 pass · 1 fail · 2 error. Drop it straight into a CI step.
           </p>
         </section>
 

@@ -329,7 +329,7 @@ export default function OpportunitySignalForm() {
         <Textarea
           value={reason}
           onChange={setReason}
-          placeholder="Explain why this company is a good opportunity — what signal did you notice?"
+          placeholder="Explain why this company is a good opportunity. What signal did you notice?"
           rows={4}
         />
       </div>

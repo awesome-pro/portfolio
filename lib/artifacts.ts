@@ -65,6 +65,44 @@ export function youtubeEmbedUrl(url: string | null | undefined): string | null {
   return `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
 }
 
+/**
+ * Pull a plain-text lead sentence out of an artifact's markdown so index
+ * listings can say what the work actually is, not just its title.
+ * Fenced code, images, tables, quotes and heading lines are skipped.
+ */
+export function artifactExcerpt(
+  story: string | null | undefined,
+  maxLength = 180
+): string {
+  if (!story) return "";
+
+  const withoutCode = story.replace(/```[\s\S]*?```/g, "\n\n");
+
+  const paragraphs = withoutCode
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
+  const lead = paragraphs.find(
+    (paragraph) =>
+      !/^#{1,6}\s/.test(paragraph) &&
+      !/^[|>]/.test(paragraph) &&
+      !/^!\[/.test(paragraph)
+  );
+  if (!lead) return "";
+
+  const plain = lead
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/[*_`~]/g, "")
+    .replace(/^\s*[-+*]\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (plain.length <= maxLength) return plain;
+  return `${plain.slice(0, maxLength).replace(/\s+\S*$/, "")}…`;
+}
+
 function normalizeArtifact(row: Record<string, unknown>): Artifact {
   return {
     ...(row as unknown as Artifact),
@@ -78,52 +116,69 @@ function normalizeArray<T>(value: unknown): T[] {
 }
 
 export async function getPublicArtifacts(): Promise<Artifact[]> {
-  const supabase = createStaticClient();
-  const { data, error } = await supabase
-    .from("artifacts")
-    .select("*")
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("serial_number", { ascending: false });
+  try {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+      .from("artifacts")
+      .select("*")
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("serial_number", { ascending: false });
 
-  if (error) return [];
-  return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
+    if (error) return [];
+    return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
+  } catch {
+    // Missing or unreachable Supabase env (e.g. a local build), degrade quietly.
+    return [];
+  }
 }
 
 export async function getLatestArtifacts(limit = 3): Promise<Artifact[]> {
-  const supabase = createStaticClient();
-  const { data, error } = await supabase
-    .from("artifacts")
-    .select("*")
-    .order("published_at", { ascending: false, nullsFirst: false })
-    .order("serial_number", { ascending: false })
-    .limit(limit);
+  try {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+      .from("artifacts")
+      .select("*")
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .order("serial_number", { ascending: false })
+      .limit(limit);
 
-  if (error) return [];
-  return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
+    if (error) return [];
+    return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
+  } catch {
+    return [];
+  }
 }
 
 export async function getArtifactBySlugStatic(
   slug: string
 ): Promise<Artifact | null> {
-  const supabase = createStaticClient();
-  const { data, error } = await supabase
-    .from("artifacts")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+  try {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+      .from("artifacts")
+      .select("*")
+      .eq("slug", slug)
+      .single();
 
-  if (error || !data) return null;
-  return normalizeArtifact(data as Record<string, unknown>);
+    if (error || !data) return null;
+    return normalizeArtifact(data as Record<string, unknown>);
+  } catch {
+    return null;
+  }
 }
 
 export async function getAllArtifactSlugsStatic(): Promise<string[]> {
-  const supabase = createStaticClient();
-  const { data, error } = await supabase
-    .from("artifacts")
-    .select("slug");
+  try {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+      .from("artifacts")
+      .select("slug");
 
-  if (error) return [];
-  return (data ?? []).map((artifact: { slug: string }) => artifact.slug);
+    if (error) return [];
+    return (data ?? []).map((artifact: { slug: string }) => artifact.slug);
+  } catch {
+    return [];
+  }
 }
 
 export async function getAllArtifactsAdmin(): Promise<Artifact[]> {

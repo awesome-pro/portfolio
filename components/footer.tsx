@@ -4,13 +4,10 @@ import VisitorCounter from "@/components/visitor-counter";
 export default function Footer() {
   return (
     <footer className="border-t border-border mt-8">
-      <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-start justify-between gap-6 px-6 py-10 sm:flex-row sm:items-center">
         {/* Left */}
         <div>
           <p className="text-sm font-semibold text-ink">Abhinandan © 2026</p>
-          <p className="text-xs text-ink-muted mt-0.5">
-            Agentic AI Engineer
-          </p>
           <div className="mt-1.5">
             <VisitorCounter />
           </div>
@@ -58,7 +55,7 @@ export default function Footer() {
              X
             </a>
             <a
-              href="https://youtube.com/@abhinandan_builds"
+              href="https://youtube.com/@0xAbhinandan"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-ink transition-colors"

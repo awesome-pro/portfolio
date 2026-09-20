@@ -20,18 +20,18 @@ import ReplayTerminal, {
 } from "@/components/projects/ReplayTerminal";
 import CopyCommand from "@/components/projects/CopyCommand";
 
-export const revalidate = 86400; // static content — revalidate daily
+export const revalidate = 86400; // static content, revalidate daily
 
 const SLUG = "agentflow-pro";
 const project = getProject(SLUG)!;
 const url = `https://abhinandan.one/projects/${SLUG}`;
 
 export const metadata: Metadata = {
-  title: `${project.title} — Process-Supervised RL for Agentic Reasoning | Abhinandan`,
+  title: `${project.title}: Process-Supervised RL for Agentic Reasoning | Abhinandan`,
   description: project.oneLiner,
   keywords: project.keywords,
   openGraph: {
-    title: `${project.title} — Process-Supervised RL for Agentic Reasoning`,
+    title: `${project.title}: Process-Supervised RL for Agentic Reasoning`,
     description: project.oneLiner,
     url,
     type: "article",
@@ -39,14 +39,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${project.title} — Process-Supervised RL for Agentic Reasoning`,
+    title: `${project.title}: Process-Supervised RL for Agentic Reasoning`,
     description: project.oneLiner,
   },
   alternates: { canonical: url },
 };
 
-/* ── Demo trace — representative, reconstructed from documented behavior.
-      Swap with a real captured `main.py` run anytime. ───────────────────── */
+/* ── Demo trace. Representative, reconstructed from documented behavior.
+      Swap in a real captured `main.py` run anytime. ─────────────────────── */
 const TRACE: TraceStep[] = [
   {
     role: "user",
@@ -96,7 +96,7 @@ const BENCHMARKS: BenchmarkGroup[] = [
   {
     name: "GPQA-Diamond (n=100)",
     takeaway:
-      "+5.0 points on graduate-level science questions — a cross-domain gain, since the Planner was trained only on AIME math. Step count barely moved (3.09 → 3.19), so the model got more accurate, not just more verbose.",
+      "+5.0 points on graduate-level science questions. That's a cross-domain gain, since the Planner was trained only on AIME math. Step count barely moved (3.09 → 3.19), so the model got more accurate without getting more verbose.",
     rows: [
       { label: "Qwen3-8B baseline", accuracy: 40.0, avgSteps: 3.09 },
       {
@@ -110,7 +110,7 @@ const BENCHMARKS: BenchmarkGroup[] = [
   {
     name: "AIME 2024 (n=30)",
     takeaway:
-      "On the in-domain math set the result moved within the confidence interval (±~17 pts at n=30) — 11 of 30 answers flipped in both directions. I report this as flat-within-noise rather than claiming a win: n=30 is too small to conclude either way.",
+      "On the in-domain math set the result landed inside the confidence interval (±~17 pts at n=30), and 11 of 30 answers flipped in both directions. I report this as flat-within-noise rather than claiming a win: n=30 is too small to conclude either way.",
     rows: [
       { label: "Qwen3-8B baseline", accuracy: 33.3, avgSteps: 4.03 },
       {
@@ -127,19 +127,19 @@ const BENCHMARKS: BenchmarkGroup[] = [
 const HIGHLIGHTS = [
   {
     title: "53× serving speedup",
-    body: "Ollama's /v1 endpoint silently ignores think: false; the native /api/chat endpoint honors it. Switching cut a single solve from 11m27s to ~13s.",
+    body: "Ollama's /v1 endpoint silently ignores think: false. The native /api/chat endpoint honors it. Switching cut a single solve from 11m27s to ~13s.",
   },
   {
     title: "Grammar-constrained planning",
-    body: "The Planner's output is locked to a Pydantic schema via Ollama's format field — every step is valid {thought, action, action_input} JSON, never free text to parse.",
+    body: "The Planner's output is locked to a Pydantic schema via Ollama's format field, so every step is valid {thought, action, action_input} JSON, never free text to parse.",
   },
   {
     title: "Leakage-free evaluation",
-    body: "Trained on AIME 1983–2023 (918 problems), de-duplicated against the AIME 2024 test set. The model is never trained on a problem it's later scored on.",
+    body: "Trained on AIME 1983–2023 (918 problems) and de-duplicated against the AIME 2024 test set. The model is never trained on a problem it's scored on later.",
   },
   {
     title: "Sandboxed Python REPL",
-    body: "The code tool runs in a stdlib + sympy/numpy/mpmath whitelist sandbox, auto-prints bare expressions, and tolerates lenient indentation from the model.",
+    body: "The code tool runs in a stdlib + sympy/numpy/mpmath whitelist sandbox. It auto-prints bare expressions and tolerates lenient indentation from the model.",
   },
 ];
 
@@ -233,17 +233,17 @@ export default function AgentFlowProPage() {
           <div className="flex flex-col gap-4 text-base leading-relaxed text-ink-muted">
             <p>
               The original AgentFlow trains its planner with{" "}
-              <span className="text-ink font-medium">Flow-GRPO</span> — an
-              outcome-only signal. A six-step reasoning trajectory gets a single
-              reward at the end: right or wrong. If the agent solved a hard
+              <span className="text-ink font-medium">Flow-GRPO</span>. That&apos;s
+              an outcome-only signal. A six-step reasoning trajectory gets a
+              single reward at the end: right or wrong. If the agent solved a hard
               problem but took one wrong turn on step 3, that signal can&apos;t
-              say so. Credit is smeared across every step equally.
+              say so. The credit gets smeared across every step equally.
             </p>
             <p>
               <span className="text-ink font-medium">Process supervision</span>{" "}
               scores <em>each step</em> instead. The bet: dense, per-step credit
-              assignment teaches better reasoning than a single pass/fail at the
-              end — even on a small model, even on a single GPU.
+              assignment teaches better reasoning than one pass/fail at the end,
+              even on a small model and even on a single GPU.
             </p>
           </div>
         </section>
@@ -253,7 +253,7 @@ export default function AgentFlowProPage() {
           <SectionHeading eyebrow="How it works" title="The agent loop" className="mb-6" />
           <p className="text-base leading-relaxed text-ink-muted mb-6">
             A <span className="text-ink font-medium">Planner → Executor → Verifier</span>{" "}
-            loop with running memory. Only the Planner is trainable; everything
+            loop with running memory. Only the Planner gets trained. Everything
             else is fixed scaffolding.
           </p>
 
@@ -269,7 +269,7 @@ export default function AgentFlowProPage() {
                 kicker: "dispatch",
                 title: "Executor",
                 detail:
-                  "Pure routing — Tavily web search, a sandboxed Python/SymPy REPL, or echo for think/answer.",
+                  "Pure routing: Tavily web search, a sandboxed Python/SymPy REPL, or echo for think/answer.",
               },
               {
                 kicker: "judge",
@@ -284,7 +284,7 @@ export default function AgentFlowProPage() {
             <Callout label="loop + memory">
               The Verifier routes back to the Planner until the state is
               sufficient. In-task <span className="text-ink">Memory</span> carries
-              context across steps; a Qdrant cross-episode backend is the planned
+              context across steps. A Qdrant cross-episode backend is the planned
               next layer.
             </Callout>
           </div>
@@ -306,7 +306,7 @@ export default function AgentFlowProPage() {
                 kicker: "Phase 2",
                 title: "Label",
                 detail:
-                  "A DeepSeek judge rates each step 0–1 via a calibrated rubric — 531 step labels.",
+                  "A DeepSeek judge rates each step 0–1 via a calibrated rubric. 531 step labels total.",
               },
               {
                 kicker: "Phase 3",
@@ -326,7 +326,7 @@ export default function AgentFlowProPage() {
           <div className="mt-6">
             <Callout label="the part TRL doesn't ship">
               TRL gives you clip-higher, token-level loss, and overlong
-              filtering — but <span className="text-ink">not dynamic sampling</span>.
+              filtering, but <span className="text-ink">not dynamic sampling</span>.
               I built that stage from scratch: drop prompts where the G rollouts
               show near-zero reward variance (pstdev &lt; 1e-3), so gradient
               steps aren&apos;t wasted on prompts the model has already saturated.
@@ -344,9 +344,9 @@ export default function AgentFlowProPage() {
         <section className="mb-16">
           <SectionHeading eyebrow="See it run" title="One pass through the loop" className="mb-6" />
           <p className="text-base leading-relaxed text-ink-muted mb-6">
-            A representative solve — Planner proposes a tool call, the Executor
-            runs it, the Verifier decides whether to loop or stop. Press{" "}
-            <span className="font-mono text-sm text-ink">Run</span> or step
+            A representative solve: the Planner proposes a tool call, the
+            Executor runs it, and the Verifier decides whether to loop or stop.
+            Press <span className="font-mono text-sm text-ink">Run</span> or step
             through it.
           </p>
           <ReplayTerminal steps={TRACE} title="agentflow-pro · main.py" />
@@ -402,7 +402,7 @@ export default function AgentFlowProPage() {
           <LinkBar links={project.links} />
           <p className="text-xs text-ink-faint mt-5 leading-relaxed">
             Built on ideas from the AgentFlow paper (arXiv 2510.05592) and DAPO
-            (arXiv 2503.14476). MIT licensed; not affiliated with the original
+            (arXiv 2503.14476). MIT licensed. Not affiliated with the original
             AgentFlow authors.
           </p>
           <Link

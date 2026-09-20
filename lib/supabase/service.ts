@@ -1,4 +1,4 @@
-// Service-role Supabase client — bypasses RLS.
+// Service-role Supabase client, bypasses RLS.
 // Only use in trusted server-side code (Route Handlers, Server Actions).
 // Never expose to the browser.
 import { createClient } from "@supabase/supabase-js";

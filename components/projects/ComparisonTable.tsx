@@ -4,7 +4,7 @@ export interface ComparisonRow {
   metric: string;
   /** One value per column, same order as `columns`. */
   values: string[];
-  /** Index of the column whose value is "better" — gets emphasized. */
+  /** Index of the column whose value is "better", gets emphasized. */
   betterIndex?: number;
   note?: ReactNode;
 }

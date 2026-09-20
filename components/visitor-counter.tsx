@@ -28,7 +28,7 @@ export default function VisitorCounter() {
           sessionStorage.setItem(SESSION_KEY, "1");
         }
       } catch {
-        // silently fail — don't break the page
+        // silently fail, don't break the page
       }
     }
 

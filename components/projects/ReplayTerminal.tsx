@@ -6,7 +6,7 @@ export type TraceRole = "user" | "planner" | "tool" | "verifier" | "answer";
 
 export interface TraceStep {
   role: TraceRole;
-  /** e.g. "think", "code", "search", "answer" — shown as the action tag. */
+  /** e.g. "think", "code", "search", "answer", shown as the action tag. */
   action?: string;
   /** Override the role's default label (e.g. "RUNTIME", "BUDGET", "LLM"). */
   label?: string;
@@ -28,7 +28,7 @@ const ROLE_META: Record<TraceRole, { label: string; tone: string }> = {
  */
 export default function ReplayTerminal({
   steps,
-  title = "main.py — replay",
+  title = "main.py replay",
 }: {
   steps: TraceStep[];
   title?: string;

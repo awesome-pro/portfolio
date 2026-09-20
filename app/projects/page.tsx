@@ -8,7 +8,7 @@ import { Chip } from "@/components/projects/shared";
 const url = "https://abhinandan.one/projects";
 
 export const metadata: Metadata = {
-  title: "Projects — Agentic AI & LLM Systems | Abhinandan",
+  title: "Projects: Agentic AI & LLM Systems | Abhinandan",
   description:
     "Open-source projects in agentic AI and LLM engineering: reinforcement learning for reasoning agents, guardrail runtimes, semantic caching, orchestration, and evaluation tooling.",
   keywords: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "AI engineering portfolio",
   ],
   openGraph: {
-    title: "Projects — Agentic AI & LLM Systems",
+    title: "Projects: Agentic AI & LLM Systems",
     description:
       "Open-source projects in agentic AI and LLM engineering: RL for reasoning agents, guardrail runtimes, semantic caching, orchestration, and eval tooling.",
     url,
@@ -66,9 +66,9 @@ export default function ProjectsPage() {
             Projects
           </h1>
           <p className="text-ink-muted max-w-xl leading-relaxed">
-            Things I&apos;ve built in agentic AI and LLM engineering — from
-            reinforcement learning for reasoning agents to the production
-            runtime, caching, and evaluation tooling that agents need to ship.
+            Stuff I&apos;ve built in agentic AI and LLM engineering. Reinforcement
+            learning for reasoning agents, plus the runtime, caching and eval
+            tooling you need to actually ship them.
           </p>
         </div>
 

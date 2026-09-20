@@ -1,58 +1,26 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
-import { getPublicArtifacts, type Artifact } from "@/lib/artifacts";
+import ArtifactIndex from "@/components/artifacts/ArtifactIndex";
+import { getPublicArtifacts } from "@/lib/artifacts";
 
 const url = "https://abhinandan.one/artifacts";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Artifacts - Build Artifacts | Abhinandan",
+  title: "Artifacts | Abhinandan",
   description:
-    "Build artifacts for production-minded agentic AI systems: demos, architecture, implementation notes, failure cases, and evals.",
+    "Training runs, eval write-ups, failure cases, and the numbers that came out. Notes from the inference and RL work I've done.",
   openGraph: {
-    title: "Artifacts - Build Artifacts",
+    title: "Artifacts",
     description:
-      "Production-minded agentic AI build traces with demos, architecture, implementation notes, failure cases, and evals.",
+      "Training runs, eval write-ups, failure cases, and the numbers that came out.",
     url,
     type: "website",
   },
   alternates: { canonical: url },
 };
-
-function formatPublishedDate(dateStr: string | null): string {
-  if (!dateStr) return "Not published";
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function ArtifactRow({ artifact, index }: { artifact: Artifact; index: number }) {
-  return (
-    <Link
-      href={`/artifacts/${artifact.slug}`}
-      className={`group block py-6 ${index !== 0 ? "border-t border-border" : ""}`}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h2 className="text-lg font-semibold text-ink group-hover:underline underline-offset-4 decoration-ink-faint">
-            <span className="font-normal">
-              #{artifact.serial_number}
-            </span>{" "}
-            {artifact.artifact_name}
-          </h2>
-        </div>
-        <span className="font-mono text-xs text-ink-muted shrink-0 mt-1">
-          Published {formatPublishedDate(artifact.published_at)}
-        </span>
-      </div>
-    </Link>
-  );
-}
 
 export default async function ArtifactsPage() {
   const artifacts = await getPublicArtifacts();
@@ -62,11 +30,11 @@ export default async function ArtifactsPage() {
     "@type": "CollectionPage",
     name: "Artifacts",
     description:
-      "Build artifacts for production-minded agentic AI systems by Abhinandan.",
+      "Training runs, eval write-ups, failure cases, and numbers from inference and RL work by Abhinandan.",
     url,
     hasPart: artifacts.map((artifact) => ({
       "@type": "CreativeWork",
-      name: `${artifact.artifact_name}`,
+      name: artifact.artifact_name,
       url: `${url}/${artifact.slug}`,
       datePublished: artifact.published_at,
     })),
@@ -82,28 +50,20 @@ export default async function ArtifactsPage() {
       />
       <Nav />
 
-      <main className="max-w-5xl mx-auto px-6 py-20">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink mb-4">
-          <span className="text-primary">artifacts</span> that i crafted
-        </h1>
+      <main className="mx-auto w-full max-w-3xl px-6 py-14">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+            Artifacts
+          </h1>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">
+            Long-form build traces. What I built, how I tested it, and where it
+            broke.
+          </p>
 
-        {artifacts.length === 0 ? (
-          <div className="py-24 text-center border border-dashed border-border rounded-lg">
-            <p className="text-ink-faint font-mono text-sm">
-              No artifacts yet.
-            </p>
+          <div className="mt-10">
+            <ArtifactIndex artifacts={artifacts} />
           </div>
-        ) : (
-          <div className="flex flex-col">
-            {artifacts.map((artifact, index) => (
-              <ArtifactRow
-                key={artifact.id}
-                artifact={artifact}
-                index={index}
-              />
-            ))}
-          </div>
-        )}
+        </div>
       </main>
 
       <Footer />

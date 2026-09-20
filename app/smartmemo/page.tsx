@@ -16,7 +16,7 @@ import ComparisonTable from "@/components/projects/ComparisonTable";
 import CopyCommand from "@/components/projects/CopyCommand";
 import SmartMemoLiveDemo from "@/components/projects/SmartMemoLiveDemo";
 
-export const revalidate = 86400; // static content — revalidate daily
+export const revalidate = 86400; // static content, revalidated daily
 
 const SLUG = "smartmemo";
 const project = getProject(SLUG)!;
@@ -30,11 +30,11 @@ const SMARTMEMO_VIDEO_EMBED_URL =
 const heroLinks = [...project.links, { label: "Video demo", url: SMARTMEMO_VIDEO_URL }];
 
 export const metadata: Metadata = {
-  title: `${project.title} — A Semantic LLM Cache That Knows When Reuse Is Unsafe | Abhinandan`,
+  title: `${project.title}: A Semantic LLM Cache That Knows When Reuse Is Unsafe | Abhinandan`,
   description: project.oneLiner,
   keywords: project.keywords,
   openGraph: {
-    title: `${project.title} — A Semantic LLM Cache That Knows When Reuse Is Unsafe`,
+    title: `${project.title}: A Semantic LLM Cache That Knows When Reuse Is Unsafe`,
     description: project.oneLiner,
     url,
     type: "article",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${project.title} — A Semantic LLM Cache`,
+    title: `${project.title}: A Semantic LLM Cache`,
     description: project.oneLiner,
   },
   alternates: { canonical: url },
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
 const HIGHLIGHTS = [
   {
     title: "Classifier, not threshold",
-    body: "Cosine similarity is a candidate selector, not a proof of equivalence. A small MLP over the embedding pair makes the final reuse decision — so near-duplicate-but-opposite prompts don't share a cached answer.",
+    body: "Cosine similarity is a way to shortlist candidates, not proof that two prompts mean the same thing. A small MLP over the embedding pair makes the final reuse call, so near-duplicate-but-opposite prompts don't end up sharing a cached answer.",
   },
   {
     title: "Learns from its own mistakes",
@@ -59,11 +59,11 @@ const HIGHLIGHTS = [
   },
   {
     title: "Gated retraining, not auto-reload",
-    body: "smartmemo retrain runs behind validation gates — a new classifier only ships if it passes. No silent background swaps that could regress precision in production.",
+    body: "smartmemo retrain runs behind validation gates. A new classifier only ships if it passes. Nothing swaps itself out silently in the background and regresses precision in production.",
   },
   {
     title: "WAL-backed SQLite",
-    body: "Durable, thread-safe persistence with an async get_or_call API, bounded-backoff retries, and clean async-context resource teardown.",
+    body: "State lives in SQLite in WAL mode, so it survives a restart and is safe to touch from multiple threads. The get_or_call API is async, retries back off instead of hammering, and async-context teardown is clean.",
   },
 ];
 
@@ -146,7 +146,7 @@ export default function SmartMemoPage() {
             {[
               "FAISS retrieves candidates; a learned classifier decides reuse",
               "+30 precision points at equal recall vs. a tuned cosine baseline",
-              "Bundled classifier — no training needed for a cold start",
+              "Bundled classifier, so no training is needed for a cold start",
               "Implicit + explicit bad-hit feedback feeds gated retraining",
             ].map((t) => (
               <li
@@ -186,10 +186,9 @@ export default function SmartMemoPage() {
             </a>
           </div>
           <p className="mb-5 max-w-3xl text-base leading-relaxed text-ink-muted">
-            An eight-minute walkthrough of the project story: why cosine-only
-            semantic caching fails, how the classifier gate blocks unsafe reuse,
-            how the live demo works, and how bad-hit feedback becomes retraining
-            data.
+            An eight-minute walkthrough of why cosine-only semantic caching
+            breaks, how the classifier gate blocks unsafe reuse, how the live
+            demo works, and how bad-hit feedback turns into retraining data.
           </p>
           <div className="overflow-hidden rounded-lg border border-border bg-surface">
             <div className="aspect-video w-full bg-background">
@@ -215,15 +214,15 @@ export default function SmartMemoPage() {
               <span className="text-ink font-medium">close in embedding space
               isn&apos;t the same as equivalent in meaning</span>.
               &ldquo;Approve the refund&rdquo; and &ldquo;Deny the refund&rdquo;
-              sit a hair apart by cosine — and a threshold-only cache will happily
+              sit a hair apart by cosine, and a threshold-only cache will happily
               serve the wrong one.
             </p>
             <p>
-              In a support, medical, or finance setting that&apos;s not a stale
-              cache — it&apos;s a <span className="text-ink font-medium">wrong,
+              In a support, medical, or finance setting, a bad hit like that means
+              serving a <span className="text-ink font-medium">wrong,
               confident answer</span>. SmartMemo keeps cosine as a fast{" "}
-              <em>candidate selector</em> and adds a learned classifier as the{" "}
-              <em>decision</em>.
+              <em>candidate selector</em> and puts a learned classifier in
+              charge of the <em>decision</em>.
             </p>
           </div>
         </section>
@@ -237,13 +236,13 @@ export default function SmartMemoPage() {
                 kicker: "embed",
                 title: "Encode",
                 detail:
-                  "Embed the prompt with all-MiniLM-L6-v2 (384-dim) — fast, local, no API call.",
+                  "Embed the prompt with all-MiniLM-L6-v2 (384-dim). Fast, local, no API call.",
               },
               {
                 kicker: "retrieve",
                 title: "FAISS search",
                 detail:
-                  "Find nearest cached prompts by cosine similarity — the candidate set, not the answer.",
+                  "Find nearest cached prompts by cosine similarity. This is the candidate set, not the answer.",
               },
               {
                 kicker: "decide",
@@ -263,8 +262,8 @@ export default function SmartMemoPage() {
             <Callout label="backbone">
               Embeddings: <span className="text-ink">all-MiniLM-L6-v2</span>{" "}
               (384-dim). The bundled classifier-v2 is a small MLP trained on{" "}
-              <span className="text-ink">16,576 labeled pairs across 9 domains</span>{" "}
-              — local-paraphraser positives and templated hard negatives.
+              <span className="text-ink">16,576 labeled pairs across 9 domains</span>,{" "}
+              mixing local-paraphraser positives with templated hard negatives.
             </Callout>
           </div>
         </section>
@@ -283,12 +282,12 @@ export default function SmartMemoPage() {
               { metric: "F1", values: ["0.67", "0.88"], betterIndex: 1 },
               { metric: "False positives", values: ["26", "6"], betterIndex: 1, note: "on the 84-pair gold set" },
             ]}
-            caption="Gold test set: 84 held-out pairs (31 equivalent, 53 not). +30 precision points with recall held constant — the cache rejects 20 more wrong reuses without losing a single correct hit."
+            caption="Gold test set: 84 held-out pairs (31 equivalent, 53 not). +30 precision points with recall held constant. The cache rejects 20 more wrong reuses without losing a single correct hit."
           />
           <p className="text-sm text-ink-faint mt-4 leading-relaxed">
             On a deliberately adversarial high-stakes set (16 medical/legal/finance
             opposite-action pairs), false-positive hits dropped from 8 → 6. A
-            generic classifier isn&apos;t infallible out of distribution — which is
+            generic classifier isn&apos;t infallible out of distribution. That&apos;s
             exactly why the feedback-and-retraining loop exists.
           </p>
         </section>
@@ -327,7 +326,7 @@ export default function SmartMemoPage() {
 
         {/* ── Engineering highlights ────────────────────────────────────── */}
         <section className="mb-16">
-          <SectionHeading eyebrow="What I built" title="Why it holds up in production" className="mb-6" />
+          <SectionHeading eyebrow="What I built" title="Why I built it this way" className="mb-6" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {HIGHLIGHTS.map((h) => (
               <div key={h.title} className="rounded-xl border border-border bg-surface p-5">
@@ -343,7 +342,7 @@ export default function SmartMemoPage() {
           <SectionHeading eyebrow="Get started" title="Install from PyPI" className="mb-6" />
           <CopyCommand label="pip" lines={['pip install "smartmemo[ml]"']} />
           <p className="text-sm text-ink-faint mt-3">
-            Ships a pretrained classifier — no training required for a cold start.
+            It ships a pretrained classifier, so a cold start needs no training.
             CI across Python 3.11–3.14.
           </p>
         </section>
