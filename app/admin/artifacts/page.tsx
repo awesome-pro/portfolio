@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getAllArtifactsAdmin } from "@/lib/artifacts";
-import SignOutButton from "@/components/admin/SignOutButton";
 import DeleteArtifactButton from "@/components/admin/DeleteArtifactButton";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +45,6 @@ export default async function ArtifactsAdminPage() {
             >
               + New artifact
             </Link>
-            <SignOutButton />
           </div>
         </div>
 

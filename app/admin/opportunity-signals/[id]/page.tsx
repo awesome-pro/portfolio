@@ -1,39 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOpportunitySignalById } from "@/lib/opportunity-signals";
-import type { PersonToReach } from "@/lib/opportunity-signals";
+import { normalizeSignalLinks } from "@/lib/signal-links";
 import DeleteOpportunitySignalButton from "@/components/admin/DeleteOpportunitySignalButton";
 import OpportunitySignalStatusChanger from "@/components/admin/OpportunitySignalStatusChanger";
 
 export const dynamic = "force-dynamic";
-
-function normalizeLinks(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => {
-      if (typeof item === "string") return item.trim();
-      if (item && typeof item === "object" && "url" in item) {
-        return String((item as { url: unknown }).url).trim();
-      }
-      return "";
-    })
-    .filter(Boolean);
-}
-
-function normalizePeople(value: unknown): PersonToReach[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter(
-      (item): item is PersonToReach =>
-        item !== null && typeof item === "object" && "name" in item
-    )
-    .map((item) => ({
-      name: String(item.name ?? ""),
-      role: item.role ? String(item.role) : undefined,
-      linkedin: item.linkedin ? String(item.linkedin) : undefined,
-      note: item.note ? String(item.note) : undefined,
-    }));
-}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -43,13 +15,6 @@ function formatDate(dateStr: string) {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function scoreColor(score: number | null) {
-  if (score === null) return "text-ink-faint";
-  if (score >= 80) return "text-green-700";
-  if (score >= 60) return "text-amber-700";
-  return "text-ink-muted";
 }
 
 function InfoBlock({
@@ -76,9 +41,7 @@ export default async function OpportunitySignalDetailPage({
   const signal = await getOpportunitySignalById(id);
   if (!signal) notFound();
 
-  const jobLinks = normalizeLinks(signal.job_links);
-  const relevantLinks = normalizeLinks(signal.relevant_links);
-  const people = normalizePeople(signal.people_to_reach);
+  const links = normalizeSignalLinks(signal.links);
   const today = new Date().toISOString().split("T")[0];
   const isNew =
     new Date(signal.discovered_at).toISOString().split("T")[0] === today;
@@ -98,21 +61,6 @@ export default async function OpportunitySignalDetailPage({
               {isNew && (
                 <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-amber-50 text-amber-700 border-amber-200">
                   New today
-                </span>
-              )}
-              <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-background text-ink-muted border-border">
-                {signal.signal_type}
-              </span>
-              {signal.match_score !== null && (
-                <span
-                  className={`text-xs font-mono font-semibold ${scoreColor(signal.match_score)}`}
-                >
-                  {signal.match_score}/100 match
-                </span>
-              )}
-              {signal.interview_probability !== null && (
-                <span className="text-xs font-mono text-ink-muted">
-                  {signal.interview_probability}% interview probability
                 </span>
               )}
             </div>
@@ -169,92 +117,22 @@ export default async function OpportunitySignalDetailPage({
             </InfoBlock>
           </div>
 
-          <InfoBlock label="Why This Signal">
-            <p className="text-sm text-ink leading-6 whitespace-pre-wrap">
-              {signal.reason}
-            </p>
-          </InfoBlock>
-
-          {people.length > 0 && (
-            <InfoBlock label="People to Reach">
-              <div className="flex flex-col gap-2">
-                {people.map((person, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col gap-0.5 bg-background border border-border rounded-xl px-4 py-3"
-                  >
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {person.linkedin ? (
-                        <a
-                          href={person.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm font-medium text-ink hover:underline"
-                        >
-                          {person.name}
-                        </a>
-                      ) : (
-                        <span className="text-sm font-medium text-ink">
-                          {person.name}
-                        </span>
-                      )}
-                      {person.role && (
-                        <span className="text-xs font-mono text-ink-faint">
-                          {person.role}
-                        </span>
-                      )}
-                    </div>
-                    {person.note && (
-                      <p className="text-xs text-ink-muted mt-0.5">
-                        {person.note}
-                      </p>
-                    )}
-                    {person.linkedin && (
-                      <a
-                        href={person.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-mono text-ink-faint hover:text-ink break-all mt-0.5"
-                      >
-                        {person.linkedin}
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </InfoBlock>
-          )}
-
-          {jobLinks.length > 0 && (
-            <InfoBlock label="Job Links">
+          {links.length > 0 && (
+            <InfoBlock label="Links">
               <div className="flex flex-col gap-1.5">
-                {jobLinks.map((url, i) => (
+                {links.map((link, i) => (
                   <a
                     key={i}
-                    href={/^https?:\/\//i.test(url) ? url : `https://${url}`}
+                    href={
+                      /^https?:\/\//i.test(link.url)
+                        ? link.url
+                        : `https://${link.url}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs font-mono text-ink-muted hover:text-ink break-all"
                   >
-                    {url}
-                  </a>
-                ))}
-              </div>
-            </InfoBlock>
-          )}
-
-          {relevantLinks.length > 0 && (
-            <InfoBlock label="Relevant Links">
-              <div className="flex flex-col gap-1.5">
-                {relevantLinks.map((url, i) => (
-                  <a
-                    key={i}
-                    href={/^https?:\/\//i.test(url) ? url : `https://${url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-mono text-ink-muted hover:text-ink break-all"
-                  >
-                    {url}
+                    {link.title ? `${link.title} — ${link.url}` : link.url}
                   </a>
                 ))}
               </div>

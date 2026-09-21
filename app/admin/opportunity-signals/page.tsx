@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getAllOpportunitySignals } from "@/lib/opportunity-signals";
 import OpportunitySignalList from "@/components/admin/OpportunitySignalList";
-import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +42,6 @@ export default async function OpportunitySignalsAdminPage() {
             >
               <span className="text-base leading-none">+</span> Add
             </Link>
-            <SignOutButton />
           </div>
         </div>
 

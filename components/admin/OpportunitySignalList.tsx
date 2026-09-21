@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
+import { normalizeSignalLinks } from "@/lib/signal-links";
 import type {
   OpportunitySignal,
   OpportunitySignalStatus,
-  PersonToReach,
 } from "@/lib/opportunity-signals";
 import { updateOpportunitySignalStatus } from "@/app/admin/opportunity-signals/actions";
 import DeleteOpportunitySignalButton from "./DeleteOpportunitySignalButton";
@@ -40,34 +40,6 @@ const STATUS_FLOW: OpportunitySignalStatus[] = [
 
 type FilterType = OpportunitySignalStatus | "all" | "active" | "today";
 
-function normalizeLinks(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => {
-      if (typeof item === "string") return item.trim();
-      if (item && typeof item === "object" && "url" in item) {
-        return String((item as { url: unknown }).url).trim();
-      }
-      return "";
-    })
-    .filter(Boolean);
-}
-
-function normalizePeople(value: unknown): PersonToReach[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter(
-      (item): item is PersonToReach =>
-        item !== null && typeof item === "object" && "name" in item
-    )
-    .map((item) => ({
-      name: String(item.name ?? ""),
-      role: item.role ? String(item.role) : undefined,
-      linkedin: item.linkedin ? String(item.linkedin) : undefined,
-      note: item.note ? String(item.note) : undefined,
-    }));
-}
-
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
     month: "short",
@@ -81,13 +53,6 @@ function isDiscoveredToday(dateStr: string) {
   return itemDate === new Date().toISOString().split("T")[0];
 }
 
-function scoreColor(score: number | null) {
-  if (score === null) return "bg-background text-ink-faint border-border";
-  if (score >= 80) return "bg-green-50 text-green-700 border-green-200";
-  if (score >= 60) return "bg-amber-50 text-amber-700 border-amber-200";
-  return "bg-surface text-ink-muted border-border";
-}
-
 function matchesFilter(signal: OpportunitySignal, filter: FilterType) {
   if (filter === "all") return true;
   if (filter === "today") return isDiscoveredToday(signal.discovered_at);
@@ -97,16 +62,10 @@ function matchesFilter(signal: OpportunitySignal, filter: FilterType) {
 
 function matchesSearch(signal: OpportunitySignal, query: string) {
   if (!query) return true;
-  const people = normalizePeople(signal.people_to_reach)
-    .map((p) => `${p.name} ${p.role ?? ""} ${p.note ?? ""}`)
+  const links = normalizeSignalLinks(signal.links)
+    .map((link) => `${link.url} ${link.title ?? ""}`)
     .join(" ");
-  const haystack = [
-    signal.company_name,
-    signal.signal_type,
-    signal.reason,
-    signal.notes,
-    people,
-  ]
+  const haystack = [signal.company_name, signal.website, signal.notes, links]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
@@ -122,6 +81,24 @@ function StatusBadge({ status }: { status: OpportunitySignalStatus | null }) {
     >
       {config.label}
     </span>
+  );
+}
+
+function LinkList({ links }: { links: { url: string; title?: string }[] }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      {links.map((link, i) => (
+        <a
+          key={i}
+          href={/^https?:\/\//i.test(link.url) ? link.url : `https://${link.url}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-mono text-ink-muted hover:text-ink break-all"
+        >
+          {link.title ? `${link.title} — ${link.url}` : link.url}
+        </a>
+      ))}
+    </div>
   );
 }
 
@@ -164,38 +141,9 @@ function InlineStatusChanger({
   );
 }
 
-function PersonCard({ person }: { person: PersonToReach }) {
-  return (
-    <div className="flex flex-col gap-0.5 bg-background border border-border rounded-lg px-3 py-2">
-      <div className="flex items-center gap-2 flex-wrap">
-        {person.linkedin ? (
-          <a
-            href={person.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-ink hover:underline"
-          >
-            {person.name}
-          </a>
-        ) : (
-          <span className="text-xs font-medium text-ink">{person.name}</span>
-        )}
-        {person.role && (
-          <span className="text-xs font-mono text-ink-faint">{person.role}</span>
-        )}
-      </div>
-      {person.note && (
-        <p className="text-xs text-ink-muted">{person.note}</p>
-      )}
-    </div>
-  );
-}
-
 function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
   const [expanded, setExpanded] = useState(false);
-  const jobLinks = normalizeLinks(signal.job_links);
-  const relevantLinks = normalizeLinks(signal.relevant_links);
-  const people = normalizePeople(signal.people_to_reach);
+  const links = normalizeSignalLinks(signal.links);
   const today = isDiscoveredToday(signal.discovered_at);
 
   return (
@@ -208,20 +156,10 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
                 New today
               </span>
             )}
-            <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-background text-ink-muted border-border">
-              {signal.signal_type}
-            </span>
             <StatusBadge status={signal.status} />
-            {signal.match_score !== null && (
-              <span
-                className={`text-xs font-mono px-2 py-0.5 rounded-md border ${scoreColor(signal.match_score)}`}
-              >
-                {signal.match_score}/100
-              </span>
-            )}
-            {signal.interview_probability !== null && (
+            {links.length > 0 && (
               <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-surface text-ink-muted border-border">
-                {signal.interview_probability}% interview
+                {links.length} {links.length === 1 ? "link" : "links"}
               </span>
             )}
           </div>
@@ -269,67 +207,20 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
         </div>
       </div>
 
-      <div className="px-5 py-3">
-        <p className="text-sm text-ink leading-6 line-clamp-2">{signal.reason}</p>
-      </div>
+      {signal.notes && (
+        <div className="px-5 py-3">
+          <p className="text-sm text-ink leading-6 line-clamp-2">{signal.notes}</p>
+        </div>
+      )}
 
       {expanded && (
         <div className="border-t border-border mx-5 mb-5 pt-5 flex flex-col gap-5">
           <InlineStatusChanger id={signal.id} current={signal.status} />
 
-          <div className="flex flex-col gap-1">
-            <p className="text-xs font-mono text-ink-faint">Why This Signal</p>
-            <p className="text-sm text-ink leading-6">{signal.reason}</p>
-          </div>
-
-          {people.length > 0 && (
+          {links.length > 0 && (
             <div className="flex flex-col gap-2">
-              <p className="text-xs font-mono text-ink-faint">
-                People to Reach
-              </p>
-              <div className="flex flex-col gap-1.5">
-                {people.map((person, i) => (
-                  <PersonCard key={i} person={person} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {jobLinks.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-mono text-ink-faint">Job Links</p>
-              <div className="flex flex-col gap-1">
-                {jobLinks.map((url, i) => (
-                  <a
-                    key={i}
-                    href={/^https?:\/\//i.test(url) ? url : `https://${url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-mono text-ink-muted hover:text-ink break-all"
-                  >
-                    {url}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {relevantLinks.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-mono text-ink-faint">Relevant Links</p>
-              <div className="flex flex-col gap-1">
-                {relevantLinks.map((url, i) => (
-                  <a
-                    key={i}
-                    href={/^https?:\/\//i.test(url) ? url : `https://${url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-mono text-ink-muted hover:text-ink break-all"
-                  >
-                    {url}
-                  </a>
-                ))}
-              </div>
+              <p className="text-xs font-mono text-ink-faint">Links</p>
+              <LinkList links={links} />
             </div>
           )}
 
@@ -419,7 +310,7 @@ export default function OpportunitySignalList({
             setSearch(e.target.value);
             setPage(1);
           }}
-          placeholder="Search companies, signal types, reasons, people..."
+          placeholder="Search companies, notes, links..."
           className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
         />
 
@@ -447,7 +338,7 @@ export default function OpportunitySignalList({
         <div className="py-24 text-center border border-dashed border-border rounded-2xl">
           <p className="text-ink-faint font-mono text-sm">
             {filter === "today"
-              ? "No new signals today yet. The agent will add them soon."
+              ? "No new signals today yet."
               : "No signals match this filter."}
           </p>
         </div>
@@ -462,8 +353,7 @@ export default function OpportunitySignalList({
           {totalPages > 1 && (
             <div className="flex items-center justify-between gap-4">
               <span className="text-xs font-mono text-ink-faint">
-                Page {safePage} of {totalPages} &middot; {sorted.length}{" "}
-                signals
+                Page {safePage} of {totalPages} &middot; {sorted.length} signals
               </span>
               <div className="flex items-center gap-2">
                 <button

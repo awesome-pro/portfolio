@@ -1,29 +1,26 @@
 import { createServiceClient } from "@/lib/supabase/service";
+import { normalizeSignalLinks, type SignalLink } from "@/lib/signal-links";
 
 export type OpportunitySignalStatus = "new" | "reached_out" | "interviewing" | "closed";
 
-export interface PersonToReach {
-  name: string;
-  role?: string;
-  linkedin?: string;
-  note?: string;
-}
+export type { SignalLink };
 
 export interface OpportunitySignal {
   id: string;
   company_name: string;
   website: string | null;
-  signal_type: string;
-  reason: string;
-  job_links: unknown[];
-  relevant_links: unknown[];
-  people_to_reach: unknown[];
+  links: SignalLink[];
   notes: string | null;
-  match_score: number | null;
   discovered_at: string;
   updated_at: string;
   status: OpportunitySignalStatus | null;
-  interview_probability: number | null;
+}
+
+function normalizeSignal(row: Record<string, unknown>): OpportunitySignal {
+  return {
+    ...(row as unknown as OpportunitySignal),
+    links: normalizeSignalLinks(row.links),
+  };
 }
 
 export async function getAllOpportunitySignals(): Promise<OpportunitySignal[]> {
@@ -31,11 +28,10 @@ export async function getAllOpportunitySignals(): Promise<OpportunitySignal[]> {
   const { data, error } = await supabase
     .from("opportunity_signals")
     .select("*")
-    .order("match_score", { ascending: false, nullsFirst: false })
     .order("discovered_at", { ascending: false });
 
   if (error) return [];
-  return (data as OpportunitySignal[]) ?? [];
+  return ((data as Record<string, unknown>[]) ?? []).map(normalizeSignal);
 }
 
 export async function getActiveOpportunitySignals(): Promise<OpportunitySignal[]> {
@@ -44,14 +40,15 @@ export async function getActiveOpportunitySignals(): Promise<OpportunitySignal[]
     .from("opportunity_signals")
     .select("*")
     .neq("status", "closed")
-    .order("match_score", { ascending: false, nullsFirst: false })
     .order("discovered_at", { ascending: false });
 
   if (error) return [];
-  return (data as OpportunitySignal[]) ?? [];
+  return ((data as Record<string, unknown>[]) ?? []).map(normalizeSignal);
 }
 
-export async function getOpportunitySignalById(id: string): Promise<OpportunitySignal | null> {
+export async function getOpportunitySignalById(
+  id: string
+): Promise<OpportunitySignal | null> {
   const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("opportunity_signals")
@@ -59,6 +56,6 @@ export async function getOpportunitySignalById(id: string): Promise<OpportunityS
     .eq("id", id)
     .single();
 
-  if (error) return null;
-  return data as OpportunitySignal;
+  if (error || !data) return null;
+  return normalizeSignal(data as Record<string, unknown>);
 }

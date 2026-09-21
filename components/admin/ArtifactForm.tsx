@@ -84,6 +84,15 @@ function slugifyArtifactInput(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Mirrors the `artifact-images` bucket's file_size_limit in Supabase, so an
+// oversized file fails here with a readable message instead of as a raw
+// request-body error from the Server Action.
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
+function formatMegabytes(bytes: number) {
+  return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+}
+
 function FieldBlock({
   title,
   children,
@@ -169,6 +178,15 @@ function ImageArrayField({
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError(
+        `That image is ${formatMegabytes(file.size)}. The limit is ${formatMegabytes(
+          MAX_IMAGE_BYTES
+        )} per image.`
+      );
+      return;
+    }
+
     setUploading(true);
     setError(null);
 

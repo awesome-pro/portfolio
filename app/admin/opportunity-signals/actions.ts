@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createClient } from "@/lib/supabase/server";
-import type { OpportunitySignalStatus, PersonToReach } from "@/lib/opportunity-signals";
+import type { OpportunitySignalStatus, SignalLink } from "@/lib/opportunity-signals";
 
 async function requireAdminSession() {
   const supabase = await createClient();
@@ -48,15 +48,18 @@ export async function updateOpportunitySignalStatus(
 export interface CreateOpportunitySignalInput {
   company_name: string;
   website: string;
-  signal_type: string;
-  reason: string;
-  match_score: number | null;
-  interview_probability: number | null;
   status: OpportunitySignalStatus;
   notes: string;
-  job_links: string[];
-  relevant_links: string[];
-  people_to_reach: PersonToReach[];
+  links: SignalLink[];
+}
+
+function cleanLinks(links: SignalLink[]): SignalLink[] {
+  return links
+    .map((link) => {
+      const title = link.title?.trim();
+      return { url: link.url.trim(), ...(title ? { title } : {}) };
+    })
+    .filter((link) => link.url);
 }
 
 export async function createOpportunitySignal(input: CreateOpportunitySignalInput) {
@@ -68,15 +71,9 @@ export async function createOpportunitySignal(input: CreateOpportunitySignalInpu
     .insert({
       company_name: input.company_name.trim(),
       website: input.website.trim() || null,
-      signal_type: input.signal_type.trim(),
-      reason: input.reason.trim(),
-      match_score: input.match_score,
-      interview_probability: input.interview_probability,
       status: input.status,
       notes: input.notes.trim() || null,
-      job_links: input.job_links.filter(Boolean),
-      relevant_links: input.relevant_links.filter(Boolean),
-      people_to_reach: input.people_to_reach.filter((p) => p.name.trim()),
+      links: cleanLinks(input.links),
     })
     .select("id")
     .single();
@@ -94,7 +91,7 @@ export async function updateOpportunitySignalNotes(id: string, notes: string) {
   const supabase = createServiceClient();
   await supabase
     .from("opportunity_signals")
-    .update({ notes, updated_at: new Date().toISOString() })
+    .update({ notes: notes.trim() || null, updated_at: new Date().toISOString() })
     .eq("id", id);
 
   revalidatePath("/admin/opportunity-signals");

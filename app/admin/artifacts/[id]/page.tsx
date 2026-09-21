@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getArtifactById } from "@/lib/artifacts";
 import ArtifactForm from "@/components/admin/ArtifactForm";
-import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +39,6 @@ export default async function EditArtifactPage({
             >
               View artifact
             </Link>
-            <SignOutButton />
           </div>
         </div>
 
