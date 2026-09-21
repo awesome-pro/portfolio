@@ -70,14 +70,6 @@ export const metadata: Metadata = {
     description: siteDescription,
     url: "/",
     siteName,
-    images: [
-      {
-        url: "/hero-photo.jpg",
-        width: 2610,
-        height: 3480,
-        alt: "Abhinandan, inference and reinforcement learning engineer",
-      },
-    ],
     locale: "en_US",
     type: "website",
   },
@@ -85,12 +77,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: [
-      {
-        url: "/hero-photo.jpg",
-        alt: "Abhinandan, inference and reinforcement learning engineer",
-      },
-    ],
   },
 };
 
