@@ -8,122 +8,13 @@ import {
   createOpportunitySignal,
   type CreateOpportunitySignalInput,
 } from "@/app/admin/opportunity-signals/actions";
-
-const STATUS_OPTIONS: { value: OpportunitySignalStatus; label: string }[] = [
-  { value: "new", label: "New" },
-  { value: "reached_out", label: "Reached Out" },
-  { value: "interviewing", label: "Interviewing" },
-  { value: "closed", label: "Closed" },
-];
-
-function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
-  return (
-    <label className="text-xs font-mono text-ink-muted">
-      {children}
-      {required && <span className="text-destructive ml-0.5">*</span>}
-    </label>
-  );
-}
-
-function Input({
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
-}) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
-    />
-  );
-}
-
-function Textarea({
-  value,
-  onChange,
-  placeholder,
-  rows = 3,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  rows?: number;
-}) {
-  return (
-    <textarea
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors resize-none leading-relaxed"
-    />
-  );
-}
-
-function LinksField({
-  links,
-  onChange,
-}: {
-  links: SignalLink[];
-  onChange: (links: SignalLink[]) => void;
-}) {
-  function update(i: number, patch: Partial<SignalLink>) {
-    onChange(links.map((link, idx) => (idx === i ? { ...link, ...patch } : link)));
-  }
-
-  function remove(i: number) {
-    onChange(links.filter((_, idx) => idx !== i));
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Label>Links</Label>
-      <div className="flex flex-col gap-1.5">
-        {links.map((link, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <input
-              type="url"
-              value={link.url}
-              onChange={(e) => update(i, { url: e.target.value })}
-              placeholder="https://..."
-              className="flex-[2] min-w-0 bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors font-mono"
-            />
-            <input
-              type="text"
-              value={link.title ?? ""}
-              onChange={(e) => update(i, { title: e.target.value })}
-              placeholder="Label (optional)"
-              className="flex-1 min-w-0 bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
-            />
-            <button
-              type="button"
-              onClick={() => remove(i)}
-              className="text-xs font-mono px-2.5 py-2 rounded-lg border border-border text-ink-faint hover:border-destructive/40 hover:text-destructive transition-colors"
-            >
-              ×
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={() => onChange([...links, { url: "" }])}
-          className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
-        >
-          + Add link
-        </button>
-      </div>
-    </div>
-  );
-}
+import {
+  Input,
+  Label,
+  LinksField,
+  StatusSelect,
+  Textarea,
+} from "./SignalFields";
 
 export default function OpportunitySignalForm() {
   const router = useRouter();
@@ -202,17 +93,7 @@ export default function OpportunitySignalForm() {
       {/* Status */}
       <div className="flex flex-col gap-1.5">
         <Label>Status</Label>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as OpportunitySignalStatus)}
-          className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink-muted transition-colors"
-        >
-          {STATUS_OPTIONS.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        <StatusSelect value={status} onChange={setStatus} />
       </div>
 
       <LinksField links={links} onChange={setLinks} />

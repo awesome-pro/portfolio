@@ -1,14 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import { normalizeSignalLinks } from "@/lib/signal-links";
 import type {
   OpportunitySignal,
   OpportunitySignalStatus,
 } from "@/lib/opportunity-signals";
-import { updateOpportunitySignalStatus } from "@/app/admin/opportunity-signals/actions";
 import DeleteOpportunitySignalButton from "./DeleteOpportunitySignalButton";
+import OpportunitySignalEditor from "./OpportunitySignalEditor";
 
 const PAGE_SIZE = 20;
 
@@ -30,13 +29,6 @@ const STATUS_CONFIG: Record<
     style: "bg-background text-ink-faint border-border",
   },
 };
-
-const STATUS_FLOW: OpportunitySignalStatus[] = [
-  "new",
-  "reached_out",
-  "interviewing",
-  "closed",
-];
 
 type FilterType = OpportunitySignalStatus | "all" | "active" | "today";
 
@@ -81,63 +73,6 @@ function StatusBadge({ status }: { status: OpportunitySignalStatus | null }) {
     >
       {config.label}
     </span>
-  );
-}
-
-function LinkList({ links }: { links: { url: string; title?: string }[] }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      {links.map((link, i) => (
-        <a
-          key={i}
-          href={/^https?:\/\//i.test(link.url) ? link.url : `https://${link.url}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs font-mono text-ink-muted hover:text-ink break-all"
-        >
-          {link.title ? `${link.title} — ${link.url}` : link.url}
-        </a>
-      ))}
-    </div>
-  );
-}
-
-function InlineStatusChanger({
-  id,
-  current,
-}: {
-  id: string;
-  current: OpportunitySignalStatus | null;
-}) {
-  const [optimistic, setOptimistic] = useState<OpportunitySignalStatus>(
-    current ?? "new"
-  );
-  const [isPending, startTransition] = useTransition();
-
-  function handleChange(status: OpportunitySignalStatus) {
-    setOptimistic(status);
-    startTransition(async () => {
-      await updateOpportunitySignalStatus(id, status);
-    });
-  }
-
-  return (
-    <div className="flex items-center gap-1.5 flex-wrap">
-      {STATUS_FLOW.map((status) => (
-        <button
-          key={status}
-          onClick={() => handleChange(status)}
-          disabled={isPending || optimistic === status}
-          className={`text-xs font-mono px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-50 ${
-            optimistic === status
-              ? "bg-ink text-background border-ink"
-              : "bg-surface text-ink-muted border-border hover:text-ink"
-          }`}
-        >
-          {STATUS_CONFIG[status].label}
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -192,14 +127,8 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
             onClick={() => setExpanded((v) => !v)}
             className="text-xs font-mono px-2.5 py-1 rounded-lg border border-border text-ink-muted hover:text-ink transition-colors"
           >
-            {expanded ? "Hide" : "Details"}
+            {expanded ? "Close" : "Edit"}
           </button>
-          <Link
-            href={`/admin/opportunity-signals/${signal.id}`}
-            className="text-xs font-mono px-2.5 py-1 rounded-lg border border-border text-ink-muted hover:text-ink transition-colors"
-          >
-            Open
-          </Link>
           <DeleteOpportunitySignalButton
             id={signal.id}
             companyName={signal.company_name}
@@ -214,24 +143,8 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
       )}
 
       {expanded && (
-        <div className="border-t border-border mx-5 mb-5 pt-5 flex flex-col gap-5">
-          <InlineStatusChanger id={signal.id} current={signal.status} />
-
-          {links.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <p className="text-xs font-mono text-ink-faint">Links</p>
-              <LinkList links={links} />
-            </div>
-          )}
-
-          {signal.notes && (
-            <div className="flex flex-col gap-1">
-              <p className="text-xs font-mono text-ink-faint">Notes</p>
-              <p className="text-sm text-ink leading-6 whitespace-pre-wrap">
-                {signal.notes}
-              </p>
-            </div>
-          )}
+        <div className="border-t border-border mx-5 mb-5 pt-5">
+          <OpportunitySignalEditor signal={signal} />
         </div>
       )}
     </div>

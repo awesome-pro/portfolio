@@ -25,32 +25,6 @@ export async function deleteOpportunitySignal(id: string) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/opportunity-signals");
-  revalidatePath(`/admin/opportunity-signals/${id}`);
-}
-
-export async function updateOpportunitySignalStatus(
-  id: string,
-  status: OpportunitySignalStatus
-) {
-  await requireAdminSession();
-
-  const supabase = createServiceClient();
-  await supabase
-    .from("opportunity_signals")
-    .update({ status, updated_at: new Date().toISOString() })
-    .eq("id", id);
-
-  revalidatePath("/admin");
-  revalidatePath("/admin/opportunity-signals");
-  revalidatePath(`/admin/opportunity-signals/${id}`);
-}
-
-export interface CreateOpportunitySignalInput {
-  company_name: string;
-  website: string;
-  status: OpportunitySignalStatus;
-  notes: string;
-  links: SignalLink[];
 }
 
 function cleanLinks(links: SignalLink[]): SignalLink[] {
@@ -62,38 +36,73 @@ function cleanLinks(links: SignalLink[]): SignalLink[] {
     .filter((link) => link.url);
 }
 
+export interface CreateOpportunitySignalInput {
+  company_name: string;
+  website: string;
+  status: OpportunitySignalStatus;
+  notes: string;
+  links: SignalLink[];
+}
+
 export async function createOpportunitySignal(input: CreateOpportunitySignalInput) {
   await requireAdminSession();
 
   const supabase = createServiceClient();
-  const { data, error } = await supabase
-    .from("opportunity_signals")
-    .insert({
-      company_name: input.company_name.trim(),
-      website: input.website.trim() || null,
-      status: input.status,
-      notes: input.notes.trim() || null,
-      links: cleanLinks(input.links),
-    })
-    .select("id")
-    .single();
+  const { error } = await supabase.from("opportunity_signals").insert({
+    company_name: input.company_name.trim(),
+    website: input.website.trim() || null,
+    status: input.status,
+    notes: input.notes.trim() || null,
+    links: cleanLinks(input.links),
+  });
 
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin");
   revalidatePath("/admin/opportunity-signals");
-  redirect(`/admin/opportunity-signals/${data.id}`);
+  // Signals are edited inline on the list, so land back there.
+  redirect("/admin/opportunity-signals");
 }
 
-export async function updateOpportunitySignalNotes(id: string, notes: string) {
+export interface UpdateOpportunitySignalInput {
+  company_name: string;
+  website: string;
+  status: OpportunitySignalStatus;
+  notes: string;
+  links: SignalLink[];
+}
+
+export async function updateOpportunitySignal(
+  id: string,
+  input: UpdateOpportunitySignalInput
+) {
   await requireAdminSession();
 
+  const companyName = input.company_name.trim();
+  if (!companyName) {
+    throw new Error("Company name is required.");
+  }
+
   const supabase = createServiceClient();
-  await supabase
+  const { error } = await supabase
     .from("opportunity_signals")
-    .update({ notes: notes.trim() || null, updated_at: new Date().toISOString() })
+    .update({
+      company_name: companyName,
+      website: input.website.trim() || null,
+      status: input.status,
+      notes: input.notes.trim() || null,
+      links: cleanLinks(input.links),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id);
 
+  if (error) {
+    if (error.code === "23505") {
+      throw new Error("Another signal already uses that company name.");
+    }
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/admin");
   revalidatePath("/admin/opportunity-signals");
-  revalidatePath(`/admin/opportunity-signals/${id}`);
 }

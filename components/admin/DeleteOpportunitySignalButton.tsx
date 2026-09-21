@@ -7,11 +7,9 @@ import { deleteOpportunitySignal } from "@/app/admin/opportunity-signals/actions
 export default function DeleteOpportunitySignalButton({
   id,
   companyName,
-  redirectTo,
 }: {
   id: string;
   companyName: string;
-  redirectTo?: string;
 }) {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -21,12 +19,6 @@ export default function DeleteOpportunitySignalButton({
   function handleDelete() {
     startTransition(async () => {
       await deleteOpportunitySignal(id);
-
-      if (redirectTo) {
-        router.push(redirectTo);
-        return;
-      }
-
       router.refresh();
     });
   }
