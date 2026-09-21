@@ -1,90 +1,36 @@
 \documentclass[letterpaper,10pt]{article}
-
 \usepackage{latexsym}
 \usepackage[empty]{fullpage}
 \usepackage{titlesec}
 \usepackage{marvosym}
 \usepackage[usenames,dvipsnames]{color}
-\usepackage{verbatim}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
 \usepackage[english]{babel}
 \usepackage{tabularx}
 \input{glyphtounicode}
-
-
-\pagestyle{fancy}
-\fancyhf{}
-\fancyfoot{}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
-
-\addtolength{\oddsidemargin}{-0.5in}
-\addtolength{\evensidemargin}{-0.5in}
-\addtolength{\textwidth}{1in}
-\addtolength{\topmargin}{-.5in}
-\addtolength{\textheight}{1.0in}
-
-\urlstyle{same}
-
-\raggedbottom
-\raggedright
-\setlength{\tabcolsep}{0in}
-
-\titleformat{\section}{
-  \vspace{-4pt}\scshape\raggedright\large
-}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
-
+\pagestyle{fancy}\fancyhf{}\fancyfoot{}\renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0pt}
+\addtolength{\oddsidemargin}{-0.6in}\addtolength{\evensidemargin}{-0.6in}\addtolength{\textwidth}{1.2in}
+\addtolength{\topmargin}{-.62in}\addtolength{\textheight}{1.18in}
+\urlstyle{same}\raggedbottom\raggedright\setlength{\tabcolsep}{0in}
+\titleformat{\section}{\vspace{-5pt}\scshape\raggedright\large}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
 \pdfgentounicode=1
-
-\newcommand{\resumeItem}[1]{
-  \item\small{
-    {#1 \vspace{-2pt}}
-  }
-}
-
-\newcommand{\resumeSubheading}[4]{
-  \vspace{-2pt}\item
-    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
-      \textbf{#1} & #2 \\
-      \textit{\small#3} & \textit{\small #4} \\
-    \end{tabular*}\vspace{-7pt}
-}
-
-\newcommand{\resumeSubSubheading}[2]{
-    \item
-    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \textit{\small#1} & \textit{\small #2} \\
-    \end{tabular*}\vspace{-7pt}
-}
-
-\newcommand{\resumeProjectHeading}[2]{
-    \item
-    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \small#1 & #2 \\
-    \end{tabular*}\vspace{-7pt}
-}
-
-\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
-
+\newcommand{\resumeItem}[1]{\item\small{{#1 \vspace{-2pt}}}}
+\newcommand{\resumeSubheading}[4]{\vspace{-2pt}\item\begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}\textbf{#1} & #2 \\\textit{\small#3} & \textit{\small #4} \\\end{tabular*}\vspace{-7pt}}
+\newcommand{\resumeProjectHeading}[2]{\item\begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}\small#1 & #2 \\\end{tabular*}\vspace{-7pt}}
 \renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
-
-\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in,label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=0.18in]}
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
-
 \begin{document}
-
-%----------HEADING----------
 \begin{center}
-    \textbf{\Huge \scshape Abhinandan} \\ \vspace{1pt}
-    \small +91-8130635690 $|$ \href{mailto:abhinandan@abhinandan.one}{\underline{abhinandan@abhinandan.one}}
-     \\[3pt]
-    \href{https://abhinandan.one}{\underline{abhinandan.one}} $|$
-    \href{https://linkedin.com/in/abhibuilds}{\underline{linkedin.com/in/abhibuilds}} $|$
-    \href{https://github.com/awesome-pro}{\underline{github.com/awesome-pro}}
+  \textbf{\Huge \scshape Abhinandan} \\ \vspace{1pt}
+  \small +91-8130635690 $|$ \href{mailto:abhinandan@abhinandan.one}{\underline{abhinandan@abhinandan.one}} $|$
+  \href{https://abhinandan.one}{\underline{abhinandan.one}} $|$
+  \href{https://linkedin.com/in/abhibuilds}{\underline{linkedin.com/in/abhibuilds}} $|$
+  \href{https://github.com/awesome-pro}{\underline{github.com/awesome-pro}}
 \end{center}
 
 
@@ -96,11 +42,11 @@
       {Founding Software Engineer}{Sept 2025 -- Present}
       {Browzer}{Remote, San Francisco}
       \resumeItemListStart
-        \resumeItem{Built Browzer's Chrome MV3 recorder + CDP-native browser automation agent having AX/DOM element capture with cross-iframe support, obstruction checks, and real mouse/key/upload execution.}
-        \resumeItem{Implemented a smart streaming ReAct loop across FastAPI + extension with SSE tool execution, multi-tab orchestration, safe parallelism, abort/continue, and audit logs.}
-        \resumeItem{Cut cost per automation run ~3x (compact traces, context compression, prompt caching, Haiku/Sonnet/GPT-5 routing) across 700K+ monitored production LLM calls.}
-        \resumeItem{Shipped a zero-LLM replay engine: recordings run as variable-driven tool-call templates, with a stateful AI fallback that resumes mid-run on failure.}
-        \resumeItem{Shipped self-healing docs that auto-repair on UI drift. Haiku $\rightarrow$ Sonnet diff triage, LLM-free replay of intact steps, and a CDP agent that fixes only what changed.}
+        \resumeItem{Built Browzer's Chrome MV3 recorder and CDP-native browser agent with AX/DOM element capture, cross-iframe support, obstruction checks, and real mouse/keyboard/upload execution.}
+        \resumeItem{Implemented a streaming ReAct runtime across FastAPI + browser extension with SSE tool execution, multi-tab orchestration, safe parallelism, abort/continue semantics, and auditable traces.}
+        \resumeItem{Cut cost per automation run \textbf{$\sim$3x} across \textbf{700K+ monitored production LLM calls} using compact traces, context compression, prompt caching, and dynamic model routing.}
+        \resumeItem{Built a proactive DevRel/content system that generates documentation portals, quickstarts, long-form guides/books, and product demo assets from product workflows, then self-heals affected content as the UI changes.}
+        \resumeItem{Shipped zero-LLM replay for intact workflows with stateful AI fallback, allowing failed automations and generated content flows to resume from the point of failure instead of restarting.}
       \resumeItemListEnd
 
     \resumeSubheading
@@ -108,9 +54,8 @@
       {Cynos Nexus}{Noida, India}
       \resumeItemListStart
         \resumeItem{Built the AI knowledge base service using FastAPI, LangChain, and vector retrieval pipelines, powering customer-facing search workflows.}
-        \resumeItem{Developed document-ingestion pipelines using Google Cloud Vision, XLSX processing, and BullMQ workers, enabling automated extraction of customer data from spreadsheets and scanned records.}
         \resumeItem{Implemented backend infrastructure for retrieval-augmented AI workflows, including document ingestion, structured data processing, asynchronous workers, Redis-backed queues, and production API serving.}
-        \resumeItem{Automated containerized deployment and CI/CD workflows for AI services using Docker, GitHub Actions, Nginx reverse proxying, and cloud infrastructure.}
+        \resumeItem{Productionized AI services with Docker, GitHub Actions, Nginx, cloud deployment, asynchronous processing, and API observability.}
       \resumeItemListEnd
 
       \resumeSubheading
@@ -119,7 +64,6 @@
   \resumeItemListStart
     \resumeItem{Built a LangChain + pgvector retrieval system; raised recall@5 from 0.71 → 0.82 on a 300-query labeled eval set.}
     \resumeItem{Developed scalable data-ingestion pipelines using bulk CSV processing and Celery workers, reducing processing time by 40\%}
-    \resumeItem{Engineered a production PDF generation system transforming structured AI outputs and dynamic JSON reports into enterprise-grade documents.}
   \resumeItemListEnd
 
 
@@ -146,30 +90,23 @@
     \resumeSubHeadingListStart
 
       \resumeProjectHeading
-          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, LoRA} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{github.com/awesome-pro/agentflow-pro}}}{}
+          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, LoRA} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{GitHub}}}{}
           \resumeItemListStart
-            \resumeItem{Rebuilt and extended the ICLR 2026 \href{https://github.com/lupantech/AgentFlow}{\underline{\emph{AgentFlow}}} architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with grammar-constrained planning, Tavily search, and sandboxed Python/SymPy tools.}
-            \resumeItem{Trained the planner with DAPO + a learned Qwen3-0.6B Process Reward Model, replacing the paper’s GRPO setup with a custom dynamic-sampling stage and full A40 training pipeline.}
-            \resumeItem{Built a leakage-free, quantization-matched evaluation flow and measured +5.0 pts on GPQA-Diamond, improving from 40.0\% to 45.0\%.}
+            \resumeItem{Rebuilt and extended the ICLR 2026 AgentFlow architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with constrained planning, Tavily search, and sandboxed Python/SymPy tools.}
+            \resumeItem{Trained with DAPO + a learned Qwen3-0.6B Process Reward Model and measured \textbf{+5.0 pts on GPQA-Diamond} (40.0\% $\rightarrow$ 45.0\%) with leakage-free, quantization-matched evaluation.}
           \resumeItemListEnd
 
       \resumeProjectHeading
-          {\textbf{smartmemo} $|$ \emph{PyTorch, sentence-transformers, FAISS, SQLite} $|$ \href{https://github.com/awesome-pro/smartmemo}{\underline{github.com/awesome-pro/smartmemo}}}{}
+          {\textbf{smartmemo} $|$ \emph{PyTorch, sentence-transformers, FAISS, SQLite} $|$ \href{https://github.com/awesome-pro/smartmemo}{\underline{GitHub}}}{}
           \resumeItemListStart
             \resumeItem{Built a semantic memory/cache for LLM agents where embedding retrieval proposes candidates and a learned pair-equivalence classifier decides whether memory reuse is safe.}
             \resumeItem{Trained classifier-v2 on 16,576 pairs across 9 domains, improving precision by +30 points at equal recall versus cosine similarity, with feedback export, bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
           \resumeItemListEnd
-
-      \resumeProjectHeading
-          {\textbf{agenteval} $|$ \emph{AsyncIO, OpenAI/Anthropic/LangChain adapters} $|$ \href{https://github.com/awesome-pro/agenteval}{\underline{github.com/awesome-pro/agenteval}}}{}
-          \resumeItemListStart
-            \resumeItem{Agent evaluation toolkit replacing exact-match asserts with repeated-run pass-rate tests; traces tool calls/timing/steps, supports collect-then-raise behavioral assertions, OpenAI/Anthropic/LangChain adapters, and Typer CLI JSON reports for CI gates.}
-          \resumeItemListEnd
         
       \resumeProjectHeading
-          {\textbf{guardloop} $|$ \emph{OpenAI/Anthropic SDKs, OpenTelemetry, LangGraph} $|$ \href{https://github.com/awesome-pro/guardloop}{\underline{github.com/awesome-pro/guardloop}}}{}
+          {\textbf{guardloop} $|$ \emph{OpenAI/Anthropic SDKs, OpenTelemetry, LangGraph} $|$ \href{https://github.com/awesome-pro/guardloop}{\underline{GitHub}}}{}
           \resumeItemListStart
-            \resumeItem{Production guardrail runtime for async agents: pre-flight Decimal cost/token/time/tool-call budgets, per-tool circuit breakers, verifier feedback retry loop, OpenTelemetry GenAI spans, and no-rewrite LangGraph/OpenAI Agents SDK adapters.}
+            \resumeItem{Built an async agent reliability runtime with cost/token/time/tool-call budgets, per-tool circuit breakers, verifier-driven retries, and OpenTelemetry GenAI spans.}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
 
@@ -177,30 +114,23 @@
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
-     \textbf{ML Engineering}{: PyTorch, Hugging Face, sentence-transformers, embeddings,  RAG, FAISS, Pinecone, Qdrant } \\
-     \textbf{Agents \& Frameworks}{: LangGraph, LangChain, LlamaIndex, CrewAI } \\
-     \textbf{LLM Engineering}{: Fine-tuning (LoRA, QLoRA, PEFT), quantization (AWQ, GPTQ, GGUF), inference engines (vLLM, SGLang, Ollama, TGI)} \\
-     \textbf{Evals \& Reliability}{: OpenTelemetry, Langfuse, Arize Phoenix, LangSmith} \\
-     \textbf{Backend \& Infrastructure}{: FastAPI, Node.js, WebSockets, AWS, GCP, Docker, Redis, PostgreSQL} \\
-     \textbf{Languages}{: Python, TypeScript, C++, Bash} \\
+     \textbf{ML Engineering}{: PyTorch, Hugging Face, LangGraph, CrewAI, Qdrant } \\
+     \textbf{LLM Systems}{: Inference engines (vLLM, SGLang, TensorRT-LLM), Fine-tuning (LoRA, QLoRA, PEFT), quantization (AWQ, GPTQ, GGUF) } \\
+     \textbf{Engineering}{: Python, TypeScript, FastAPI, Node.js,  Redis, PostgreSQL, AWS, GCP, Docker, GitHub Actions} \\
     }}
  \end{itemize}
 
-%-----------AWARDS-----------
-\section{Awards \& Recognition}
- \begin{itemize}[leftmargin=0.15in, label={}]
+\section{Education \& Recognition}
+  \resumeSubHeadingListStart
+    \resumeProjectHeading
+      {\textbf{Dr. APJ Abdul Kalam Technical University}}{B.Tech, Computer Science $|$ 2026}
+  \resumeSubHeadingListEnd
+  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{
      \textbf{International Youth Math Challenge Gold Honour} $|$
      \textbf{Top 1\% TypeScript Engineer Globally} (Algora) $|$
      \textbf{Amazon ML Summer School 2025}
     }}
  \end{itemize}
-
-%-----------EDUCATION-----------
-\section{Education}
-  \resumeSubHeadingListStart
-    \resumeProjectHeading
-      {\textbf{Dr. APJ Abdul Kalam Technical University}}{B.Tech, Computer Science $|$ 2026}
-  \resumeSubHeadingListEnd
 
 \end{document}

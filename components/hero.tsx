@@ -14,8 +14,8 @@ export default function Hero() {
       </h1>
 
       <p className="mt-7 text-base leading-relaxed text-ink-muted">
-        I do RL post-training on reasoning models, and build
-        the inference systems that serve them. And I usually write my thoughts in my artifacts.
+        I do <strong>RL post-training</strong> on reasoning models, & build
+        the <strong>inference systems</strong> that serve them. And I usually write my thoughts in my artifacts.
       </p>
 
       <nav
