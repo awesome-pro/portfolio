@@ -6,10 +6,16 @@ import type { ReactNode } from "react";
 import { useState, useTransition } from "react";
 import {
   createArtifact,
+  createArtifactUploadUrl,
   updateArtifact,
-  uploadArtifactImage,
   type SaveArtifactInput,
 } from "@/app/admin/artifacts/actions";
+import {
+  MEDIA_ACCEPT,
+  formatMegabytes,
+  isVideoUrl,
+  maxBytesFor,
+} from "@/lib/artifact-media";
 import type { Artifact, ArtifactImage, ArtifactLink } from "@/lib/artifacts";
 
 function Label({
@@ -84,13 +90,48 @@ function slugifyArtifactInput(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-// Mirrors the `artifact-images` bucket's file_size_limit in Supabase, so an
-// oversized file fails here with a readable message instead of as a raw
-// request-body error from the Server Action.
-const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+/**
+ * Uploads straight to Supabase with XHR rather than fetch, because fetch still
+ * has no upload-progress event and a 40MB clip with no feedback looks hung.
+ */
+function putWithProgress(
+  url: string,
+  file: File,
+  contentType: string,
+  onProgress: (percent: number) => void
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Content-Type", contentType);
 
-function formatMegabytes(bytes: number) {
-  return `${(bytes / 1024 / 1024).toFixed(1)}MB`;
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        onProgress(Math.round((event.loaded / event.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve();
+        return;
+      }
+      // Storage returns a JSON { message } for rejections such as
+      // invalid_mime_type or EntityTooLarge; surface that instead of a bare code.
+      try {
+        const body = JSON.parse(xhr.responseText) as { message?: string };
+        reject(new Error(body.message || `Upload failed (HTTP ${xhr.status}).`));
+      } catch {
+        reject(new Error(`Upload failed (HTTP ${xhr.status}).`));
+      }
+    };
+
+    xhr.onerror = () =>
+      reject(new Error("Upload failed. Check your connection and try again."));
+    xhr.ontimeout = () => reject(new Error("Upload timed out. Try again."));
+
+    xhr.send(file);
+  });
 }
 
 function FieldBlock({
@@ -163,7 +204,7 @@ function LinkArrayField({
   );
 }
 
-function ImageArrayField({
+function MediaArrayField({
   artifactName,
   slug,
   values,
@@ -175,32 +216,50 @@ function ImageArrayField({
   onChange: (values: ArtifactImage[]) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
-    if (file.size > MAX_IMAGE_BYTES) {
+    const contentType = (file.type || "").toLowerCase();
+    const limit = maxBytesFor(contentType);
+
+    if (file.size > limit) {
       setError(
-        `That image is ${formatMegabytes(file.size)}. The limit is ${formatMegabytes(
-          MAX_IMAGE_BYTES
-        )} per image.`
+        `That file is ${formatMegabytes(file.size)}. The limit is ${formatMegabytes(
+          limit
+        )} per ${contentType.startsWith("video/") ? "video" : "image"}.`
       );
       return;
     }
 
     setUploading(true);
+    setProgress(0);
     setError(null);
 
-    const formData = new FormData();
-    formData.set("file", file);
-    formData.set("group", slug || artifactName || "draft");
-
     try {
-      const uploaded = await uploadArtifactImage(formData);
-      onChange([...values, { ...uploaded, caption: "" }]);
+      // 1. Ask the server for a pre-signed URL, then 2. PUT the bytes straight
+      // to Supabase — the file never passes through a Server Action.
+      const target = await createArtifactUploadUrl({
+        filename: file.name,
+        contentType,
+        group: slug || artifactName || "draft",
+      });
+
+      await putWithProgress(target.uploadUrl, file, contentType, setProgress);
+
+      onChange([
+        ...values,
+        {
+          url: target.publicUrl,
+          alt: file.name.replace(/\.[^.]+$/, ""),
+          caption: "",
+        },
+      ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   }
 
@@ -214,68 +273,107 @@ function ImageArrayField({
 
   return (
     <div className="flex flex-col gap-3">
-      <Label>Architecture images</Label>
-      {values.map((image, index) => (
-        <div
-          key={`${image.url}-${index}`}
-          className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-surface p-3 sm:grid-cols-[180px_1fr]"
-        >
-          <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-background">
-            <Image
-              src={image.url}
-              alt={image.alt}
-              fill
-              className="object-contain"
-              sizes="180px"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Input
-              value={image.alt}
-              onChange={(value) => update(index, { alt: value })}
-              placeholder="Alt text"
-            />
-            <Input
-              value={image.caption ?? ""}
-              onChange={(value) => update(index, { caption: value })}
-              placeholder="Caption"
-            />
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  navigator.clipboard?.writeText(`![${image.alt}](${image.url})`)
-                }
-                className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-ink hover:border-ink-muted transition-colors"
-              >
-                Copy markdown
-              </button>
-              <button
-                type="button"
-                onClick={() => onChange(values.filter((_, current) => current !== index))}
-                className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-destructive hover:border-destructive/40 transition-colors"
-              >
-                Remove image
-              </button>
+      <Label>Architecture media</Label>
+      {values.map((image, index) => {
+        const video = isVideoUrl(image.url);
+        return (
+          <div
+            key={`${image.url}-${index}`}
+            className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-surface p-3 sm:grid-cols-[180px_1fr]"
+          >
+            <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-background">
+              {video ? (
+                <video
+                  src={image.url}
+                  controls
+                  preload="metadata"
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <Image
+                  src={image.url}
+                  alt={image.alt}
+                  fill
+                  className="object-contain"
+                  sizes="180px"
+                />
+              )}
+              {video && (
+                <span className="pointer-events-none absolute left-1.5 top-1.5 rounded-md border border-border bg-background/85 px-1.5 py-0.5 font-mono text-[10px] text-ink-muted">
+                  video
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <Input
+                value={image.alt}
+                onChange={(value) => update(index, { alt: value })}
+                placeholder="Alt text"
+              />
+              <Input
+                value={image.caption ?? ""}
+                onChange={(value) => update(index, { caption: value })}
+                placeholder="Caption"
+              />
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigator.clipboard?.writeText(`![${image.alt}](${image.url})`)
+                  }
+                  className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-ink hover:border-ink-muted transition-colors"
+                >
+                  Copy markdown
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange(values.filter((_, current) => current !== index))}
+                  className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-destructive hover:border-destructive/40 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      <label className="self-start text-xs font-mono px-3 py-2 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors cursor-pointer">
-        {uploading ? "Uploading..." : "+ Upload image"}
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          disabled={uploading}
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) void handleFile(file);
-            event.target.value = "";
-          }}
-        />
-      </label>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="self-start text-xs font-mono px-3 py-2 rounded-lg border border-dashed border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors cursor-pointer">
+          {uploading ? "Uploading..." : "+ Upload image or video"}
+          <input
+            type="file"
+            accept={MEDIA_ACCEPT}
+            className="hidden"
+            disabled={uploading}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void handleFile(file);
+              event.target.value = "";
+            }}
+          />
+        </label>
+
+        {uploading && (
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-32 overflow-hidden rounded-full bg-border">
+              <div
+                className="h-full bg-ink transition-[width] duration-150"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <span className="font-mono text-xs tabular-nums text-ink-faint">
+              {progress}%
+            </span>
+          </div>
+        )}
+      </div>
+
+      <p className="font-mono text-xs text-ink-faint">
+        Paste the markdown anywhere in the story. Images and videos use the same
+        syntax — video URLs render as a player automatically.
+      </p>
+
       {error && <p className="text-xs font-mono text-destructive">{error}</p>}
     </div>
   );
@@ -384,8 +482,8 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
         </div>
       </FieldBlock>
 
-      <FieldBlock title="Architecture images">
-        <ImageArrayField
+      <FieldBlock title="Architecture media">
+        <MediaArrayField
           artifactName={artifactName}
           slug={slug}
           values={architectureImages}
@@ -402,7 +500,7 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
             rows={24}
             mono
             placeholder={
-              "Write it as one continuous piece. ## headings, lists, and ```fenced code``` all render inline.\n\nTo place an architecture image inside the story, upload it above and paste its markdown (![alt](url)) wherever it belongs in the text."
+              "Write it as one continuous piece. ## headings, lists, and ```fenced code``` all render inline.\n\nTo place architecture media inside the story, upload it above and paste its markdown (![alt](url)) wherever it belongs in the text. Video files render as an inline player."
             }
           />
         </div>

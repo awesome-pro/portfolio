@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createClient } from "@/lib/supabase/server";
+import { ALLOWED_MEDIA_MIME_TYPES } from "@/lib/artifact-media";
 import {
   extractYouTubeId,
   slugifyArtifact,
@@ -191,44 +192,83 @@ export async function deleteArtifact(id: string) {
   revalidateArtifactPaths((existing as { slug?: string } | null)?.slug);
 }
 
-export async function uploadArtifactImage(formData: FormData) {
+/**
+ * Extension is derived from the mime type, not the uploaded filename, because
+ * `ArtifactMarkdown` decides whether to render a <video> by extension. Trusting
+ * the filename would let `clip.MOV` store a `.mov` we cannot detect, or worse a
+ * mislabelled extension the browser will not play.
+ */
+const EXTENSION_BY_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
+  "video/x-m4v": "m4v",
+  "video/ogg": "ogv",
+};
+
+export interface ArtifactUploadTarget {
+  /** Absolute URL the browser PUTs the file to. Authorised by its own token. */
+  uploadUrl: string;
+  /** Public URL the object will be served from once the PUT succeeds. */
+  publicUrl: string;
+  path: string;
+}
+
+export interface CreateArtifactUploadInput {
+  filename: string;
+  contentType: string;
+  group: string;
+}
+
+/**
+ * Hands the browser a pre-signed URL so the file goes straight to Supabase
+ * Storage. Routing media through a Server Action would cap uploads at the
+ * request-body limit and be killed by the serverless function timeout on large
+ * video, so the bytes never touch Next.js.
+ */
+export async function createArtifactUploadUrl(
+  input: CreateArtifactUploadInput
+): Promise<ArtifactUploadTarget> {
   await requireAdminUser();
 
-  const file = formData.get("file");
-  const group = String(formData.get("group") || "draft")
-    .toLowerCase()
-    .replace(/[^\w-]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  if (!file || !(file instanceof File)) {
-    throw new Error("Choose an image file to upload.");
+  const contentType = input.contentType.trim().toLowerCase();
+  if (!(ALLOWED_MEDIA_MIME_TYPES as readonly string[]).includes(contentType)) {
+    throw new Error(
+      `Unsupported file type${input.contentType ? `: ${input.contentType}` : ""}. Upload an image or a video.`
+    );
   }
 
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Artifact uploads must be images.");
-  }
+  const group =
+    input.group
+      .toLowerCase()
+      .replace(/[^\w-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "") || "draft";
 
-  const extension =
-    file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-    file.type.split("/")[1]?.replace("jpeg", "jpg") ||
-    "jpg";
-  const path = `artifacts/${group || "draft"}/${Date.now()}-${Math.random()
+  const extension = EXTENSION_BY_MIME[contentType];
+  const path = `artifacts/${group}/${Date.now()}-${Math.random()
     .toString(36)
     .slice(2)}.${extension}`;
+
   const supabase = createServiceClient();
-  const { error } = await supabase.storage
+  const { data, error } = await supabase.storage
     .from("artifact-images")
-    .upload(path, await file.arrayBuffer(), {
-      contentType: file.type,
-      upsert: false,
-    });
+    .createSignedUploadUrl(path);
 
   if (error) throw new Error(error.message);
 
-  const { data } = supabase.storage.from("artifact-images").getPublicUrl(path);
+  const { data: publicData } = supabase.storage
+    .from("artifact-images")
+    .getPublicUrl(path);
+
   return {
-    url: data.publicUrl,
-    alt: file.name.replace(/\.[^.]+$/, ""),
+    uploadUrl: data.signedUrl,
+    publicUrl: publicData.publicUrl,
+    path,
   };
 }

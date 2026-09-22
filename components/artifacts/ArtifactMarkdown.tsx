@@ -5,8 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { youtubeEmbedUrl } from "@/lib/artifacts";
-
-const VIDEO_FILE_PATTERN = /\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i;
+import { isVideoUrl } from "@/lib/artifact-media";
 
 function soleChild(children: ReactNode): ReactNode | null {
   const kids = (Array.isArray(children) ? children : [children]).filter(
@@ -166,7 +165,7 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
           hr: () => <hr className="border-border my-12" />,
           img: ({ src, alt }) => {
             const url = typeof src === "string" ? src : "";
-            if (VIDEO_FILE_PATTERN.test(url)) {
+            if (isVideoUrl(url)) {
               return (
                 <video
                   src={url}

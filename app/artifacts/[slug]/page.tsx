@@ -6,6 +6,7 @@ import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import ArtifactMarkdown from "@/components/artifacts/ArtifactMarkdown";
 import { LinkBar } from "@/components/projects/shared";
+import { isVideoUrl } from "@/lib/artifact-media";
 import {
   getAllArtifactSlugsStatic,
   getArtifactBySlugStatic,
@@ -37,6 +38,12 @@ export async function generateMetadata({
 
   const title = `Artifact #${artifact.serial_number}: ${artifact.artifact_name} | Abhinandan`;
 
+  // Social cards must be a still: an mp4 in og:image renders as a broken card,
+  // so pick the first image even when a video is listed ahead of it.
+  const socialImage = artifact.architecture_images.find(
+    (media) => !isVideoUrl(media.url)
+  );
+
   return {
     title,
     description: DEFAULT_DESCRIPTION,
@@ -48,13 +55,13 @@ export async function generateMetadata({
       publishedTime: artifact.published_at ?? undefined,
       modifiedTime: artifact.updated_at,
       authors: ["Abhinandan"],
-      images: artifact.architecture_images[0]
+      images: socialImage
         ? [
             {
-              url: artifact.architecture_images[0].url,
+              url: socialImage.url,
               width: 1200,
               height: 630,
-              alt: artifact.architecture_images[0].alt,
+              alt: socialImage.alt,
             },
           ]
         : [],
@@ -63,9 +70,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description: DEFAULT_DESCRIPTION,
-      images: artifact.architecture_images[0]
-        ? [artifact.architecture_images[0].url]
-        : [],
+      images: socialImage ? [socialImage.url] : [],
     },
     alternates: {
       canonical: `https://abhinandan.one/artifacts/${slug}`,
@@ -110,13 +115,22 @@ function ArchitectureGallery({ artifact }: { artifact: Artifact }) {
       {artifact.architecture_images.map((image) => (
         <figure key={image.url}>
           <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-surface">
-            <Image
-              src={image.url}
-              alt={image.alt}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 768px"
-            />
+            {isVideoUrl(image.url) ? (
+              <video
+                src={image.url}
+                controls
+                preload="metadata"
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <Image
+                src={image.url}
+                alt={image.alt}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 768px"
+              />
+            )}
           </div>
           {image.caption && (
             <figcaption className="mt-2 text-sm text-ink-faint">

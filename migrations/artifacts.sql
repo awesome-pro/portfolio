@@ -66,6 +66,15 @@ create policy "Artifacts are public."
   to anon, authenticated
   using (true);
 
+-- Holds architecture media: images *and* short screen recordings. Despite the
+-- bucket name (kept for backwards compatibility with existing object paths),
+-- video mime types are allowed here so an artifact's architecture media can be
+-- a clip as well as a still.
+--
+-- 52428800 (50MB) is the ceiling: Supabase Storage rejects any bucket limit
+-- above the project's GLOBAL file size limit, which defaults to 50MB, and it
+-- reports that rejection as a misleading "Payload too large" (EntityTooLarge).
+-- Raise the global limit in Storage settings first if you need more here.
 insert into storage.buckets (
   id,
   name,
@@ -77,13 +86,18 @@ values (
   'artifact-images',
   'artifact-images',
   true,
-  10485760,
+  52428800,
   array[
     'image/jpeg',
     'image/png',
     'image/webp',
     'image/gif',
-    'image/svg+xml'
+    'image/svg+xml',
+    'video/mp4',
+    'video/webm',
+    'video/quicktime',
+    'video/x-m4v',
+    'video/ogg'
   ]
 )
 on conflict (id) do update set
