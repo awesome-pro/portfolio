@@ -3,6 +3,7 @@ interface Experience {
   role: string;
   location: string;
   period: string;
+  note?: string;
 }
 
 const EXPERIENCES: Experience[] = [
@@ -11,6 +12,7 @@ const EXPERIENCES: Experience[] = [
     role: "Founding Software Engineer",
     location: "San Francisco",
     period: "2025 to now",
+    note: "role just ended",
   },
   {
     company: "Cynos Nexus",
@@ -63,9 +65,16 @@ export default function Experience() {
                   {exp.location}
                 </span>
               </div>
-              <span className="font-mono text-xs text-ink-faint">
-                {exp.period}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs text-ink-faint">
+                  {exp.period}
+                </span>
+                {exp.note && (
+                  <span className="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-ink-muted">
+                    {exp.note}
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>

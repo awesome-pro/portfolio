@@ -27,7 +27,6 @@ export default async function Home() {
           </div>
         </section>
 
-        <About />
         <Projects />
         <Experience />
       </main>
