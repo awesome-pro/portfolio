@@ -83,8 +83,7 @@ export const PROJECTS: ProjectMeta[] = [
     stack: ["PyTorch", "TRL", "DAPO", "PRM", "PEFT / LoRA", "Qwen3-8B", "Ollama", "FastMCP"],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/agentflow-pro" },
-      { label: "AgentFlow paper", url: "https://arxiv.org/abs/2510.05592" },
-      { label: "DAPO paper", url: "https://arxiv.org/abs/2503.14476" },
+      { label: "Original AgentFlow paper", url: "https://arxiv.org/abs/2510.05592" },
     ],
     keywords: [
       "AgentFlow",
@@ -128,33 +127,6 @@ export const PROJECTS: ProjectMeta[] = [
     programmingLanguage: ["Python"],
     hasPage: true,
     date: "2026-03-15",
-  },
-  {
-    slug: "guardloop",
-    title: "GuardLoop",
-    tag: "Production Agent Runtime",
-    oneLiner:
-      "A guardrail runtime for async agents. Pre-flight cost, token and time budgets, per-tool circuit breakers, and OpenTelemetry spans. Your agent code stays as it is.",
-    headlineStat: { value: "0 rewrites", label: "drop-in adapters" },
-    stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
-    links: [
-      { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
-      { label: "PyPI", url: "https://pypi.org/project/guardloop/" },
-    ],
-    keywords: [
-      "LLM guardrails",
-      "agent runtime",
-      "OpenTelemetry",
-      "circuit breaker",
-      "token budget",
-      "cost limit",
-      "LangGraph",
-      "OpenAI Agents SDK",
-      "production AI agents",
-    ],
-    programmingLanguage: ["Python"],
-    hasPage: true,
-    date: "2026-04-10",
   },
   {
     slug: "orchflow",

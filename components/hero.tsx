@@ -42,7 +42,7 @@ export default function Hero() {
         ))}
 
         <Link
-          href="/resume"
+          href="/resume.pdf"
           className="group inline-flex items-center gap-1.5 text-ink-muted transition-colors hover:text-ink focus-visible:text-ink"
         >
           <span

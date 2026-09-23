@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getAllProjects, type ProjectMeta } from "@/lib/projects";
 import Expandable from "@/components/projects/Expandable";
 
@@ -6,42 +5,35 @@ import Expandable from "@/components/projects/Expandable";
 const INITIAL_COUNT = 3;
 
 function ProjectRow({ project, index }: { project: ProjectMeta; index: number }) {
-  const github = project.links.find((link) => link.label === "GitHub")?.url;
-  const href = project.hasPage ? `/${project.slug}` : github;
-
-  const body = (
-    <>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <div className="flex flex-wrap items-baseline gap-x-3">
-          <span className="text-base font-medium text-ink">{project.title}</span>
-          <span className="font-mono text-xs text-ink-faint">{project.tag}</span>
-        </div>
+  // No in-site case-study links, and no primary link either: the title is plain
+  // text and the row simply lists every link the project has.
+  return (
+    <div className={`py-5 ${index !== 0 ? "border-t border-border" : ""}`}>
+      <div className="flex flex-wrap items-baseline gap-x-3">
+        <span className="text-base font-medium text-ink">{project.title}</span>
+        <span className="font-mono text-xs text-ink-faint">{project.tag}</span>
       </div>
+
       <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-muted">
         {project.oneLiner}
       </p>
-    </>
-  );
 
-  const className = `group block py-5 ${index !== 0 ? "border-t border-border" : ""}`;
-
-  if (!href) {
-    return <div className={className}>{body}</div>;
-  }
-
-  return project.hasPage ? (
-    <Link href={href} className={className}>
-      {body}
-    </Link>
-  ) : (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={className}
-    >
-      {body}
-    </a>
+      {project.links.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs">
+          {project.links.map((link) => (
+            <a
+              key={link.label}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink-faint transition-colors hover:text-ink"
+            >
+              {link.label} ↗
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
