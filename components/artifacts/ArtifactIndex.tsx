@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AgentUrl from "@/components/agent-url";
 import { artifactExcerpt, type Artifact } from "@/lib/artifacts";
 
 function formatMonth(dateStr: string | null): string {
@@ -24,7 +25,7 @@ export default function ArtifactIndex({ artifacts }: { artifacts: Artifact[] }) 
 
   return (
     <ol className="flex flex-col">
-      {artifacts.map((artifact, index) => {
+      {artifacts.map((artifact) => {
         const excerpt = artifactExcerpt(artifact.story_markdown);
 
         return (
@@ -68,10 +69,19 @@ export default function ArtifactIndex({ artifacts }: { artifacts: Artifact[] }) 
                         className="text-ink-faint transition-colors hover:text-ink"
                       >
                         {link.label} ↗
+                        <AgentUrl url={link.url} />
                       </a>
                     ))}
                   </div>
                 )}
+
+                {/* Agent view only: canonical URL plus the raw record. */}
+                <div className="agent-only mt-2 font-mono text-xs text-ink-faint">
+                  https://abhinandan.one/artifacts/{artifact.slug} · serial{" "}
+                  {String(artifact.serial_number).padStart(2, "0")} · published{" "}
+                  {artifact.published_at ?? "unpublished"} · updated{" "}
+                  {artifact.updated_at}
+                </div>
               </div>
             </div>
           </li>

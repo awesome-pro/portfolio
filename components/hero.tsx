@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AgentUrl from "@/components/agent-url";
 
 const LINKS = [
   { label: "x", href: "https://x.com/abhibuilds" },
@@ -38,6 +39,7 @@ export default function Hero() {
             className="text-ink-muted transition-colors hover:text-ink"
           >
             {link.label}
+            <AgentUrl url={link.href} />
           </a>
         ))}
 
@@ -57,6 +59,7 @@ export default function Hero() {
               </span>
             </span>
           </span>
+          <AgentUrl url="https://abhinandan.one/resume.pdf" />
         </Link>
       </nav>
     </section>

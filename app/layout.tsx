@@ -140,6 +140,17 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${sourceSerif.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Restores the stored reading view before first paint so the agent
+            view never flashes the human layout. Runs before hydration; the
+            <html> element already carries suppressHydrationWarning. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{if(localStorage.getItem("view")==="agent")document.documentElement.dataset.view="agent"}catch(e){}',
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-background text-ink font-serif">
         <script
           type="application/ld+json"

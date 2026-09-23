@@ -1,5 +1,6 @@
-import { getAllProjects, type ProjectMeta } from "@/lib/projects";
+import AgentUrl from "@/components/agent-url";
 import Expandable from "@/components/projects/Expandable";
+import { getAllProjects, type ProjectMeta } from "@/lib/projects";
 
 /** How many projects the homepage shows before the toggle. */
 const INITIAL_COUNT = 3;
@@ -29,10 +30,23 @@ function ProjectRow({ project, index }: { project: ProjectMeta; index: number })
               className="text-ink-faint transition-colors hover:text-ink"
             >
               {link.label} ↗
+              <AgentUrl url={link.url} />
             </a>
           ))}
         </div>
       )}
+
+      {/* Agent view only: the metadata a machine would otherwise have to infer. */}
+      <div className="agent-only mt-2 font-mono text-xs text-ink-faint">
+        stack: {project.stack.join(", ")}
+        <br />
+        keywords: {project.keywords.join(", ")}
+        <br />
+        date: {project.date} · case study:{" "}
+        {project.hasPage
+          ? `https://abhinandan.one/${project.slug}`
+          : "none"}
+      </div>
     </div>
   );
 }

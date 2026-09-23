@@ -165,3 +165,61 @@
   color: var(--ink-muted);
   white-space: pre;
 }
+
+/* ---------------------------------------------------------------------------
+   Agent view
+   ---------------------------------------------------------------------------
+   components/view-toggle.tsx sets data-view="agent" on <html>. The two views
+   are rendered from identical HTML — no server-side branching — so everything
+   here must be pure CSS. `.agent-url` and `.agent-only` ship in the markup for
+   both views and are simply revealed here.
+   --------------------------------------------------------------------------- */
+
+.agent-url,
+.agent-only {
+  display: none;
+}
+
+[data-view="agent"] .agent-url {
+  display: inline;
+  margin-left: 0.4em;
+  color: var(--ink-faint);
+  word-break: break-all;
+}
+
+[data-view="agent"] .agent-only {
+  display: block;
+}
+
+/* Raw, machine-first typography: monospace, denser, less decoration. */
+[data-view="agent"] body {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+[data-view="agent"] .human-only {
+  display: none;
+}
+
+[data-view="agent"] .artifact-markdown,
+[data-view="agent"] .artifact-markdown * {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* The view toggle: active option is driven by data-view, not React state, so
+   it is correct on the first paint. */
+.view-option {
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+
+.view-option:hover {
+  color: var(--ink);
+}
+
+html:not([data-view="agent"]) .view-option[data-view-option="human"],
+[data-view="agent"] .view-option[data-view-option="agent"] {
+  color: var(--ink);
+}
+
