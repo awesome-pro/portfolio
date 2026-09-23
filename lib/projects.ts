@@ -31,8 +31,9 @@ export interface ProjectMeta {
 /**
  * Display order, most prominent first. This array is the single source of both
  * the homepage's first three projects and the `/projects` index, so reorder it
- * here rather than sorting by `date`: the dates are factual metadata and are
- * deliberately not monotonic (SmartMemo is featured above the newer GuardLoop).
+ * here rather than sorting by `date`: the dates are factual metadata, not the
+ * sort key. (They happen to run descending today; that is a coincidence of the
+ * current set, not an invariant.)
  */
 export const PROJECTS: ProjectMeta[] = [
   {
