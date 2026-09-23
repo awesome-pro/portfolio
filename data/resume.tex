@@ -89,6 +89,13 @@
 \section{Open Source Projects}
     \resumeSubHeadingListStart
 
+       \resumeProjectHeading
+          {\textbf{MiniServe} $|$ \emph{LLM Inference Runtime | Python, PyTorch} $|$ \href{https://github.com/awesome-pro/miniserve}{\underline{GitHub}}}{}
+          \resumeItemListStart
+            \resumeItem{Built a from-scratch serving loop with continuous batching, token-budget scheduling, chunked prefill, recompute preemption, and paged KV with content-addressed prefix caching.}
+            \resumeItem{Implemented a Llama-family path over those paged KV tensors and matched Hugging Face (≤6e-8 float32 logit error; identical greedy tokens); on a 120-request shared-prefix workload, prefix reuse cut computed prefill work by 97\%.}
+          \resumeItemListEnd
+
       \resumeProjectHeading
           {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, LoRA} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{GitHub}}}{}
           \resumeItemListStart
@@ -101,12 +108,6 @@
           \resumeItemListStart
             \resumeItem{Built a semantic memory/cache for LLM agents where embedding retrieval proposes candidates and a learned pair-equivalence classifier decides whether memory reuse is safe.}
             \resumeItem{Trained classifier-v2 on 16,576 pairs across 9 domains, improving precision by +30 points at equal recall versus cosine similarity, with feedback export, bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
-          \resumeItemListEnd
-        
-      \resumeProjectHeading
-          {\textbf{guardloop} $|$ \emph{OpenAI/Anthropic SDKs, OpenTelemetry, LangGraph} $|$ \href{https://github.com/awesome-pro/guardloop}{\underline{GitHub}}}{}
-          \resumeItemListStart
-            \resumeItem{Built an async agent reliability runtime with cost/token/time/tool-call budgets, per-tool circuit breakers, verifier-driven retries, and OpenTelemetry GenAI spans.}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
 

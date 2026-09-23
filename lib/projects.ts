@@ -21,11 +21,58 @@ export interface ProjectMeta {
   programmingLanguage: string[];
   /** Whether a dedicated case-study page exists (vs. linking straight to GitHub). */
   hasPage: boolean;
-  /** Used for sitemap lastmod + index ordering (ISO date). */
+  /**
+   * Factual completion/publish date (ISO). Feeds `lastModified` in the sitemap
+   * only — it is NOT the sort key. See the note on `PROJECTS` below.
+   */
   date: string;
 }
 
+/**
+ * Display order, most prominent first. This array is the single source of both
+ * the homepage's first three projects and the `/projects` index, so reorder it
+ * here rather than sorting by `date`: the dates are factual metadata and are
+ * deliberately not monotonic (SmartMemo is featured above the newer GuardLoop).
+ */
 export const PROJECTS: ProjectMeta[] = [
+  {
+    slug: "miniserve",
+    title: "MiniServe",
+    tag: "LLM Inference Runtime",
+    oneLiner:
+      "a from-scratch LLM serving runtime with continuous batching, chunked prefill, block-based KV management, preemption, and prefix caching.",
+    headlineStat: {
+      value: "97%",
+      label: "of prefill work removed by prefix caching · ≤6e-8 logit delta vs HF",
+    },
+    stack: [
+      "Python 3.12",
+      "PyTorch",
+      "Paged KV Cache",
+      "Continuous Batching",
+      "Prefix Caching",
+    ],
+    links: [
+      { label: "GitHub", url: "https://github.com/awesome-pro/miniserve" },
+    ],
+    keywords: [
+      "LLM inference",
+      "serving runtime",
+      "continuous batching",
+      "chunked prefill",
+      "paged attention",
+      "KV cache",
+      "prefix caching",
+      "preemption",
+      "request scheduling",
+      "vLLM",
+      "TTFT",
+      "throughput",
+    ],
+    programmingLanguage: ["Python"],
+    hasPage: false,
+    date: "2026-09-23",
+  },
   {
     slug: "agentflow-pro",
     title: "AgentFlow-Pro",
@@ -56,33 +103,6 @@ export const PROJECTS: ProjectMeta[] = [
     date: "2026-05-20",
   },
   {
-    slug: "guardloop",
-    title: "GuardLoop",
-    tag: "Production Agent Runtime",
-    oneLiner:
-      "A guardrail runtime for async agents. Pre-flight cost, token and time budgets, per-tool circuit breakers, and OpenTelemetry spans. Your agent code stays as it is.",
-    headlineStat: { value: "0 rewrites", label: "drop-in adapters" },
-    stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
-    links: [
-      { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
-      { label: "PyPI", url: "https://pypi.org/project/guardloop/" },
-    ],
-    keywords: [
-      "LLM guardrails",
-      "agent runtime",
-      "OpenTelemetry",
-      "circuit breaker",
-      "token budget",
-      "cost limit",
-      "LangGraph",
-      "OpenAI Agents SDK",
-      "production AI agents",
-    ],
-    programmingLanguage: ["Python"],
-    hasPage: true,
-    date: "2026-04-10",
-  },
-  {
     slug: "smartmemo",
     title: "SmartMemo",
     tag: "Semantic LLM Cache",
@@ -108,6 +128,33 @@ export const PROJECTS: ProjectMeta[] = [
     programmingLanguage: ["Python"],
     hasPage: true,
     date: "2026-03-15",
+  },
+  {
+    slug: "guardloop",
+    title: "GuardLoop",
+    tag: "Production Agent Runtime",
+    oneLiner:
+      "A guardrail runtime for async agents. Pre-flight cost, token and time budgets, per-tool circuit breakers, and OpenTelemetry spans. Your agent code stays as it is.",
+    headlineStat: { value: "0 rewrites", label: "drop-in adapters" },
+    stack: ["OpenAI SDK", "Anthropic SDK", "LangGraph", "OpenTelemetry"],
+    links: [
+      { label: "GitHub", url: "https://github.com/awesome-pro/guardloop" },
+      { label: "PyPI", url: "https://pypi.org/project/guardloop/" },
+    ],
+    keywords: [
+      "LLM guardrails",
+      "agent runtime",
+      "OpenTelemetry",
+      "circuit breaker",
+      "token budget",
+      "cost limit",
+      "LangGraph",
+      "OpenAI Agents SDK",
+      "production AI agents",
+    ],
+    programmingLanguage: ["Python"],
+    hasPage: true,
+    date: "2026-04-10",
   },
   {
     slug: "orchflow",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Nav from "@/components/nav";
 import Hero from "@/components/hero";
 import Projects from "@/components/projects";
@@ -8,8 +9,14 @@ import { getPublicArtifacts } from "@/lib/artifacts";
 
 export const revalidate = 30;
 
+/** How many artifacts the homepage shows before linking out to the full index. */
+const INITIAL_ARTIFACTS = 3;
+
 export default async function Home() {
   const artifacts = await getPublicArtifacts();
+  // getPublicArtifacts() is newest-first, so the head is the latest work.
+  const latestArtifacts = artifacts.slice(0, INITIAL_ARTIFACTS);
+  const hasMoreArtifacts = artifacts.length > latestArtifacts.length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -23,8 +30,18 @@ export default async function Home() {
               Artifacts
             </h2>
             <div className="mt-6">
-              <ArtifactIndex artifacts={artifacts} />
+              <ArtifactIndex artifacts={latestArtifacts} />
             </div>
+            {hasMoreArtifacts && (
+              <div className="mt-10">
+                <Link
+                  href="/artifacts"
+                  className="font-mono text-xs text-ink transition-colors hover:text-ink"
+                >
+                  all artifacts →
+                </Link>
+              </div>
+            )}
           </div>
         </section>
 

@@ -28,7 +28,7 @@ export default function ArtifactIndex({ artifacts }: { artifacts: Artifact[] }) 
         const excerpt = artifactExcerpt(artifact.story_markdown);
 
         return (
-          <li key={artifact.id} className={index !== 0 ? "border-t border-border" : ""}>
+          <li key={artifact.id}>
             <div className="grid grid-cols-[2rem_1fr] gap-x-4 py-7">
               <span className="pt-1.5 font-mono text-xs text-ink-faint">
                 {String(artifact.serial_number).padStart(2, "0")}

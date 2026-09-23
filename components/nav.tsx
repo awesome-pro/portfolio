@@ -8,12 +8,6 @@ export default function Nav() {
       <div className="mx-auto flex h-14 w-full max-w-3xl items-center justify-between gap-4 px-6">
         <Logo />
         <div className="flex items-center gap-5">
-          <Link
-            href="/artifacts"
-            className="font-mono text-xs text-ink-muted transition-colors hover:text-ink"
-          >
-            artifacts
-          </Link>
           <ThemeToggle />
         </div>
       </div>

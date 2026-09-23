@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { getAllProjects, type ProjectMeta } from "@/lib/projects";
+import Expandable from "@/components/projects/Expandable";
+
+/** How many projects the homepage shows before the toggle. */
+const INITIAL_COUNT = 3;
 
 function ProjectRow({ project, index }: { project: ProjectMeta; index: number }) {
   const github = project.links.find((link) => link.label === "GitHub")?.url;
@@ -12,11 +16,6 @@ function ProjectRow({ project, index }: { project: ProjectMeta; index: number })
           <span className="text-base font-medium text-ink">{project.title}</span>
           <span className="font-mono text-xs text-ink-faint">{project.tag}</span>
         </div>
-        {project.headlineStat && (
-          <span className="font-mono text-xs text-ink-muted">
-            {project.headlineStat.value}
-          </span>
-        )}
       </div>
       <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-muted">
         {project.oneLiner}
@@ -48,26 +47,31 @@ function ProjectRow({ project, index }: { project: ProjectMeta; index: number })
 
 export default function Projects() {
   const projects = getAllProjects();
+  const visible = projects.slice(0, INITIAL_COUNT);
+  const hidden = projects.slice(INITIAL_COUNT);
 
   return (
     <section className="mx-auto w-full max-w-3xl border-t border-border px-6 py-14">
       <div>
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-mono text-xs tracking-[0.25em] text-ink-faint uppercase">
-            Projects
-          </h2>
-          <Link
-            href="/projects"
-            className="font-mono text-xs text-ink-faint transition-colors hover:text-ink"
-          >
-            all projects →
-          </Link>
-        </div>
-
+       <h2 className="font-mono text-xs tracking-[0.25em] text-ink-faint uppercase">
+          Projects
+       </h2>
         <div className="mt-6 flex flex-col">
-          {projects.map((project, index) => (
+          {visible.map((project, index) => (
             <ProjectRow key={project.slug} project={project} index={index} />
           ))}
+
+          {hidden.length > 0 && (
+            <Expandable count={hidden.length} noun="projects">
+              {hidden.map((project, index) => (
+                <ProjectRow
+                  key={project.slug}
+                  project={project}
+                  index={index + INITIAL_COUNT}
+                />
+              ))}
+            </Expandable>
+          )}
         </div>
       </div>
     </section>
