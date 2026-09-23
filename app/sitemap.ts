@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getAllArtifactSlugsStatic } from "@/lib/artifacts";
 import { getAllProjects } from "@/lib/projects";
 
+export const revalidate = 30;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://abhinandan.one";
 

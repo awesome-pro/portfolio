@@ -2,10 +2,11 @@ import Nav from "@/components/nav";
 import Hero from "@/components/hero";
 import Projects from "@/components/projects";
 import Experience from "@/components/experience";
-import About from "@/components/about";
 import ArtifactIndex from "@/components/artifacts/ArtifactIndex";
 import Footer from "@/components/footer";
 import { getPublicArtifacts } from "@/lib/artifacts";
+
+export const revalidate = 30;
 
 export default async function Home() {
   const artifacts = await getPublicArtifacts();

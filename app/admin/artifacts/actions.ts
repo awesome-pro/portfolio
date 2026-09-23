@@ -108,6 +108,7 @@ function validatePayload(payload: {
 }
 
 function revalidateArtifactPaths(slug?: string | null) {
+  revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/artifacts");
   revalidatePath("/artifacts");

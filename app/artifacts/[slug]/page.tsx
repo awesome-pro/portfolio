@@ -14,7 +14,7 @@ import {
   type Artifact,
 } from "@/lib/artifacts";
 
-export const revalidate = 3600;
+export const revalidate = 30;
 
 const DEFAULT_DESCRIPTION =
   "A build artifact. What I built, how I tested it, and where it broke.";

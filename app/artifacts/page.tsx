@@ -6,7 +6,8 @@ import { getPublicArtifacts } from "@/lib/artifacts";
 
 const url = "https://abhinandan.one/artifacts";
 
-export const revalidate = 3600;
+
+export const revalidate = 30;
 
 export const metadata: Metadata = {
   title: "Artifacts | Abhinandan",
