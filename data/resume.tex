@@ -89,6 +89,13 @@
 \section{Open Source Projects}
     \resumeSubHeadingListStart
 
+      \resumeProjectHeading
+          {\textbf{RolloutCore} $|$ \emph{PyTorch, NCCL, vLLM} $|$ \href{https://github.com/awesome-pro/rolloutcore}{\underline{GitHub}}}{}
+          \resumeItemListStart
+            \resumeItem{Built a RL rollout control plane around vLLM with drain-before-mutate semantics, live NCCL weight installs, post-update cache invalidation, and admit-time version/provenance binding, validated end-to-end without restarting the inference process.}
+            \resumeItem{On Qwen3-8B, measured 4.25s hot updates vs 37.04s full restart (~8.7× lower model-transition time) on 2× RTX 3090 over PCIe; reproduced 32 stale prefix-cache hits and changed output when cross-version invalidation was deliberately skipped.}
+          \resumeItemListEnd
+          
        \resumeProjectHeading
           {\textbf{MiniServe} $|$ \emph{Python, PyTorch} $|$ \href{https://github.com/awesome-pro/miniserve}{\underline{GitHub}}}{}
           \resumeItemListStart
@@ -101,13 +108,6 @@
           \resumeItemListStart
             \resumeItem{Rebuilt and extended the ICLR 2026 AgentFlow architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with constrained planning, Tavily search, and sandboxed Python/SymPy tools.}
             \resumeItem{Trained with DAPO + a learned Qwen3-0.6B Process Reward Model and measured \textbf{+5.0 pts on GPQA-Diamond} (40.0\% $\rightarrow$ 45.0\%) with leakage-free, quantization-matched evaluation.}
-          \resumeItemListEnd
-
-      \resumeProjectHeading
-          {\textbf{smartmemo} $|$ \emph{PyTorch, sentence-transformers, FAISS, SQLite} $|$ \href{https://github.com/awesome-pro/smartmemo}{\underline{GitHub}}}{}
-          \resumeItemListStart
-            \resumeItem{Built a semantic memory/cache for LLM agents where embedding retrieval proposes candidates and a learned pair-equivalence classifier decides whether memory reuse is safe.}
-            \resumeItem{Trained classifier-v2 on 16,576 pairs across 9 domains, improving precision by +30 points at equal recall versus cosine similarity, with feedback export, bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
 

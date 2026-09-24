@@ -37,6 +37,39 @@ export interface ProjectMeta {
  */
 export const PROJECTS: ProjectMeta[] = [
   {
+    slug: "rolloutcore",
+    title: "RolloutCore",
+    tag: "",
+    oneLiner:
+      "Versioned RL rollout runtime for vLLM with NCCL hot weight updates, version-pure rollouts, and cache-coherent transitions.",
+    stack: [
+      "PyTorch",
+      "NCCL",
+      "vLLM",
+      "RL",
+    ],
+    links: [
+      { label: "GitHub", url: "https://github.com/awesome-pro/rolloutcore" },
+    ],
+    keywords: [
+      "LLM inference",
+      "serving runtime",
+      "continuous batching",
+      "chunked prefill",
+      "paged attention",
+      "KV cache",
+      "prefix caching",
+      "preemption",
+      "request scheduling",
+      "vLLM",
+      "TTFT",
+      "throughput",
+    ],
+    programmingLanguage: ["Python"],
+    hasPage: false,
+    date: "2026-09-23",
+  },
+  {
     slug: "miniserve",
     title: "MiniServe",
     tag: "LLM Inference Runtime",
