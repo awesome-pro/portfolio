@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import ArtifactMarkdown from "@/components/artifacts/ArtifactMarkdown";
+import ArtifactViews from "@/components/artifacts/ArtifactViews";
 import { LinkBar } from "@/components/projects/shared";
 import { isVideoUrl } from "@/lib/artifact-media";
 import {
@@ -160,6 +161,11 @@ export default async function ArtifactDetailPage({
     description: DEFAULT_DESCRIPTION,
     url: `https://abhinandan.one/artifacts/${artifact.slug}`,
     datePublished: artifact.published_at,
+    interactionStatistic: {
+      "@type": "InteractionCounter",
+      interactionType: { "@type": "ViewAction" },
+      userInteractionCount: artifact.view_count,
+    },
     author: {
       "@type": "Person",
       name: "Abhinandan",
@@ -192,11 +198,16 @@ export default async function ArtifactDetailPage({
               {artifact.artifact_name}
             </h1>
 
-            {artifact.published_at && (
-              <p className="mb-5 font-mono text-xs text-ink-faint">
-                {formatPublishedDate(artifact.published_at)}
-              </p>
-            )}
+            <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-ink-faint">
+              {artifact.published_at && (
+                <span>{formatPublishedDate(artifact.published_at)}</span>
+              )}
+              <ArtifactViews
+                slug={artifact.slug}
+                initialCount={artifact.view_count}
+                track
+              />
+            </div>
 
             {artifact.github_links.length > 0 && (
               <LinkBar links={artifact.github_links} />

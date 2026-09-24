@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AgentUrl from "@/components/agent-url";
+import ArtifactViews from "@/components/artifacts/ArtifactViews";
 import { artifactExcerpt, type Artifact } from "@/lib/artifacts";
 
 function formatMonth(dateStr: string | null): string {
@@ -45,11 +46,15 @@ export default function ArtifactIndex({ artifacts }: { artifacts: Artifact[] }) 
                       {artifact.artifact_name}
                     </Link>
                   </h3>
-                  {artifact.published_at && (
-                    <span className="font-mono text-xs text-ink-faint">
-                      {formatMonth(artifact.published_at)}
-                    </span>
-                  )}
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-ink-faint">
+                    {artifact.published_at && (
+                      <span>{formatMonth(artifact.published_at)}</span>
+                    )}
+                    <ArtifactViews
+                      slug={artifact.slug}
+                      initialCount={artifact.view_count}
+                    />
+                  </div>
                 </div>
 
                 {excerpt && (

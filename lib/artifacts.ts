@@ -22,13 +22,14 @@ export interface Artifact {
   story_markdown: string | null;
   github_links: ArtifactLink[];
   architecture_images: ArtifactImage[];
+  view_count: number;
   created_at: string;
   updated_at: string;
 }
 
 export type ArtifactInput = Omit<
   Artifact,
-  "id" | "serial_number" | "created_at" | "updated_at"
+  "id" | "serial_number" | "view_count" | "created_at" | "updated_at"
 >;
 
 export function slugifyArtifact(text: string): string {
@@ -106,6 +107,8 @@ export function artifactExcerpt(
 function normalizeArtifact(row: Record<string, unknown>): Artifact {
   return {
     ...(row as unknown as Artifact),
+    // Tolerate a database that predates migrations/artifact_views.sql.
+    view_count: typeof row.view_count === "number" ? row.view_count : 0,
     github_links: normalizeArray<ArtifactLink>(row.github_links),
     architecture_images: normalizeArray<ArtifactImage>(row.architecture_images),
   };
@@ -146,6 +149,31 @@ export async function getLatestArtifacts(limit = 3): Promise<Artifact[]> {
     return ((data as Record<string, unknown>[]) ?? []).map(normalizeArtifact);
   } catch {
     return [];
+  }
+}
+
+/**
+ * slug -> view_count for every artifact, in one lightweight query (no
+ * story_markdown payload). Powers /api/artifacts/views, which the client uses
+ * to refresh the counts baked into the static HTML. Returns {} if the view
+ * count column does not exist yet, so the UI degrades to the ISR value.
+ */
+export async function getArtifactViewCounts(): Promise<Record<string, number>> {
+  try {
+    const supabase = createStaticClient();
+    const { data, error } = await supabase
+      .from("artifacts")
+      .select("slug, view_count");
+
+    if (error) return {};
+    return Object.fromEntries(
+      (data ?? []).map((row: { slug: string; view_count: number | null }) => [
+        row.slug,
+        row.view_count ?? 0,
+      ])
+    );
+  } catch {
+    return {};
   }
 }
 
