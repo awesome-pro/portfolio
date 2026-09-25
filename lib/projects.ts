@@ -39,7 +39,7 @@ export const PROJECTS: ProjectMeta[] = [
   {
     slug: "rolloutcore",
     title: "RolloutCore",
-    tag: "",
+    tag: "RL Rollout Runtime",
     oneLiner:
       "Versioned RL rollout runtime for vLLM with NCCL hot weight updates, version-pure rollouts, and cache-coherent transitions.",
     stack: [
@@ -50,6 +50,38 @@ export const PROJECTS: ProjectMeta[] = [
     ],
     links: [
       { label: "GitHub", url: "https://github.com/awesome-pro/rolloutcore" },
+    ],
+    keywords: [
+      "LLM inference",
+      "serving runtime",
+      "continuous batching",
+      "chunked prefill",
+      "paged attention",
+      "KV cache",
+      "prefix caching",
+      "preemption",
+      "request scheduling",
+      "vLLM",
+      "TTFT",
+      "throughput",
+    ],
+    programmingLanguage: ["Python"],
+    hasPage: false,
+    date: "2026-09-23",
+  },
+  {
+    slug: "hiqcache",
+    title: "HiQCache",
+    tag: "Quantized SGLang HiCache",
+    oneLiner:
+      "INT8 hierarchical KV caching for SGLang HiCache, delivering 43.75% lower host KV memory and 1.78× more L2 cache capacity for Qwen3-8B.",
+    stack: [
+      "PyTorch",
+      "SGLang",
+      "Quantization"
+    ],
+    links: [
+      { label: "GitHub", url: "https://github.com/awesome-pro/hiqcache" },
     ],
     keywords: [
       "LLM inference",

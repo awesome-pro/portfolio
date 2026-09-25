@@ -36,32 +36,43 @@
 
 %-----------EXPERIENCE-----------
 \section{Experience}
-\resumeSubHeadingListStart
-  \resumeSubheading{Founding Software Engineer}{Sept 2025 -- Present}{Browzer}{Remote, San Francisco}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Founding Software Engineer}{Sept 2025 -- Present}
+      {Browzer}{Remote, San Francisco}
+      \resumeItemListStart
+        \resumeItem{Built Browzer's Chrome MV3 recorder and CDP-native browser agent with AX/DOM element capture, cross-iframe support, obstruction checks, and real mouse/keyboard/upload execution.}
+        \resumeItem{Implemented a streaming ReAct runtime across FastAPI + browser extension with SSE tool execution, multi-tab orchestration, safe parallelism, abort/continue semantics, and auditable traces.}
+        \resumeItem{Cut cost per automation run \textbf{$\sim$3x} across \textbf{700K+ monitored production LLM calls} using compact traces, context compression, prompt caching, and dynamic model routing.}
+        \resumeItem{Built a proactive DevRel/content system that generates documentation portals, quickstarts, long-form guides/books, and product demo assets from product workflows, then self-heals affected content as the UI changes.}
+        \resumeItem{Shipped zero-LLM replay for intact workflows with stateful AI fallback, allowing failed automations and generated content flows to resume from the point of failure instead of restarting.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Founding Software Engineer}{Jan 2025 -- Jul 2025}
+      {Cynos Nexus}{Noida, India}
+      \resumeItemListStart
+        \resumeItem{Built the AI knowledge base service using FastAPI, LangChain, and vector retrieval pipelines, powering customer-facing search workflows.}
+        \resumeItem{Implemented backend infrastructure for retrieval-augmented AI workflows, including document ingestion, structured data processing, asynchronous workers, Redis-backed queues, and production API serving.}
+        \resumeItem{Productionized AI services with Docker, GitHub Actions, Nginx, cloud deployment, asynchronous processing, and API observability.}
+      \resumeItemListEnd
+
+      \resumeSubheading
+  {Contract Software Engineer}{Sept 2024 -- Dec 2024}
+  {Etkin.ai}{Remote, Turkiye}
   \resumeItemListStart
-    \resumeItem{Built production agent/runtime infrastructure for browser automation: Chrome MV3 recorder, CDP execution, AX/DOM element capture, cross-iframe support, streaming ReAct execution, multi-tab orchestration, and safe parallel tool calls.}
-    \resumeItem{Cut cost per automation run \textbf{$\sim$3x} across \textbf{700K+ monitored production LLM calls} using compact traces, context compression, prompt caching, and dynamic Haiku/Sonnet/GPT-5 routing.}
-    \resumeItem{Shipped a zero-LLM replay engine with variable-driven tool-call templates and stateful AI fallback that resumes failed runs mid-execution instead of restarting them.}
-    \resumeItem{Built a proactive DevRel/content system that turns product workflows into documentation portals, quickstarts, long-form guides/books, and demo assets, with self-healing regeneration when the underlying UI changes.}
+    \resumeItem{Built a LangChain + pgvector retrieval system; raised recall@5 from 0.71 $\rightarrow$ 0.82 on a 300-query labeled eval set.}
+    \resumeItem{Developed scalable data-ingestion pipelines using bulk CSV processing and Celery workers, reducing processing time by 40\%}
   \resumeItemListEnd
 
-  \resumeSubheading{Founding Software Engineer}{Jan 2025 -- Jul 2025}{Cynos Nexus}{Noida, India}
-  \resumeItemListStart
-    \resumeItem{Built FastAPI retrieval and ingestion services with vector search, Redis/BullMQ workers, structured document processing, and production API serving.}
-    \resumeItem{Automated containerized deployment and CI/CD for AI services using Docker, GitHub Actions, Nginx, and cloud infrastructure.}
-  \resumeItemListEnd
 
-  \resumeSubheading{Contract Software Engineer}{Sept 2024 -- Dec 2024}{Etkin.ai}{Remote, Turkiye}
-  \resumeItemListStart
-    \resumeItem{Built a LangChain + pgvector retrieval system; improved recall@5 from \textbf{0.71 to 0.82} on a 300-query labeled evaluation set.}
-    \resumeItem{Built Celery-backed ingestion pipelines and production PDF/report generation systems; reduced bulk processing time by \textbf{40\%}.}
-  \resumeItemListEnd
-  \resumeSubheading
+\resumeSubheading
   {Open Source Contributor}{June 2024 -- Aug 2024}
   {HeroUI}{Y Combinator S24 startup}
   \resumeItemListStart
     \resumeItem{
-    Received a \href{https://abhinandan.one/nextui-offer.png}{\textbf{personal offer from the CEO}} to join HeroUI (prev.\ NextUI) after making \href{https://github.com/heroui-inc/heroui/pulls?q=is\%3Apr+author\%3Aawesome-pro} {\textbf{open-source contributions}}.}
+    Received a \href{https://abhinandan.one/nextui-offer.png}{\textbf{personal offer from the CEO}} to join HeroUI (prev.\ NextUI) after \href{https://github.com/heroui-inc/heroui/pulls?q=is\%3Apr+author\%3Aawesome-pro+state\%3Amerged} {\textbf{16 merged open-source contributions}}.}
   \resumeItemListEnd
 
 
@@ -73,34 +84,42 @@
   \resumeItemListEnd
 \resumeSubHeadingListEnd
 
-\section{Selected Projects}
-\resumeSubHeadingListStart
-  \resumeProjectHeading{\textbf{Mini LLM Inference Runtime} $|$ \emph{Python, scheduling, KV-cache management}}{}
-  \resumeItemListStart
-    \resumeItem{Implemented request admission, continuous batching, token-budget scheduling, chunked prefill, decode iteration, and fixed-block KV-cache allocation to model the core control plane of modern LLM serving engines.}
-    \resumeItem{Built workload simulations comparing static vs. continuous scheduling under heterogeneous prompt/decode lengths, tracking request latency, token utilization, and decode starvation behavior.}
-  \resumeItemListEnd
 
-  \resumeProjectHeading{\textbf{AgentFlow-Pro} $|$ \emph{PyTorch, TRL, DAPO, PRM, LoRA} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{GitHub}}}{}
-  \resumeItemListStart
-    \resumeItem{Rebuilt the ICLR 2026 AgentFlow architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory system with constrained planning and sandboxed Python/SymPy tools.}
-    \resumeItem{Trained the planner with DAPO + a learned Qwen3-0.6B Process Reward Model and measured \textbf{+5.0 pts on GPQA-Diamond} (40.0\% $\rightarrow$ 45.0\%) with a leakage-free evaluation pipeline.}
-  \resumeItemListEnd
-  \resumeProjectHeading{\textbf{smartmemo} $|$ \emph{PyTorch, sentence-transformers, FAISS, SQLite} $|$ \href{https://github.com/awesome-pro/smartmemo}{\underline{github.com/awesome-pro/smartmemo}}}{}
-  \resumeItemListStart
-    \resumeItem{Built a semantic memory/cache for LLM agents where embedding retrieval proposes candidates and a learned pair-equivalence classifier decides whether memory reuse is safe.}
-    \resumeItem{Trained classifier-v2 on 16,576 pairs across 9 domains, improving precision by +30 points at equal recall versus cosine similarity, with feedback export, bad-hit detection, gated retraining, and WAL-backed SQLite hardening.}
-  \resumeItemListEnd
-\resumeSubHeadingListEnd
+%-----------PROJECTS-----------
+\section{Open Source Projects}
+    \resumeSubHeadingListStart
 
+      \resumeProjectHeading
+          {\textbf{RolloutCore} $|$ \emph{PyTorch, NCCL, vLLM} $|$ \href{https://github.com/awesome-pro/rolloutcore}{\underline{GitHub}}}{}
+          \resumeItemListStart
+            \resumeItem{Built a RL rollout control plane around vLLM with drain-before-mutate semantics, live NCCL weight installs, post-update cache invalidation, and admit-time version/provenance binding, validated end-to-end without restarting the inference process.}
+            \resumeItem{On Qwen3-8B, measured 4.25s hot updates vs 37.04s full restart (~8.7× lower model-transition time) on 2× RTX 3090 over PCIe; reproduced 32 stale prefix-cache hits and changed output when cross-version invalidation was deliberately skipped.}
+          \resumeItemListEnd
+          
+       \resumeProjectHeading
+          {\textbf{MiniServe} $|$ \emph{Python, PyTorch} $|$ \href{https://github.com/awesome-pro/miniserve}{\underline{GitHub}}}{}
+          \resumeItemListStart
+            \resumeItem{Built a from-scratch inference runtime with continuous batching, token-budget scheduling, chunked prefill, recompute preemption, and paged KV with content-addressed prefix caching.}
+            \resumeItem{Implemented a Llama-family path over those paged KV tensors and matched Hugging Face ($\leq$6e-8 float32 logit error; identical greedy tokens); on a 120-request shared-prefix workload, prefix reuse cut computed prefill work by 97\%.}
+          \resumeItemListEnd
+
+      \resumeProjectHeading
+          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, LoRA} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{GitHub}}}{}
+          \resumeItemListStart
+            \resumeItem{Rebuilt and extended the ICLR 2026 AgentFlow architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with constrained planning, Tavily search, and sandboxed Python/SymPy tools.}
+            \resumeItem{Trained with DAPO + a learned Qwen3-0.6B Process Reward Model and measured \textbf{+5.0 pts on GPQA-Diamond} (40.0\% $\rightarrow$ 45.0\%) with leakage-free, quantization-matched evaluation.}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+%-----------TECHNICAL SKILLS-----------
 \section{Technical Skills}
-\begin{itemize}[leftmargin=0.15in,label={}]
-\small{\item{
-  \textbf{ML / Inference:} PyTorch, Hugging Face, vLLM, SGLang, KV caching, continuous batching, chunked prefill, quantization (AWQ/GPTQ), speculative decoding \\
-  \textbf{Systems:} Python, C++, FastAPI, AsyncIO, Redis, PostgreSQL, Docker, Linux, AWS, GCP, OpenTelemetry \\
-  \textbf{Post-training:} LoRA/QLoRA, TRL, DAPO/GRPO, process reward models, evaluation pipelines
-}}
-\end{itemize}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{ML Engineering}{: PyTorch, Hugging Face, LangGraph, CrewAI, Qdrant } \\
+     \textbf{LLM Systems}{: Inference engines (vLLM, SGLang, TensorRT-LLM), Fine-tuning (LoRA, QLoRA, PEFT), quantization (AWQ, GPTQ, GGUF) } \\
+     \textbf{Engineering}{: Python, TypeScript, FastAPI, Node.js,  Redis, PostgreSQL, AWS, GCP, Docker, GitHub Actions} \\
+    }}
+ \end{itemize}
 
 \section{Education \& Recognition}
   \resumeSubHeadingListStart

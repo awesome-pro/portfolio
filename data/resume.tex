@@ -90,24 +90,24 @@
     \resumeSubHeadingListStart
 
       \resumeProjectHeading
-          {\textbf{RolloutCore} $|$ \emph{PyTorch, NCCL, vLLM} $|$ \href{https://github.com/awesome-pro/rolloutcore}{\underline{GitHub}}}{}
+          {\textbf{RolloutCore} $|$ \emph{NCCL, vLLM} $|$ \href{https://github.com/awesome-pro/rolloutcore}{\underline{GitHub}}}{}
           \resumeItemListStart
             \resumeItem{Built a RL rollout control plane around vLLM with drain-before-mutate semantics, live NCCL weight installs, post-update cache invalidation, and admit-time version/provenance binding, validated end-to-end without restarting the inference process.}
             \resumeItem{On Qwen3-8B, measured 4.25s hot updates vs 37.04s full restart (~8.7× lower model-transition time) on 2× RTX 3090 over PCIe; reproduced 32 stale prefix-cache hits and changed output when cross-version invalidation was deliberately skipped.}
           \resumeItemListEnd
-          
+
+      \resumeProjectHeading
+          {\textbf{HiQCache} $|$ \emph{SGLang, Quantization} $|$ \href{https://github.com/awesome-pro/hiqcache}{\underline{GitHub}}}{}
+          \resumeItemListStart
+            \resumeItem{Built an INT8 host-tier KV cache for SGLang HiCache, reducing Qwen3-8B L2 KV storage from 147,456 → 82,944 B/token (43.75\%) and increasing fixed-budget host-cache capacity 1.78× (54K → 96K tokens) while keeping GPU L1 KV in BF16.}
+            \resumeItem{Integrated and validated real GPU↔CPU KV compression/restoration on SGLang, with repeated 8 GB-budget runs improving cache hit rate from ~57\% to ~73\% and increasing L2-restored KV from ~127K to ~168K tokens on an RTX A6000.}
+          \resumeItemListEnd
+
        \resumeProjectHeading
           {\textbf{MiniServe} $|$ \emph{Python, PyTorch} $|$ \href{https://github.com/awesome-pro/miniserve}{\underline{GitHub}}}{}
           \resumeItemListStart
             \resumeItem{Built a from-scratch inference runtime with continuous batching, token-budget scheduling, chunked prefill, recompute preemption, and paged KV with content-addressed prefix caching.}
             \resumeItem{Implemented a Llama-family path over those paged KV tensors and matched Hugging Face ($\leq$6e-8 float32 logit error; identical greedy tokens); on a 120-request shared-prefix workload, prefix reuse cut computed prefill work by 97\%.}
-          \resumeItemListEnd
-
-      \resumeProjectHeading
-          {\textbf{AgentFlow-Pro} {{\textit{(Research)}}} $|$ \emph{PyTorch, TRL, DAPO, PRM, LoRA} $|$ \href{https://github.com/awesome-pro/agentflow-pro}{\underline{GitHub}}}{}
-          \resumeItemListStart
-            \resumeItem{Rebuilt and extended the ICLR 2026 AgentFlow architecture as a local Qwen3-8B Planner $\rightarrow$ Executor $\rightarrow$ Verifier $\rightarrow$ Memory loop with constrained planning, Tavily search, and sandboxed Python/SymPy tools.}
-            \resumeItem{Trained with DAPO + a learned Qwen3-0.6B Process Reward Model and measured \textbf{+5.0 pts on GPQA-Diamond} (40.0\% $\rightarrow$ 45.0\%) with leakage-free, quantization-matched evaluation.}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
 
