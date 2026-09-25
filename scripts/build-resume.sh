@@ -41,6 +41,32 @@ output_file_for() {
   esac
 }
 
+# These resumes are typeset with pdflatex, which only copes with the Unicode
+# characters LaTeX happens to have a text definition for. Symbols like →, ↔ or ≤
+# abort the run with "Unicode character ... not set up for use with LaTeX", and
+# because latexmk stops at the first one, every CI run reveals exactly one more
+# character. Checking up front lists all of them at once.
+check_ascii() {
+  local tex_file="$1"
+  local offenders
+
+  offenders="$(LC_ALL=C grep -n '[^[:print:][:space:]]' "$tex_file" || true)"
+  if [[ -z "$offenders" ]]; then
+    return 0
+  fi
+
+  echo "ERROR: $tex_file contains characters pdflatex cannot typeset:" >&2
+  printf '%s\n' "$offenders" >&2
+  cat >&2 <<'EOF'
+
+Use the ASCII/LaTeX spelling the resumes already use:
+  ->   $\rightarrow$      <->  $\leftrightarrow$    <=  $\leq$
+  x    $\times$           ~    $\sim$ (before a number, never a bare ~)
+  '    '                  -    -- (en dash), --- (em dash), \% for percent
+EOF
+  return 1
+}
+
 if [[ "$#" -eq 0 ]]; then
   VARIANTS=("${ALL_VARIANTS[@]}")
 else
@@ -61,6 +87,14 @@ else
     esac
   done
 fi
+
+# Validate every requested source before touching Docker or building anything.
+for variant in "${VARIANTS[@]}"; do
+  tex_file="$(tex_file_for "$variant")"
+  if [[ -f "$tex_file" ]]; then
+    check_ascii "$tex_file" || exit 1
+  fi
+done
 
 if [[ -z "$DOCKER_BIN" ]]; then
   DOCKER_BIN="$(command -v docker || true)"

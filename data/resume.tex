@@ -93,14 +93,14 @@
           {\textbf{RolloutCore} $|$ \emph{NCCL, vLLM} $|$ \href{https://github.com/awesome-pro/rolloutcore}{\underline{GitHub}}}{}
           \resumeItemListStart
             \resumeItem{Built a RL rollout control plane around vLLM with drain-before-mutate semantics, live NCCL weight installs, post-update cache invalidation, and admit-time version/provenance binding, validated end-to-end without restarting the inference process.}
-            \resumeItem{On Qwen3-8B, measured 4.25s hot updates vs 37.04s full restart (~8.7× lower model-transition time) on 2× RTX 3090 over PCIe; reproduced 32 stale prefix-cache hits and changed output when cross-version invalidation was deliberately skipped.}
+            \resumeItem{On Qwen3-8B, measured 4.25s hot updates vs 37.04s full restart ($\sim$8.7$\times$ lower model-transition time) on 2$\times$ RTX 3090 over PCIe; reproduced 32 stale prefix-cache hits and changed output when cross-version invalidation was deliberately skipped.}
           \resumeItemListEnd
 
       \resumeProjectHeading
           {\textbf{HiQCache} $|$ \emph{SGLang, Quantization} $|$ \href{https://github.com/awesome-pro/hiqcache}{\underline{GitHub}}}{}
           \resumeItemListStart
-            \resumeItem{Built an INT8 host-tier KV cache for SGLang HiCache, reducing Qwen3-8B L2 KV storage from 147,456 → 82,944 B/token (43.75\%) and increasing fixed-budget host-cache capacity 1.78× (54K → 96K tokens) while keeping GPU L1 KV in BF16.}
-            \resumeItem{Integrated and validated real GPU↔CPU KV compression/restoration on SGLang, with repeated 8 GB-budget runs improving cache hit rate from ~57\% to ~73\% and increasing L2-restored KV from ~127K to ~168K tokens on an RTX A6000.}
+            \resumeItem{Built an INT8 host-tier KV cache for SGLang HiCache, reducing Qwen3-8B L2 KV storage from 147,456 $\rightarrow$ 82,944 B/token (43.75\%) and increasing fixed-budget host-cache capacity 1.78$\times$ (54K $\rightarrow$ 96K tokens) while keeping GPU L1 KV in BF16.}
+            \resumeItem{Integrated and validated real GPU$\leftrightarrow$CPU KV compression/restoration on SGLang, with repeated 8 GB-budget runs improving cache hit rate from $\sim$57\% to $\sim$73\% and increasing L2-restored KV from $\sim$127K to $\sim$168K tokens on an RTX A6000.}
           \resumeItemListEnd
 
        \resumeProjectHeading
