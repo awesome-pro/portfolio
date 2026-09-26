@@ -1,8 +1,12 @@
 import { artifactExcerpt, getPublicArtifacts } from "@/lib/artifacts";
+import { getContributions } from "@/lib/contributions";
 import { getAllProjects } from "@/lib/projects";
 
 /** Matches the freshness window of the pages this summarises. */
 export const revalidate = 60;
+
+/** Keeps this index link-first; /contributions is the complete list. */
+const MAX_CONTRIBUTIONS = 15;
 
 const SITE = "https://abhinandan.one";
 
@@ -25,6 +29,7 @@ const CONTACT: [label: string, url: string][] = [
  */
 export async function GET() {
   const artifacts = await getPublicArtifacts();
+  const contributions = await getContributions();
 
   const out: string[] = [];
 
@@ -60,7 +65,22 @@ export async function GET() {
   }
   out.push("");
 
+  if (contributions.length > 0) {
+    out.push("## Open source", "");
+    out.push(
+      `Merged pull requests and open issues I have raised against other projects (${contributions.length} total: ${SITE}/contributions).`,
+      "",
+    );
+    for (const contribution of contributions.slice(0, MAX_CONTRIBUTIONS)) {
+      out.push(
+        `- [${contribution.title}](${contribution.url}) — ${contribution.repo} #${contribution.number} ${contribution.kind}, ${contribution.status}, ${contribution.date}`,
+      );
+    }
+    out.push("");
+  }
+
   out.push("## Contact", "");
+
   for (const [label, url] of CONTACT) {
     out.push(`- ${label}: ${url}`);
   }
