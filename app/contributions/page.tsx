@@ -5,11 +5,8 @@ import Footer from "@/components/footer";
 import ContributionList from "@/components/contributions";
 import { getContributions } from "@/lib/contributions";
 
-/**
- * Pull requests land on the order of days, and lib/contributions.ts caches the
- * GitHub response for the same window, so this is cheap.
- */
-export const revalidate = 900;
+/** Same window as the rest of the site, so new work shows up just as fast. */
+export const revalidate = 30;
 
 const url = "https://abhinandan.one/contributions";
 

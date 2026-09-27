@@ -6,21 +6,31 @@
 // merged pull requests and still-open items are kept: a closed, unmerged PR is
 // not a contribution worth showing.
 //
-// The response is cached for FETCH_REVALIDATE seconds — deliberately
-// independent of the pages' own ISR windows, so the homepage can revalidate
-// every 30s while GitHub is asked only a few times an hour.
+// FETCH_REVALIDATE must not outlive the pages' own revalidate. It did once
+// (900s against a 30s page) and the effect was a list that looked frozen: the
+// page re-rendered on schedule, but every re-render was handed the same cached
+// GitHub response. Measured with a stub GitHub — the fetch ran once at build
+// and then never again until the window expired.
 //
 // Unauthenticated the Search API allows 10 requests/minute per IP (30 with a
-// GITHUB_TOKEN in the environment), which this stays far inside. A failure
-// renders nothing rather than breaking the page.
+// GITHUB_TOKEN in the environment). Revalidations are traffic-driven, so this
+// stays inside that; if GitHub does push back, LAST_GOOD below keeps the list
+// on screen instead of blanking it.
 
 const GITHUB_USER = "awesome-pro";
 
 /** GitHub caps `per_page` at 100; that covers the whole list today (82 items). */
 const MAX_RESULTS = 100;
 
-/** How often GitHub is actually queried, whatever a page's own revalidate is. */
-const FETCH_REVALIDATE = 900;
+/** Matches the pages that render this, so new work appears as fast as theirs. */
+const FETCH_REVALIDATE = 30;
+
+/**
+ * Last response that actually parsed. Module state survives between requests on
+ * a warm serverless instance, so a rate-limited or failed fetch degrades to
+ * slightly older numbers rather than an empty section.
+ */
+let lastGood: Contribution[] | null = null;
 
 export type ContributionStatus = "merged" | "open" | "closed";
 
@@ -120,11 +130,11 @@ export async function getContributions(): Promise<Contribution[]> {
       }
     );
 
-    if (!response.ok) return [];
+    if (!response.ok) return lastGood ?? [];
 
     const data = (await response.json()) as { items?: GitHubSearchItem[] };
 
-    return (data.items ?? [])
+    lastGood = (data.items ?? [])
       .map(toContribution)
       .filter(
         (item) =>
@@ -136,7 +146,9 @@ export async function getContributions(): Promise<Contribution[]> {
           item.status !== "closed"
       )
       .sort(compare);
+
+    return lastGood;
   } catch {
-    return [];
+    return lastGood ?? [];
   }
 }
