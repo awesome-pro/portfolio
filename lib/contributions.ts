@@ -2,9 +2,14 @@
 //
 // One Search API request returns everything I have authored — pull requests and
 // issues alike, distinguished by the `pull_request` field — with its state and
-// merge time, so this cannot drift the way a hand-maintained array would. Only
-// merged pull requests and still-open items are kept: a closed, unmerged PR is
-// not a contribution worth showing.
+// merge time, so neither the contents nor the order drift the way a
+// hand-maintained array would. Only merged pull requests and still-open items
+// are kept: a closed, unmerged PR is not a contribution worth showing.
+//
+// The order is derived, never curated (see compare). It used to be curated: a
+// PINNED array of three fixed URLs was what the homepage sliced to three, so a
+// brand-new pull request could not appear there no matter how often it
+// revalidated. The data was right the whole time; the display order was the bug.
 //
 // FETCH_REVALIDATE must not outlive the pages' own revalidate. It did once
 // (900s against a 30s page) and the effect was a list that looked frozen: the
@@ -51,19 +56,18 @@ export interface Contribution {
 }
 
 /**
- * Pull requests pinned to the top in this order — this is what the homepage
- * shows. Empty the array to fall back to the automatic order: merged first,
- * then open, then closed, newest first inside each group.
+ * Ordering, applied to every consumer so the homepage head is always the most
+ * interesting slice of the same list the full page shows.
+ *
+ * Pull requests outrank issues (an issue is a report, a PR is shipped work),
+ * then still-open work outranks what already landed — the homepage leads with
+ * whatever is in flight right now, which is also what keeps it current without
+ * anyone editing this file. Newest first inside each bucket.
  */
-const PINNED = [
-  "https://github.com/vllm-project/vllm/pull/58843",
-  "https://github.com/laurent22/joplin/pull/11435",
-  "https://github.com/heroui-inc/heroui/pull/3595",
-];
-
+const KIND_RANK: Record<ContributionKind, number> = { pr: 0, issue: 1 };
 const STATUS_RANK: Record<ContributionStatus, number> = {
-  merged: 0,
-  open: 1,
+  open: 0,
+  merged: 1,
   closed: 2,
 };
 interface GitHubSearchItem {
@@ -98,14 +102,8 @@ function toContribution(item: GitHubSearchItem): Contribution {
 }
 
 function compare(a: Contribution, b: Contribution) {
-  const pinA = PINNED.indexOf(a.url);
-  const pinB = PINNED.indexOf(b.url);
-
-  if (pinA !== -1 || pinB !== -1) {
-    if (pinA === -1) return 1;
-    if (pinB === -1) return -1;
-    return pinA - pinB;
-  }
+  const kind = KIND_RANK[a.kind] - KIND_RANK[b.kind];
+  if (kind !== 0) return kind;
 
   const rank = STATUS_RANK[a.status] - STATUS_RANK[b.status];
   return rank !== 0 ? rank : b.date.localeCompare(a.date);
