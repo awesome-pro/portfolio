@@ -1,7 +1,7 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import { normalizeSignalLinks, type SignalLink } from "@/lib/signal-links";
 
-export type OpportunitySignalStatus = "new" | "reached_out" | "interviewing" | "closed";
+export type OpportunitySignalStatus = "new" | "applied" | "reached_out" | "interviewing" | "closed";
 
 export type { SignalLink };
 
