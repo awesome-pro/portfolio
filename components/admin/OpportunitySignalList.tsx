@@ -16,6 +16,10 @@ const STATUS_CONFIG: Record<
   { label: string; style: string }
 > = {
   new: { label: "New", style: "bg-surface text-ink-muted border-border" },
+  applied: {
+    label: "Applied",
+    style: "bg-violet-50 text-violet-700 border-violet-200",
+  },
   reached_out: {
     label: "Reached Out",
     style: "bg-blue-50 text-blue-700 border-blue-200",
@@ -86,11 +90,6 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
       <div className="flex items-start justify-between gap-4 px-5 pt-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            {today && (
-              <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-amber-50 text-amber-700 border-amber-200">
-                New today
-              </span>
-            )}
             <StatusBadge status={signal.status} />
             {links.length > 0 && (
               <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-surface text-ink-muted border-border">
@@ -198,6 +197,7 @@ export default function OpportunitySignalList({
         (s) => new Date(s.discovered_at).toISOString().split("T")[0] === todayDate
       ).length,
       new: signals.filter((s) => (s.status ?? "new") === "new").length,
+      applied: signals.filter((s) => s.status === "applied").length,
       reached_out: signals.filter((s) => s.status === "reached_out").length,
       interviewing: signals.filter((s) => s.status === "interviewing").length,
       closed: signals.filter((s) => s.status === "closed").length,
@@ -208,6 +208,7 @@ export default function OpportunitySignalList({
     { value: "active", label: "Active" },
     { value: "today", label: "Today" },
     { value: "new", label: "New" },
+    { value: "applied", label: "Applied" },
     { value: "reached_out", label: "Reached Out" },
     { value: "interviewing", label: "Interviewing" },
     { value: "closed", label: "Closed" },

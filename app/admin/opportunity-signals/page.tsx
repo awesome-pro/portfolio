@@ -12,6 +12,7 @@ export default async function OpportunitySignalsAdminPage() {
     (s) => new Date(s.discovered_at).toISOString().split("T")[0] === today
   ).length;
   const activeCount = signals.filter((s) => s.status !== "closed").length;
+  const appliedCount = signals.filter((s) => s.status === "applied").length;
   const interviewingCount = signals.filter(
     (s) => s.status === "interviewing"
   ).length;
@@ -34,7 +35,8 @@ export default async function OpportunitySignalsAdminPage() {
           <div className="flex items-center gap-4">
             <span className="text-xs font-mono text-ink-faint">
               {signals.length} total &middot; {activeCount} active &middot;{" "}
-              {todayCount} today &middot; {interviewingCount} interviewing
+              {todayCount} today &middot; {appliedCount} applied &middot;{" "}
+              {interviewingCount} interviewing
             </span>
             <Link
               href="/admin/opportunity-signals/new"

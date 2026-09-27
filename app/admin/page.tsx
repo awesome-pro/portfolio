@@ -16,6 +16,7 @@ export default async function AdminHub() {
   const todaySignalsCount = signals.filter(
     (s) => new Date(s.discovered_at).toISOString().split("T")[0] === today
   ).length;
+  const appliedCount = signals.filter((s) => s.status === "applied").length;
   const interviewingCount = signals.filter(
     (s) => s.status === "interviewing"
   ).length;
@@ -63,7 +64,8 @@ export default async function AdminHub() {
             </h2>
             <p className="font-mono text-xs text-ink-faint">
               {signals.length} total &middot; {activeSignalsCount} active &middot;{" "}
-              {todaySignalsCount} today &middot; {interviewingCount} interviewing
+              {todaySignalsCount} today &middot; {appliedCount} applied &middot;{" "}
+              {interviewingCount} interviewing
             </p>
           </Link>
         </div>

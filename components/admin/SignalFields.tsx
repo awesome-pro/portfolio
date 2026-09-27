@@ -6,6 +6,7 @@ import type { SignalLink } from "@/lib/signal-links";
 
 export const STATUS_OPTIONS: { value: OpportunitySignalStatus; label: string }[] = [
   { value: "new", label: "New" },
+  { value: "applied", label: "Applied" },
   { value: "reached_out", label: "Reached Out" },
   { value: "interviewing", label: "Interviewing" },
   { value: "closed", label: "Closed" },
