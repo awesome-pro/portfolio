@@ -24,7 +24,12 @@
 
 const GITHUB_USER = "awesome-pro";
 
-/** GitHub caps `per_page` at 100; that covers the whole list today (82 items). */
+/**
+ * GitHub caps `per_page` at 100 and this reads a single page, so it is also the
+ * ceiling on how much history reaches the site — 92 authored items at the time
+ * of writing. Past 100, the oldest silently fall off, which is the right end to
+ * lose. Add pagination before the list actually reaches that.
+ */
 const MAX_RESULTS = 100;
 
 /** Matches the pages that render this, so new work appears as fast as theirs. */
@@ -56,20 +61,16 @@ export interface Contribution {
 }
 
 /**
- * Ordering, applied to every consumer so the homepage head is always the most
- * interesting slice of the same list the full page shows.
- *
- * Pull requests outrank issues (an issue is a report, a PR is shipped work),
- * then still-open work outranks what already landed — the homepage leads with
- * whatever is in flight right now, which is also what keeps it current without
- * anyone editing this file. Newest first inside each bucket.
+ * Newest first, and nothing else. State is a colour, not a sort key: grouping
+ * open above merged meant an open item from years back outranked a merge from
+ * last week, which reads as a broken list. Every consumer shares this one
+ * order, so the homepage is always the head of the list /contributions shows
+ * in full.
  */
-const KIND_RANK: Record<ContributionKind, number> = { pr: 0, issue: 1 };
-const STATUS_RANK: Record<ContributionStatus, number> = {
-  open: 0,
-  merged: 1,
-  closed: 2,
-};
+function compare(a: Contribution, b: Contribution) {
+  return b.date.localeCompare(a.date);
+}
+
 interface GitHubSearchItem {
   id: number;
   number: number;
@@ -99,14 +100,6 @@ function toContribution(item: GitHubSearchItem): Contribution {
     status: mergedAt ? "merged" : item.state === "open" ? "open" : "closed",
     date: (mergedAt ?? item.updated_at ?? item.created_at).slice(0, 10),
   };
-}
-
-function compare(a: Contribution, b: Contribution) {
-  const kind = KIND_RANK[a.kind] - KIND_RANK[b.kind];
-  if (kind !== 0) return kind;
-
-  const rank = STATUS_RANK[a.status] - STATUS_RANK[b.status];
-  return rank !== 0 ? rank : b.date.localeCompare(a.date);
 }
 
 export async function getContributions(): Promise<Contribution[]> {
