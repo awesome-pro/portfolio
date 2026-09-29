@@ -1,20 +1,17 @@
 import { getPublicArtifacts } from "@/lib/artifacts";
 import { getAllProjects } from "@/lib/projects";
+import {
+  CONTACT,
+  FAQ,
+  factLines,
+  PERSON_NAME,
+  SITE_URL as SITE,
+  SUMMARY,
+} from "@/lib/identity";
 
 export const revalidate = 60;
 
-const SITE = "https://abhinandan.one";
-
-const ABOUT =
-  "Inference engineer. RL post-training on reasoning models, plus the inference systems that serve them.";
-
-const CONTACT: [label: string, url: string][] = [
-  ["Email", "mailto:abhinandan@abhinandan.one"],
-  ["GitHub", "https://github.com/awesome-pro"],
-  ["LinkedIn", "https://linkedin.com/in/abhibuilds"],
-  ["X", "https://x.com/abhibuilds"],
-  ["YouTube", "https://youtube.com/@0xAbhinandan"],
-];
+const ABOUT = SUMMARY;
 
 /**
  * `/llms-full.txt` — the complete text of every artifact plus full project
@@ -26,10 +23,19 @@ export async function GET() {
 
   const out: string[] = [];
 
-  out.push("# abhinandan", "", `> ${ABOUT}`, "");
+  out.push(`# ${PERSON_NAME}`, "", `> ${ABOUT}`, "");
   out.push(`Site: ${SITE}`);
   out.push(`Index (short): ${SITE}/llms.txt`);
+  out.push(`Profile page: ${SITE}/about`);
   out.push("");
+
+  // Everything a hiring agent needs, before it has to read six artifacts.
+  out.push("## At a glance", "", ...factLines(), "");
+
+  out.push("## FAQ", "");
+  for (const entry of FAQ) {
+    out.push(`**${entry.question}**`, "", entry.answer, "");
+  }
 
   out.push("# Projects", "");
   for (const project of getAllProjects()) {

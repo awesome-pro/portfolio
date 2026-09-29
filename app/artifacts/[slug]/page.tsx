@@ -9,6 +9,7 @@ import ArtifactViews from "@/components/artifacts/ArtifactViews";
 import { LinkBar } from "@/components/projects/shared";
 import { isVideoUrl } from "@/lib/artifact-media";
 import {
+  artifactExcerpt,
   getAllArtifactSlugsStatic,
   getArtifactBySlugStatic,
   youtubeEmbedUrl,
@@ -19,6 +20,17 @@ export const revalidate = 30;
 
 const DEFAULT_DESCRIPTION =
   "A build artifact. What I built, how I tested it, and where it broke.";
+
+/**
+ * The artifact's own opening paragraph, falling back to the boilerplate only
+ * when there is no prose to read. Every artifact used to ship the same
+ * description — "a build artifact, what I built, how I tested it" — which tells
+ * a search engine or an agent nothing about which artifact this is, and is the
+ * one field they both read first.
+ */
+function describe(artifact: Artifact): string {
+  return artifactExcerpt(artifact.story_markdown, 300) || DEFAULT_DESCRIPTION;
+}
 
 export async function generateStaticParams() {
   const slugs = await getAllArtifactSlugsStatic();
@@ -38,6 +50,7 @@ export async function generateMetadata({
   }
 
   const title = `Artifact #${artifact.serial_number}: ${artifact.artifact_name} | Abhinandan`;
+  const description = describe(artifact);
 
   // Social cards must be a still: an mp4 in og:image renders as a broken card,
   // so pick the first image even when a video is listed ahead of it.
@@ -47,10 +60,10 @@ export async function generateMetadata({
 
   return {
     title,
-    description: DEFAULT_DESCRIPTION,
+    description,
     openGraph: {
       title,
-      description: DEFAULT_DESCRIPTION,
+      description,
       url: `https://abhinandan.one/artifacts/${slug}`,
       type: "article",
       publishedTime: artifact.published_at ?? undefined,
@@ -70,7 +83,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description: DEFAULT_DESCRIPTION,
+      description,
       images: socialImage ? [socialImage.url] : [],
     },
     alternates: {
@@ -154,26 +167,35 @@ export default async function ArtifactDetailPage({
 
   if (!artifact) notFound();
 
+  const artifactUrl = `https://abhinandan.one/artifacts/${artifact.slug}`;
+
+  // The author is a bare @id reference, not a second inline Person: this is what
+  // folds six artifact pages into the one entity the homepage already declares,
+  // so an agent that reads any of them learns it is the same Abhinandan.
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "CreativeWork",
+    "@type": "TechArticle",
+    "@id": `${artifactUrl}#article`,
+    headline: artifact.artifact_name,
     name: artifact.artifact_name,
-    description: DEFAULT_DESCRIPTION,
-    url: `https://abhinandan.one/artifacts/${artifact.slug}`,
-    datePublished: artifact.published_at,
+    description: describe(artifact),
+    url: artifactUrl,
+    datePublished: artifact.published_at ?? undefined,
+    dateModified: artifact.updated_at,
+    inLanguage: "en-US",
+    image: artifact.architecture_images
+      .filter((media) => !isVideoUrl(media.url))
+      .map((media) => media.url),
     interactionStatistic: {
       "@type": "InteractionCounter",
       interactionType: { "@type": "ViewAction" },
       userInteractionCount: artifact.view_count,
     },
-    author: {
-      "@type": "Person",
-      name: "Abhinandan",
-      url: "https://abhinandan.one",
-    },
+    author: { "@id": "https://abhinandan.one/#person" },
+    isPartOf: { "@id": "https://abhinandan.one/#website" },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://abhinandan.one/artifacts/${artifact.slug}`,
+      "@id": artifactUrl,
     },
   };
 

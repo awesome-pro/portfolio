@@ -33,6 +33,10 @@ export default function Footer() {
               Resume
               <AgentUrl url="https://abhinandan.one/resume" />
             </Link>
+            <Link href="/about" className="hover:text-ink transition-colors">
+              About
+              <AgentUrl url="https://abhinandan.one/about" />
+            </Link>
             <a
               href="https://github.com/awesome-pro"
               target="_blank"

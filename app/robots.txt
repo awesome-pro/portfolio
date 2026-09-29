@@ -1,0 +1,223 @@
+# abhinandan.one
+#
+# Everything here is public and meant to be read by machines. This file exists
+# to state that permission explicitly rather than relying on a wildcard being
+# read generously, and to point crawlers at the machine-readable versions:
+#
+#   Human pages:        https://abhinandan.one
+#   Profile for agents: https://abhinandan.one/about
+#   Index for LLMs:     https://abhinandan.one/llms.txt
+#   Full text for LLMs: https://abhinandan.one/llms-full.txt
+#   Sitemap:            https://abhinandan.one/sitemap.xml
+#
+# Two usage vocabularies are declared, because they are different standards and
+# cost one line each:
+#
+#   Content-Usage  — IETF aipref (draft-ietf-aipref-vocab / -attach), which
+#                    updates RFC 9309 and is co-authored by Google's crawl
+#                    lead. Labels train-ai / ai-use / search, values y / n.
+#   Content-Signal — Cloudflare's 2025 vocabulary, read by Cloudflare's own
+#                    products. Labels ai-train / ai-input / search, values
+#                    yes / no.
+#
+# Both say the same thing here: this is a personal portfolio whose entire
+# purpose is to be found, read, quoted and cited. Nothing on it is restricted.
+# Neither vocabulary is enforced by anyone; they are preferences, and the
+# wildcard Allow below is what actually governs crawling.
+
+# ---------------------------------------------------------------------------
+# Content Signals Policy
+#
+# As a condition of accessing this website, you agree to abide by the following
+# content signals:
+#
+# (a) If a content-signal = yes, you may collect content for the corresponding
+#     use.
+# (b) If a content-signal = no, you may not collect content for the
+#     corresponding use.
+# (c) If the website operator does not include a content signal for a
+#     corresponding use, the website operator neither grants nor restricts
+#     permission via content signal with respect to the corresponding use.
+#
+# The content signals and their meanings are:
+#
+# search:   building a search index and providing search results (e.g.,
+#           returning hyperlinks and short excerpts from your website's
+#           contents). Search does not include providing AI-generated search
+#           summaries.
+# ai-input: inputting content into one or more AI models (e.g., retrieval
+#           augmented generation, grounding, or other real-time taking of
+#           content for generative AI search answers).
+# ai-train: training or fine-tuning AI models.
+# use:      what a crawler may keep and reuse after accessing the content —
+#           immediate (store nothing) | reference (index, excerpt, link back)
+#           | full (summarize and reproduce).
+#
+# ANY RESTRICTIONS EXPRESSED VIA CONTENT SIGNALS ARE EXPRESS RESERVATIONS OF
+# RIGHTS UNDER ARTICLE 4 OF THE EUROPEAN UNION DIRECTIVE 2019/790 ON COPYRIGHT
+# AND RELATED RIGHTS IN THE DIGITAL SINGLE MARKET.
+# ---------------------------------------------------------------------------
+
+User-Agent: *
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# ---------------------------------------------------------------------------
+# Crawlers that fetch at answer time — the ones whose reading decides whether
+# this site is cited when someone asks an AI about inference engineers.
+#
+# They are covered by the wildcard above; they are named anyway so the
+# permission is unambiguous and survives a host or proxy that injects its own
+# AI-bot rules ahead of this file. Every group repeats the two Disallows,
+# because a crawler matching a named group ignores the wildcard group
+# entirely — naming these bots must not quietly expose /admin.
+#
+# Deliberately absent: Google-Extended and Applebot-Extended. Both are
+# opt-OUT tokens with no user-agent string of their own, and Google-Extended
+# also governs grounding for the Gemini app. Leaving them unlisted is what
+# keeps this site eligible.
+# ---------------------------------------------------------------------------
+
+# OpenAI, ChatGPT search index
+User-Agent: OAI-SearchBot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# OpenAI, user-initiated fetch
+User-Agent: ChatGPT-User
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Anthropic, search index
+User-Agent: Claude-SearchBot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Anthropic, user-initiated fetch
+User-Agent: Claude-User
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Perplexity, search index
+User-Agent: PerplexityBot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Perplexity, user-initiated fetch
+User-Agent: Perplexity-User
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# DuckDuckGo, real-time AI answers
+User-Agent: DuckAssistBot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Apple, Spotlight/Siri/Safari search
+User-Agent: Applebot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Amazon, Alexa search
+User-Agent: Amzn-SearchBot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Amazon, live Alexa queries
+User-Agent: Amzn-User
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Google, user-triggered agent browsing
+User-Agent: Google-Agent
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Google, Notebook source fetches
+User-Agent: Google-GeminiNotebook
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Meta, user-triggered assistant fetches
+User-Agent: meta-externalfetcher
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Mistral, user-triggered fetch
+User-Agent: MistralAI-User
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# You.com, search index
+User-Agent: YouBot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# --- classic search engines: their indexes ground AI answers too -------------
+# Googlebot drives AI Overviews and AI Mode; Copilot grounding reads the Bing
+# index. Both are allowed by the wildcard and named here for the same reason.
+
+User-Agent: Googlebot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+User-Agent: bingbot
+Content-Usage: search=y, ai-use=y, train-ai=y
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Host: https://abhinandan.one
+Sitemap: https://abhinandan.one/sitemap.xml

@@ -1,6 +1,13 @@
 import { artifactExcerpt, getPublicArtifacts } from "@/lib/artifacts";
 import { getContributions } from "@/lib/contributions";
 import { getAllProjects } from "@/lib/projects";
+import {
+  CONTACT,
+  FAQ,
+  factLines,
+  SITE_URL as SITE,
+  SUMMARY,
+} from "@/lib/identity";
 
 /** Matches the freshness window of the pages this summarises. */
 export const revalidate = 60;
@@ -8,18 +15,7 @@ export const revalidate = 60;
 /** Keeps this index link-first; /contributions is the complete list. */
 const MAX_CONTRIBUTIONS = 15;
 
-const SITE = "https://abhinandan.one";
-
-const ABOUT =
-  "Inference engineer. RL post-training on reasoning models, plus the inference systems that serve them.";
-
-const CONTACT: [label: string, url: string][] = [
-  ["Email", "mailto:abhinandan@abhinandan.one"],
-  ["GitHub", "https://github.com/awesome-pro"],
-  ["LinkedIn", "https://linkedin.com/in/abhibuilds"],
-  ["X", "https://x.com/abhibuilds"],
-  ["YouTube", "https://youtube.com/@0xAbhinandan"],
-];
+const ABOUT = SUMMARY;
 
 /**
  * `/llms.txt` — a curated, link-first index for language models, following the
@@ -38,12 +34,28 @@ export async function GET() {
     `Machine-readable views: ${SITE}/llms.txt (this index) and ${SITE}/llms-full.txt (complete text of every artifact).`,
     "",
   );
+  out.push(
+    `Profile page for agents and people: ${SITE}/about — role, availability, selected work with measured numbers, education, recognition, and a FAQ.`,
+    "",
+  );
 
+  // Stated before the first H2, and before the project list, because "is this
+  // person available and for what" is the first thing a hiring agent resolves
+  // and the last thing a portfolio usually says outright. It sits in the
+  // non-heading part of the file on purpose: in llms.txt v2 the H2 sections are
+  // for file lists, and this is prose.
+  out.push(...factLines(), "");
+
+  // llms.txt v2 requires every file-list entry to be a markdown hyperlink
+  // `[name](url)`, optionally followed by ": notes". Bare URLs and bold names
+  // are not conformant, so the primary link leads and the rest hang off it.
   out.push("## Projects", "");
   for (const project of getAllProjects()) {
-    out.push(`- **${project.title}** — ${project.tag}. ${project.oneLiner}`);
-    for (const link of project.links) {
-      out.push(`  - ${link.label}: ${link.url}`);
+    const [primary, ...rest] = project.links;
+    const label = primary ? `[${project.title}](${primary.url})` : project.title;
+    out.push(`- ${label}: ${project.tag}. ${project.oneLiner}`);
+    for (const link of rest) {
+      out.push(`  - [${link.label}](${link.url})`);
     }
     out.push(`  - stack: ${project.stack.join(", ")}`);
   }
@@ -79,10 +91,16 @@ export async function GET() {
     out.push("");
   }
 
+  // Answers an agent can lift whole, in the form the question is asked.
+  out.push("## FAQ", "");
+  for (const entry of FAQ) {
+    out.push(`**${entry.question}**`, "", entry.answer, "");
+  }
+
   out.push("## Contact", "");
 
   for (const [label, url] of CONTACT) {
-    out.push(`- ${label}: ${url}`);
+    out.push(`- [${label}](${url})`);
   }
   out.push("");
 

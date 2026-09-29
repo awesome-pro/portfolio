@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { getAllOpportunitySignals } from "@/lib/opportunity-signals";
 import { getAllArtifactsAdmin } from "@/lib/artifacts";
+import { loadChecklist } from "@/lib/prep-checklist";
 import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
-  const [signals, artifacts] = await Promise.all([
+  const [signals, artifacts, prep] = await Promise.all([
     getAllOpportunitySignals(),
     getAllArtifactsAdmin(),
+    loadChecklist(),
   ]);
 
   const today = new Date().toISOString().split("T")[0];
@@ -66,6 +68,24 @@ export default async function AdminHub() {
               {signals.length} total &middot; {activeSignalsCount} active &middot;{" "}
               {todaySignalsCount} today &middot; {appliedCount} applied &middot;{" "}
               {interviewingCount} interviewing
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/prep"
+            className="group flex flex-col gap-3 p-6 border border-border rounded-2xl bg-surface hover:border-ink-muted transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold tracking-widest uppercase text-ink-muted">
+                Prep
+              </p>
+              <span className="text-ink-faint group-hover:text-ink transition-colors">→</span>
+            </div>
+            <h2 className="text-lg font-bold tracking-tight text-ink">
+              Interview Prep
+            </h2>
+            <p className="font-mono text-xs text-ink-faint">
+              {prep.itemCount} items across {prep.modules.length} modules
             </p>
           </Link>
         </div>
