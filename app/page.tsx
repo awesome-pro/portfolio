@@ -24,9 +24,14 @@ export default async function Home() {
   const hasMoreArtifacts = artifacts.length > latestArtifacts.length;
 
   const contributions = await getContributions();
-  const latestContributions = contributions.slice(0, INITIAL_CONTRIBUTIONS);
-  const hasMoreContributions =
-    contributions.length > latestContributions.length;
+  // Pull requests only. Issues live behind the toggle on /contributions; a bug
+  // report in the homepage's top three reads as weaker proof of work than code
+  // that actually landed, so it never takes a slot here.
+  const pullRequests = contributions.filter(
+    (contribution) => contribution.kind === "pr"
+  );
+  const latestContributions = pullRequests.slice(0, INITIAL_CONTRIBUTIONS);
+  const hasMoreContributions = pullRequests.length > latestContributions.length;
 
   return (
     <div className="min-h-screen bg-background">

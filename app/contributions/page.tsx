@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
-import ContributionList from "@/components/contributions";
+import ContributionExplorer from "@/components/contribution-explorer";
 import { getContributions } from "@/lib/contributions";
 
 /** Same window as the rest of the site, so new work shows up just as fast. */
@@ -73,7 +73,7 @@ export default async function ContributionsPage() {
 
           <div className="mt-10">
             {contributions.length > 0 ? (
-              <ContributionList contributions={contributions} />
+              <ContributionExplorer contributions={contributions} />
             ) : (
               <p className="py-10 font-mono text-sm text-ink-faint">
                 GitHub isn&apos;t reachable right now. Try again shortly.
