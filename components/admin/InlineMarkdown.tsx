@@ -1,3 +1,5 @@
+"use client";
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -6,8 +8,8 @@ import remarkGfm from "remark-gfm";
  *
  * Items are written as prose ("**MiniServe** — paged KV, `97%` prefill saved"),
  * so the emphasis and the code spans carry meaning and cannot be stripped. This
- * runs on the server and hands React nodes to the client checklist, which keeps
- * the markdown parser out of the browser bundle.
+ * runs in the browser, inside the checklist, so an item can be re-rendered the
+ * moment it is reworded without a round trip.
  *
  * No raw HTML: react-markdown escapes it, and the source is a file in this
  * repository anyway.

@@ -1,19 +1,38 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
+import InlineMarkdown from "@/components/admin/InlineMarkdown";
+import {
+  addItem,
+  deleteCustomItem,
+  editItem,
+  getChangesSnapshot,
+  getItemsServerSnapshot,
+  getItemsStateServerSnapshot,
+  getItemsStateSnapshot,
+  hideItem,
+  resolveItems,
+  restoreItem,
+  subscribe as subscribeItems,
+  CUSTOM_PREFIX,
+  type ItemsState,
+} from "@/lib/prep-items-store";
 import {
   clearAll,
   exportProgress,
   getServerSnapshot,
   getSnapshot,
+  getSyncServerSnapshot,
+  getSyncSnapshot,
   importProgress,
   subscribe,
   toggle,
+  type SyncState,
 } from "@/lib/prep-progress-store";
 
 export interface PrepItemView {
   key: string;
-  label: ReactNode;
+  text: string;
 }
 
 export interface PrepSectionView {
@@ -21,30 +40,42 @@ export interface PrepSectionView {
   title: string;
   /** A module with no subheadings: render its items with no heading of their own. */
   implicit: boolean;
-  prose: ReactNode[];
+  prose: string[];
   items: PrepItemView[];
 }
 
 export interface PrepModuleView {
   id: string;
   title: string;
-  prose: ReactNode[];
+  prose: string[];
   sections: PrepSectionView[];
 }
 
-function keysOf(module: PrepModuleView): string[] {
-  return module.sections.flatMap((section) =>
-    section.items.map((item) => item.key)
-  );
-}
+/** What the footer says about where the ticks currently live. */
+const SYNC_NOTE: Record<SyncState, string> = {
+  local: "checking…",
+  syncing: "saving…",
+  synced: "ticks synced — they survive clearing this browser and follow you to another",
+  unavailable:
+    "ticks are browser-only — run migrations/prep_progress.sql to sync them",
+  offline: "offline — ticks are kept here and pushed on the next load",
+};
+
+const ITEMS_NOTE: Record<ItemsState, string> = {
+  loading: "",
+  ready: "",
+  unavailable: "edits need migrations/prep_items.sql",
+  offline: "edits are not reaching the server",
+};
 
 /**
- * The whole checklist, tickable.
+ * The checklist: tickable, and editable in place.
  *
- * Ticking is local and instant — there is no save button and no request, and
- * the browser holds the state. "Remaining" hides what is done, which is the
- * only view that matters a week before a loop; collapsing a module is how you
- * ignore the other eighteen while you work through one.
+ * Editing is deliberately one text box — Enter saves, Escape cancels, clicking
+ * away saves. Hiding is the same row carrying a flag, never a deletion, so a
+ * stray click cannot destroy anything and the "hidden" toggle in the bar is
+ * where things come back from. Only items you added yourself can be deleted
+ * outright, because there is nothing underneath them to restore.
  */
 export default function PrepChecklist({
   modules,
@@ -56,10 +87,61 @@ export default function PrepChecklist({
     getSnapshot,
     getServerSnapshot
   );
+  const sync = useSyncExternalStore(
+    subscribe,
+    getSyncSnapshot,
+    getSyncServerSnapshot
+  );
+  const changes = useSyncExternalStore(
+    subscribeItems,
+    getChangesSnapshot,
+    getItemsServerSnapshot
+  );
+  const itemsState = useSyncExternalStore(
+    subscribeItems,
+    getItemsStateSnapshot,
+    getItemsStateServerSnapshot
+  );
+
   const [onlyRemaining, setOnlyRemaining] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [editing, setEditing] = useState<{ key: string; draft: string } | null>(
+    null
+  );
+  const [adding, setAdding] = useState<{
+    sectionId: string;
+    draft: string;
+  } | null>(null);
   const [note, setNote] = useState<string | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
+  /** Escape must cancel, but it also blurs the input — which saves. */
+  const cancelled = useRef(false);
+
+  /**
+   * Live item keys for a module: what the markdown supplied minus what has been
+   * hidden, plus anything added here. Progress is measured against this, so
+   * adding an item moves the denominator rather than silently inflating the
+   * percentage.
+   */
+  function keysOf(module: PrepModuleView): string[] {
+    const keys: string[] = [];
+    const sectionIds = new Set<string>();
+
+    for (const section of module.sections) {
+      sectionIds.add(section.id);
+      for (const item of section.items) {
+        if (changes[item.key]?.deleted) continue;
+        keys.push(item.key);
+      }
+    }
+    for (const change of Object.values(changes)) {
+      if (change.deleted) continue;
+      if (!change.key.startsWith(CUSTOM_PREFIX)) continue;
+      if (!sectionIds.has(change.sectionId)) continue;
+      keys.push(change.key);
+    }
+    return keys;
+  }
 
   const allKeys = modules.flatMap(keysOf);
   const doneCount = allKeys.filter((key) => progress[key]).length;
@@ -68,7 +150,36 @@ export default function PrepChecklist({
     ? Math.round((doneCount / allKeys.length) * 100)
     : 0;
 
-  function backup() {
+  const hiddenCount = Object.values(changes).filter(
+    (change) => change.deleted
+  ).length;
+  const customCount = Object.keys(changes).filter((key) =>
+    key.startsWith(CUSTOM_PREFIX)
+  ).length;
+
+  function sectionIdOf(key: string): string | null {
+    // `module` is reserved in Next's bundler, so the loop variable is not.
+    for (const item of modules) {
+      for (const section of item.sections) {
+        if (section.items.some((entry) => entry.key === key)) return section.id;
+      }
+    }
+    return changes[key]?.sectionId ?? null;
+  }
+
+  function saveEdit() {
+    if (cancelled.current) {
+      cancelled.current = false;
+      return;
+    }
+    if (!editing) return;
+    const text = editing.draft.trim();
+    const sectionId = sectionIdOf(editing.key);
+    if (text && sectionId) editItem(editing.key, sectionId, text);
+    setEditing(null);
+  }
+
+  function download() {
     const blob = new Blob([exportProgress()], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -114,13 +225,26 @@ export default function PrepChecklist({
           >
             remaining {remaining}
           </button>
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowHidden((value) => !value)}
+              aria-pressed={showHidden}
+              className={`cursor-pointer font-mono text-xs transition-colors ${
+                showHidden ? "text-ink" : "text-ink-faint hover:text-ink"
+              }`}
+            >
+              hidden {hiddenCount}
+            </button>
+          )}
         </div>
       </div>
 
       {modules.map((module) => {
         const moduleKeys = keysOf(module);
         const moduleDone = moduleKeys.filter((key) => progress[key]).length;
-        const complete = moduleKeys.length > 0 && moduleDone === moduleKeys.length;
+        const complete =
+          moduleKeys.length > 0 && moduleDone === moduleKeys.length;
         const isCollapsed = collapsed[module.id];
 
         return (
@@ -153,17 +277,22 @@ export default function PrepChecklist({
 
             {!isCollapsed && (
               <>
-                {module.prose.length > 0 && (
-                  <div className="mt-3 text-sm leading-relaxed text-ink-muted">
-                    {module.prose}
+                {module.prose.map((paragraph, index) => (
+                  <div
+                    key={index}
+                    className="mt-3 text-sm leading-relaxed text-ink-muted"
+                  >
+                    <InlineMarkdown text={paragraph} />
                   </div>
-                )}
+                ))}
 
                 {module.sections.map((section) => {
-                  const visible = section.items.filter(
-                    (item) => !onlyRemaining || !progress[item.key]
+                  const resolved = resolveItems(section.id, section.items);
+                  const visible = resolved.filter(
+                    (item) =>
+                      (showHidden || !item.hidden) &&
+                      (!onlyRemaining || item.hidden || !progress[item.key])
                   );
-                  if (visible.length === 0) return null;
 
                   return (
                     <div key={section.id} className="mt-6">
@@ -172,17 +301,52 @@ export default function PrepChecklist({
                           {section.title}
                         </h3>
                       )}
-                      {section.prose.length > 0 && (
-                        <div className="mt-2 text-sm leading-relaxed text-ink-muted">
-                          {section.prose}
+                      {section.prose.map((paragraph, index) => (
+                        <div
+                          key={index}
+                          className="mt-2 text-sm leading-relaxed text-ink-muted"
+                        >
+                          <InlineMarkdown text={paragraph} />
                         </div>
-                      )}
+                      ))}
+
                       <ul className={section.implicit ? "" : "mt-3"}>
                         {visible.map((item) => {
                           const done = Boolean(progress[item.key]);
+                          const isEditing = editing?.key === item.key;
+
+                          if (isEditing && editing) {
+                            return (
+                              <li key={item.key} className="py-1">
+                                <input
+                                  autoFocus
+                                  value={editing.draft}
+                                  onChange={(event) =>
+                                    setEditing({
+                                      key: item.key,
+                                      draft: event.target.value,
+                                    })
+                                  }
+                                  onKeyDown={(event) => {
+                                    if (event.key === "Enter") saveEdit();
+                                    if (event.key === "Escape") {
+                                      cancelled.current = true;
+                                      setEditing(null);
+                                    }
+                                  }}
+                                  onBlur={saveEdit}
+                                  className="w-full rounded border border-ink-muted/60 bg-surface px-2 py-1 text-sm text-ink outline-none"
+                                />
+                              </li>
+                            );
+                          }
+
                           return (
-                            <li key={item.key}>
-                              <label className="group flex cursor-pointer items-start gap-3 py-1.5">
+                            <li
+                              key={item.key}
+                              className="group flex items-start gap-3"
+                            >
+                              <label className="flex flex-1 cursor-pointer items-start gap-3 py-1.5">
                                 <input
                                   type="checkbox"
                                   checked={done}
@@ -191,18 +355,94 @@ export default function PrepChecklist({
                                 />
                                 <span
                                   className={`text-sm leading-relaxed ${
-                                    done
-                                      ? "text-ink-faint line-through decoration-ink-faint/60"
-                                      : "text-ink-muted group-hover:text-ink"
+                                    item.hidden
+                                      ? "text-ink-faint/70 line-through"
+                                      : done
+                                        ? "text-ink-faint line-through decoration-ink-faint/60"
+                                        : "text-ink-muted group-hover:text-ink"
                                   }`}
                                 >
-                                  {item.label}
+                                  <InlineMarkdown text={item.text} />
                                 </span>
                               </label>
+
+                              <span className="flex shrink-0 items-center gap-2 pt-2 font-mono text-[10px] opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                                {item.hidden ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      restoreItem(item.key, section.id)
+                                    }
+                                    className="cursor-pointer text-ink-faint hover:text-ink"
+                                  >
+                                    restore
+                                  </button>
+                                ) : (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setEditing({
+                                          key: item.key,
+                                          draft: item.text,
+                                        })
+                                      }
+                                      className="cursor-pointer text-ink-faint hover:text-ink"
+                                    >
+                                      edit
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        item.custom
+                                          ? deleteCustomItem(item.key)
+                                          : hideItem(item.key, section.id)
+                                      }
+                                      className="cursor-pointer text-ink-faint hover:text-ink"
+                                    >
+                                      {item.custom ? "delete" : "hide"}
+                                    </button>
+                                  </>
+                                )}
+                              </span>
                             </li>
                           );
                         })}
                       </ul>
+
+                      {adding?.sectionId === section.id ? (
+                        <input
+                          autoFocus
+                          value={adding.draft}
+                          placeholder="new item — Enter to add, Escape to cancel"
+                          onChange={(event) =>
+                            setAdding({
+                              sectionId: section.id,
+                              draft: event.target.value,
+                            })
+                          }
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              const text = adding.draft.trim();
+                              if (text) addItem(section.id, text);
+                              setAdding(null);
+                            }
+                            if (event.key === "Escape") setAdding(null);
+                          }}
+                          onBlur={() => setAdding(null)}
+                          className="mt-2 w-full rounded border border-ink-muted/60 bg-surface px-2 py-1 font-mono text-xs text-ink outline-none"
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setAdding({ sectionId: section.id, draft: "" })
+                          }
+                          className="mt-2 cursor-pointer font-mono text-[10px] text-ink-faint transition-colors hover:text-ink"
+                        >
+                          + add item
+                        </button>
+                      )}
                     </div>
                   );
                 })}
@@ -215,33 +455,32 @@ export default function PrepChecklist({
       <div className="mt-14 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-6 font-mono text-xs">
         <button
           type="button"
-          onClick={backup}
+          onClick={download}
           className="cursor-pointer text-ink-faint transition-colors hover:text-ink"
         >
           backup
         </button>
-        <button
-          type="button"
-          onClick={() => fileInput.current?.click()}
-          className="cursor-pointer text-ink-faint transition-colors hover:text-ink"
-        >
+        <label className="cursor-pointer text-ink-faint transition-colors hover:text-ink">
           restore
-        </button>
-        <input
-          ref={fileInput}
-          type="file"
-          accept="application/json"
-          className="hidden"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) void restore(file);
-            event.target.value = "";
-          }}
-        />
+          <input
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) void restore(file);
+              event.target.value = "";
+            }}
+          />
+        </label>
         <button
           type="button"
           onClick={() => {
-            if (window.confirm("Clear every tick? This cannot be undone.")) {
+            if (
+              window.confirm(
+                "Clear every tick, here and in the synced copy? This cannot be undone."
+              )
+            ) {
               clearAll();
               setNote("all ticks cleared");
             }
@@ -252,7 +491,13 @@ export default function PrepChecklist({
         </button>
         <span className="text-ink-faint">
           {note ??
-            "ticks are stored in this browser only — back up if you switch machines"}
+            [
+              SYNC_NOTE[sync],
+              ITEMS_NOTE[itemsState],
+              customCount > 0 ? `${customCount} added by you` : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
         </span>
       </div>
     </div>
