@@ -57,8 +57,7 @@ export default async function ArtifactsPage() {
             Artifacts
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">
-            Long-form build traces. What I built, how I tested it, and where it
-            broke.
+            What I build, what I think, What I learn - I generally write here
           </p>
 
           <div className="mt-10">

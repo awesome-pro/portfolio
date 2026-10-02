@@ -22,7 +22,7 @@ export default function Hero() {
       </p>
       <p className="mt-7 text-base leading-relaxed text-ink-muted">i like working when the world is sleeping. my work cycle is generally 12pm to 4am. And I usually write my thoughts in my <Link className="hover:text-white underline" href={'/artifacts'}>artifacts</Link> .</p>
       <p className="mt-7 text-base leading-relaxed text-ink-muted">
-        The part I live is generally after the launch day. When the reasoning
+        I live the part after the launch day. When the reasoning
         breaks, when the cost skyrockets, when the first traffic hits - all the similar thrills :)
       </p>
 
