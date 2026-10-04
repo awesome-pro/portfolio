@@ -2,24 +2,26 @@
 
 import { useState } from "react";
 import ContributionList from "@/components/contributions";
-import type { Contribution, ContributionKind } from "@/lib/contributions";
+import type { Contribution } from "@/lib/contributions";
 
 /**
- * Pull requests and issues, one kind at a time.
+ * The contribution list, split by state.
  *
- * They are not the same evidence — a merged PR is work that shipped, an issue is
- * a report — so the full page separates them instead of folding both into one
- * ranking. Pull requests are what opens by default; the homepage shows nothing
- * but pull requests, because a bug report sitting in the top three reads as
- * weaker proof of work than code that landed.
+ * Merged and open answer different questions: merged is proof of work, open is
+ * what is in flight right now. Merged leads because it is the stronger claim.
  *
- * This is the only stateful part of the page. ContributionList stays a plain
- * component so the homepage can keep rendering it on the server with no client
- * JavaScript of its own.
+ * Pull requests only. Issues are still fetched and classified in
+ * lib/contributions.ts — the `kind` field is what separates them — but nothing
+ * on the site displays them, so this component receives PRs and never has to
+ * ask.
+ *
+ * The homepage renders ContributionList directly, on the server, with merged
+ * pull requests only; this client component exists for the page where you want
+ * to look things up rather than be impressed.
  */
-const TABS: { kind: ContributionKind; label: string }[] = [
-  { kind: "pr", label: "pull requests" },
-  { kind: "issue", label: "issues" },
+const TABS: { status: "merged" | "open"; label: string }[] = [
+  { status: "merged", label: "merged" },
+  { status: "open", label: "open" },
 ];
 
 export default function ContributionExplorer({
@@ -27,24 +29,24 @@ export default function ContributionExplorer({
 }: {
   contributions: Contribution[];
 }) {
-  const [kind, setKind] = useState<ContributionKind>("pr");
+  const [status, setStatus] = useState<"merged" | "open">("merged");
 
   const counts = {
-    pr: contributions.filter((c) => c.kind === "pr").length,
-    issue: contributions.filter((c) => c.kind === "issue").length,
-  } satisfies Record<ContributionKind, number>;
+    merged: contributions.filter((c) => c.status === "merged").length,
+    open: contributions.filter((c) => c.status === "open").length,
+  } satisfies Record<"merged" | "open", number>;
 
-  const visible = contributions.filter((c) => c.kind === kind);
+  const visible = contributions.filter((c) => c.status === status);
 
   return (
     <>
       <div
         role="group"
-        aria-label="Contribution kind"
+        aria-label="Pull request state"
         className="flex items-center gap-1.5 font-mono text-[13px] tracking-[0.14em] uppercase"
       >
         {TABS.map((tab, index) => (
-          <span key={tab.kind} className="flex items-center gap-1.5">
+          <span key={tab.status} className="flex items-center gap-1.5">
             {index > 0 && (
               <span aria-hidden className="">
                 /
@@ -52,14 +54,16 @@ export default function ContributionExplorer({
             )}
             <button
               type="button"
-              onClick={() => setKind(tab.kind)}
-              aria-pressed={kind === tab.kind}
+              onClick={() => setStatus(tab.status)}
+              aria-pressed={status === tab.status}
               className={`cursor-pointer transition-colors ${
-                kind === tab.kind ? "text-ink" : "text-ink-faint hover:text-ink"
+                status === tab.status
+                  ? "text-ink"
+                  : "text-ink-faint hover:text-ink"
               }`}
             >
               {tab.label}{" "}
-              <span className="tabular-nums">{counts[tab.kind]}</span>
+              <span className="tabular-nums">{counts[tab.status]}</span>
             </button>
           </span>
         ))}

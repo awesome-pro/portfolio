@@ -7,14 +7,14 @@ import ArtifactIndex from "@/components/artifacts/ArtifactIndex";
 import ContributionList from "@/components/contributions";
 import Footer from "@/components/footer";
 import { getPublicArtifacts } from "@/lib/artifacts";
-import { getContributions } from "@/lib/contributions";
+import { getPullRequests } from "@/lib/contributions";
 
 export const revalidate = 30;
 
 /** How many artifacts the homepage shows before linking out to the full index. */
 const INITIAL_ARTIFACTS = 3;
 
-/** How many pull requests the homepage shows before linking out to /contributions. */
+/** How many merged pull requests the homepage shows before linking out. */
 const INITIAL_CONTRIBUTIONS = 3;
 
 export default async function Home() {
@@ -23,15 +23,18 @@ export default async function Home() {
   const latestArtifacts = artifacts.slice(0, INITIAL_ARTIFACTS);
   const hasMoreArtifacts = artifacts.length > latestArtifacts.length;
 
-  const contributions = await getContributions();
-  // Pull requests only. Issues live behind the toggle on /contributions; a bug
-  // report in the homepage's top three reads as weaker proof of work than code
-  // that actually landed, so it never takes a slot here.
-  const pullRequests = contributions.filter(
-    (contribution) => contribution.kind === "pr"
+  // Merged pull requests only. This section is the proof-of-work slot: code
+  // that landed, not code that is waiting. An open PR is a claim rather than a
+  // result, so it does not take a slot here either.
+  const mergedPullRequests = (await getPullRequests()).filter(
+    (contribution) => contribution.status === "merged"
   );
-  const latestContributions = pullRequests.slice(0, INITIAL_CONTRIBUTIONS);
-  const hasMoreContributions = pullRequests.length > latestContributions.length;
+  const latestContributions = mergedPullRequests.slice(
+    0,
+    INITIAL_CONTRIBUTIONS
+  );
+  const hasMoreContributions =
+    mergedPullRequests.length > latestContributions.length;
 
   return (
     <div className="min-h-screen bg-background">

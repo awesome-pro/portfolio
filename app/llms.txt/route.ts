@@ -1,5 +1,5 @@
 import { artifactExcerpt, getPublicArtifacts } from "@/lib/artifacts";
-import { getContributions } from "@/lib/contributions";
+import { getPullRequests } from "@/lib/contributions";
 import { getAllProjects } from "@/lib/projects";
 import {
   CONTACT,
@@ -25,7 +25,7 @@ const ABOUT = SUMMARY;
  */
 export async function GET() {
   const artifacts = await getPublicArtifacts();
-  const contributions = await getContributions();
+  const contributions = await getPullRequests();
 
   const out: string[] = [];
 
@@ -80,12 +80,12 @@ export async function GET() {
   if (contributions.length > 0) {
     out.push("## Open source", "");
     out.push(
-      `Merged pull requests and open issues I have raised against other projects (${contributions.length} total: ${SITE}/contributions).`,
+      `Merged and open pull requests I have raised against other projects (${contributions.length} total: ${SITE}/contributions).`,
       "",
     );
     for (const contribution of contributions.slice(0, MAX_CONTRIBUTIONS)) {
       out.push(
-        `- [${contribution.title}](${contribution.url}) — ${contribution.repo} #${contribution.number} ${contribution.kind}, ${contribution.status}, ${contribution.date}`,
+        `- [${contribution.title}](${contribution.url}) — ${contribution.repo} #${contribution.number}, ${contribution.status}, ${contribution.date}`,
       );
     }
     out.push("");

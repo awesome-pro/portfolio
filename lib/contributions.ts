@@ -102,6 +102,19 @@ function toContribution(item: GitHubSearchItem): Contribution {
   };
 }
 
+/**
+ * Pull requests only — what every surface on the site now shows.
+ *
+ * Issues are still fetched and still classified (the `kind` field is what
+ * separates them), they are simply not displayed anywhere: a bug report beside
+ * merged code reads as weaker evidence than the code, and the page is a
+ * portfolio, not a changelog.
+ */
+export async function getPullRequests(): Promise<Contribution[]> {
+  const contributions = await getContributions();
+  return contributions.filter((contribution) => contribution.kind === "pr");
+}
+
 export async function getContributions(): Promise<Contribution[]> {
   // No `type:` qualifier, so this returns pull requests *and* issues in one
   // request; they are told apart by the `pull_request` field in each item.

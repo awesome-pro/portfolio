@@ -24,9 +24,9 @@ function formatDate(date: string) {
 }
 
 /**
- * Open-source pull requests and issues as a quiet list: the title links out,
- * with the repo, when it moved, and its current status. Rows follow the Work
- * section's layout so the two read as one page.
+ * Open-source pull requests as a quiet list: the title links out, with the
+ * repo, when it moved, and whether it merged. Rows follow the Work section's
+ * layout so the two read as one page.
  */
 export default function ContributionList({
   contributions,
@@ -54,7 +54,6 @@ export default function ContributionList({
             </a>
             <span className="font-mono text-xs text-ink-faint">
               {contribution.repo} #{contribution.number}
-              {contribution.kind === "issue" && " · issue"}
             </span>
           </div>
 

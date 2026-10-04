@@ -3,7 +3,7 @@ import Link from "next/link";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import ContributionExplorer from "@/components/contribution-explorer";
-import { getContributions } from "@/lib/contributions";
+import { getPullRequests } from "@/lib/contributions";
 
 /** Same window as the rest of the site, so new work shows up just as fast. */
 export const revalidate = 30;
@@ -13,11 +13,11 @@ const url = "https://abhinandan.one/contributions";
 export const metadata: Metadata = {
   title: "Open source | Abhinandan",
   description:
-    "Merged pull requests and open issues I've raised against other people's open-source projects.",
+    "Merged and open pull requests I've raised against other people's open-source projects.",
   openGraph: {
     title: "Open source contributions",
     description:
-      "Merged pull requests and open issues I've raised against other people's open-source projects.",
+      "Merged and open pull requests I've raised against other people's open-source projects.",
     url,
     type: "website",
   },
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ContributionsPage() {
-  const contributions = await getContributions();
+  const contributions = await getPullRequests();
   const merged = contributions.filter((c) => c.status === "merged").length;
   const open = contributions.filter((c) => c.status === "open").length;
   const repos = new Set(contributions.map((c) => c.repo)).size;
@@ -59,9 +59,8 @@ export default async function ContributionsPage() {
             Open source
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">
-            Pull requests and issues I&apos;ve opened against other
-            people&apos;s projects, read straight from GitHub. Merged and still
-            open only.
+            Pull requests I&apos;ve opened against other people&apos;s
+            projects, read straight from GitHub. Merged and still open only.
           </p>
 
           {contributions.length > 0 && (

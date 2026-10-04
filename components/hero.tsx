@@ -3,9 +3,8 @@ import AgentUrl from "@/components/agent-url";
 
 const LINKS = [
   { label: "x", href: "https://x.com/abhibuilds" },
-  { label: "email", href: "mailto:abhinandan@abhinandan.one" },
+  { label: "mail", href: "mailto:abhinandan@abhinandan.one" },
   { label: "github", href: "https://github.com/awesome-pro" },
-  { label: "youtube", href: "https://youtube.com/@0xAbhinandan" },
 ];
 
 export default function Hero() {
@@ -55,7 +54,7 @@ export default function Hero() {
           <span className="grid grid-cols-[0fr] transition-[grid-template-columns] duration-300 ease-out group-hover:grid-cols-[1fr] group-focus-visible:grid-cols-[1fr]">
             <span className="overflow-hidden">
               <span className="ml-1.5 inline-block whitespace-nowrap rounded-full border border-border bg-surface px-2 py-0.5 text-[10px] text-ink-muted opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-                can join immediately
+                available
               </span>
             </span>
           </span>
