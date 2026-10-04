@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { getAllOpportunitySignals } from "@/lib/opportunity-signals";
 import { getAllArtifactsAdmin } from "@/lib/artifacts";
-import { loadChecklist } from "@/lib/prep-checklist";
+import { CHECKLISTS, loadChecklist } from "@/lib/prep-checklist";
 import SignOutButton from "@/components/admin/SignOutButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
-  const [signals, artifacts, prep] = await Promise.all([
+  const [signals, artifacts, sheets] = await Promise.all([
     getAllOpportunitySignals(),
     getAllArtifactsAdmin(),
-    loadChecklist(),
+    Promise.all(CHECKLISTS.map((entry) => loadChecklist(entry.slug))),
   ]);
+  const prepItems = sheets.reduce((total, sheet) => total + sheet.itemCount, 0);
 
   const today = new Date().toISOString().split("T")[0];
   const activeSignalsCount = signals.filter((s) => s.status !== "closed").length;
@@ -85,7 +86,7 @@ export default async function AdminHub() {
               Interview Prep
             </h2>
             <p className="font-mono text-xs text-ink-faint">
-              {prep.itemCount} items across {prep.modules.length} modules
+              {prepItems} items across {sheets.length} sheets
             </p>
           </Link>
         </div>

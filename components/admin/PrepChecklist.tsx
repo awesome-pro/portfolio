@@ -1,7 +1,13 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import {
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import InlineMarkdown from "@/components/admin/InlineMarkdown";
+import type { PrepBlock } from "@/lib/prep-checklist";
 import {
   addItem,
   deleteCustomItem,
@@ -16,6 +22,7 @@ import {
   subscribe as subscribeItems,
   CUSTOM_PREFIX,
   type ItemsState,
+  type ResolvedItem,
 } from "@/lib/prep-items-store";
 import {
   clearAll,
@@ -40,7 +47,8 @@ export interface PrepSectionView {
   title: string;
   /** A module with no subheadings: render its items with no heading of their own. */
   implicit: boolean;
-  prose: string[];
+  /** Items and their explanations, in the order the file writes them. */
+  blocks: PrepBlock[];
   items: PrepItemView[];
 }
 
@@ -199,6 +207,90 @@ export default function PrepChecklist({
     }
   }
 
+  function renderRow(item: ResolvedItem, sectionId: string): ReactNode {
+    const done = Boolean(progress[item.key]);
+
+    if (editing?.key === item.key) {
+      return (
+        <li key={item.key} className="py-1">
+          <input
+            autoFocus
+            value={editing.draft}
+            onChange={(event) =>
+              setEditing({ key: item.key, draft: event.target.value })
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") saveEdit();
+              if (event.key === "Escape") {
+                cancelled.current = true;
+                setEditing(null);
+              }
+            }}
+            onBlur={saveEdit}
+            className="w-full rounded border border-ink-muted/60 bg-surface px-2 py-1 text-sm text-ink outline-none"
+          />
+        </li>
+      );
+    }
+
+    return (
+      <li key={item.key} className="group flex items-start gap-3">
+        <label className="flex flex-1 cursor-pointer items-start gap-3 py-1.5">
+          <input
+            type="checkbox"
+            checked={done}
+            onChange={() => toggle(item.key)}
+            className="mt-1 h-3.5 w-3.5 shrink-0 cursor-pointer accent-ink"
+          />
+          <span
+            className={`text-sm leading-relaxed ${
+              item.hidden
+                ? "text-ink-faint/70 line-through"
+                : done
+                  ? "text-ink-faint line-through decoration-ink-faint/60"
+                  : "text-ink-muted group-hover:text-ink"
+            }`}
+          >
+            <InlineMarkdown text={item.text} />
+          </span>
+        </label>
+
+        <span className="flex shrink-0 items-center gap-2 pt-2 font-mono text-[10px] opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+          {item.hidden ? (
+            <button
+              type="button"
+              onClick={() => restoreItem(item.key, sectionId)}
+              className="cursor-pointer text-ink-faint hover:text-ink"
+            >
+              restore
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setEditing({ key: item.key, draft: item.text })}
+                className="cursor-pointer text-ink-faint hover:text-ink"
+              >
+                edit
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  item.custom
+                    ? deleteCustomItem(item.key)
+                    : hideItem(item.key, sectionId)
+                }
+                className="cursor-pointer text-ink-faint hover:text-ink"
+              >
+                {item.custom ? "delete" : "hide"}
+              </button>
+            </>
+          )}
+        </span>
+      </li>
+    );
+  }
+
   return (
     <div>
       <div className="sticky top-0 z-10 -mx-6 border-b border-border bg-background/90 px-6 py-3 backdrop-blur">
@@ -287,12 +379,52 @@ export default function PrepChecklist({
                 ))}
 
                 {module.sections.map((section) => {
-                  const resolved = resolveItems(section.id, section.items);
-                  const visible = resolved.filter(
-                    (item) =>
-                      (showHidden || !item.hidden) &&
-                      (!onlyRemaining || item.hidden || !progress[item.key])
+                  const resolved = new Map(
+                    resolveItems(section.id, section.items).map((item) => [
+                      item.key,
+                      item,
+                    ])
                   );
+
+                  /**
+                   * Blocks in file order, with runs of consecutive items
+                   * grouped into a list so the markup stays a real list even
+                   * though prose can sit between items.
+                   */
+                  const rendered: ReactNode[] = [];
+                  let run: ReactNode[] = [];
+
+                  const flushRun = () => {
+                    if (run.length === 0) return;
+                    rendered.push(
+                      <ul key={`run-${rendered.length}`}>{run}</ul>
+                    );
+                    run = [];
+                  };
+
+                  for (const [index, block] of section.blocks.entries()) {
+                    if (block.kind === "prose") {
+                      flushRun();
+                      rendered.push(
+                        <div
+                          key={`prose-${index}`}
+                          className="mt-2 border-l border-border pl-3 text-sm leading-relaxed text-ink-muted"
+                        >
+                          <InlineMarkdown text={block.text} />
+                        </div>
+                      );
+                      continue;
+                    }
+
+                    const item = resolved.get(block.key);
+                    if (!item) continue;
+                    if (item.hidden && !showHidden) continue;
+                    if (onlyRemaining && !item.hidden && progress[item.key]) {
+                      continue;
+                    }
+                    run.push(renderRow(item, section.id));
+                  }
+                  flushRun();
 
                   return (
                     <div key={section.id} className="mt-6">
@@ -301,114 +433,10 @@ export default function PrepChecklist({
                           {section.title}
                         </h3>
                       )}
-                      {section.prose.map((paragraph, index) => (
-                        <div
-                          key={index}
-                          className="mt-2 text-sm leading-relaxed text-ink-muted"
-                        >
-                          <InlineMarkdown text={paragraph} />
-                        </div>
-                      ))}
 
-                      <ul className={section.implicit ? "" : "mt-3"}>
-                        {visible.map((item) => {
-                          const done = Boolean(progress[item.key]);
-                          const isEditing = editing?.key === item.key;
-
-                          if (isEditing && editing) {
-                            return (
-                              <li key={item.key} className="py-1">
-                                <input
-                                  autoFocus
-                                  value={editing.draft}
-                                  onChange={(event) =>
-                                    setEditing({
-                                      key: item.key,
-                                      draft: event.target.value,
-                                    })
-                                  }
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Enter") saveEdit();
-                                    if (event.key === "Escape") {
-                                      cancelled.current = true;
-                                      setEditing(null);
-                                    }
-                                  }}
-                                  onBlur={saveEdit}
-                                  className="w-full rounded border border-ink-muted/60 bg-surface px-2 py-1 text-sm text-ink outline-none"
-                                />
-                              </li>
-                            );
-                          }
-
-                          return (
-                            <li
-                              key={item.key}
-                              className="group flex items-start gap-3"
-                            >
-                              <label className="flex flex-1 cursor-pointer items-start gap-3 py-1.5">
-                                <input
-                                  type="checkbox"
-                                  checked={done}
-                                  onChange={() => toggle(item.key)}
-                                  className="mt-1 h-3.5 w-3.5 shrink-0 cursor-pointer accent-ink"
-                                />
-                                <span
-                                  className={`text-sm leading-relaxed ${
-                                    item.hidden
-                                      ? "text-ink-faint/70 line-through"
-                                      : done
-                                        ? "text-ink-faint line-through decoration-ink-faint/60"
-                                        : "text-ink-muted group-hover:text-ink"
-                                  }`}
-                                >
-                                  <InlineMarkdown text={item.text} />
-                                </span>
-                              </label>
-
-                              <span className="flex shrink-0 items-center gap-2 pt-2 font-mono text-[10px] opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-                                {item.hidden ? (
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      restoreItem(item.key, section.id)
-                                    }
-                                    className="cursor-pointer text-ink-faint hover:text-ink"
-                                  >
-                                    restore
-                                  </button>
-                                ) : (
-                                  <>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        setEditing({
-                                          key: item.key,
-                                          draft: item.text,
-                                        })
-                                      }
-                                      className="cursor-pointer text-ink-faint hover:text-ink"
-                                    >
-                                      edit
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        item.custom
-                                          ? deleteCustomItem(item.key)
-                                          : hideItem(item.key, section.id)
-                                      }
-                                      className="cursor-pointer text-ink-faint hover:text-ink"
-                                    >
-                                      {item.custom ? "delete" : "hide"}
-                                    </button>
-                                  </>
-                                )}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                      <div className={section.implicit ? "" : "mt-3"}>
+                        {rendered}
+                      </div>
 
                       {adding?.sectionId === section.id ? (
                         <input

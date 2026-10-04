@@ -1,7 +1,9 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 
 /**
  * A checklist item's label, rendered from markdown.
@@ -24,7 +26,14 @@ export default function InlineMarkdown({
 }) {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[
+        remarkGfm,
+        // Display math only ($...$ off). The prep files use $$ blocks for
+        // formulas and single dollars for money — "cost ($/1M in, $/1M out)"
+        // would otherwise be parsed as a formula and rendered as gibberish.
+        [remarkMath, { singleDollarTextMath: false }],
+      ]}
+      rehypePlugins={[rehypeKatex]}
       components={{
         p: ({ children }) =>
           block ? (
