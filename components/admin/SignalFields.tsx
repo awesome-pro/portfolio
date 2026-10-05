@@ -27,6 +27,10 @@ export function Label({
   );
 }
 
+export function Hint({ children }: { children: ReactNode }) {
+  return <p className="text-xs font-mono text-ink-faint">{children}</p>;
+}
+
 export function Input({
   value,
   onChange,
@@ -44,7 +48,7 @@ export function Input({
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
-      className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
+      className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
     />
   );
 }
@@ -66,7 +70,7 @@ export function Textarea({
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors resize-y leading-relaxed"
+      className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors resize-y leading-relaxed"
     />
   );
 }
@@ -82,7 +86,7 @@ export function StatusSelect({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value as OpportunitySignalStatus)}
-      className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink-muted transition-colors"
+      className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-ink focus:outline-none focus:border-ink-muted transition-colors"
     >
       {STATUS_OPTIONS.map(({ value: option, label }) => (
         <option key={option} value={option}>
@@ -90,6 +94,34 @@ export function StatusSelect({
         </option>
       ))}
     </select>
+  );
+}
+
+/** The whole priority model: one star, on or off. */
+export function FocusToggle({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: boolean;
+  onChange: (value: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={value}
+      disabled={disabled}
+      onClick={() => onChange(!value)}
+      className={`flex items-center gap-2 text-xs font-mono px-3 py-2 rounded-lg border transition-colors disabled:opacity-50 ${
+        value
+          ? "bg-ink text-background border-ink"
+          : "bg-surface border-border text-ink-muted hover:text-ink"
+      }`}
+    >
+      <span className="text-sm leading-none">{value ? "★" : "☆"}</span>
+      {value ? "focused" : "not focused"}
+    </button>
   );
 }
 
@@ -109,9 +141,9 @@ export function LinksField({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       <Label>Links</Label>
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1">
         {links.map((link, index) => (
           <div key={index} className="flex items-center gap-2">
             <input
@@ -119,20 +151,20 @@ export function LinksField({
               value={link.url}
               onChange={(event) => update(index, { url: event.target.value })}
               placeholder="https://..."
-              className="flex-[2] min-w-0 bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors font-mono"
+              className="flex-[2] min-w-0 bg-surface border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors font-mono"
             />
             <input
               type="text"
               value={link.title ?? ""}
               onChange={(event) => update(index, { title: event.target.value })}
               placeholder="Label (optional)"
-              className="flex-1 min-w-0 bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
+              className="flex-1 min-w-0 bg-surface border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
             />
             <button
               type="button"
               onClick={() => remove(index)}
               aria-label="Remove link"
-              className="text-xs font-mono px-2.5 py-2 rounded-lg border border-border text-ink-faint hover:border-destructive/40 hover:text-destructive transition-colors"
+              className="text-xs font-mono px-2 py-1.5 rounded-lg border border-border text-ink-faint hover:border-destructive/40 hover:text-destructive transition-colors"
             >
               ×
             </button>

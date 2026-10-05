@@ -9,6 +9,8 @@ import {
   type CreateOpportunitySignalInput,
 } from "@/app/admin/opportunity-signals/actions";
 import {
+  FocusToggle,
+  Hint,
   Input,
   Label,
   LinksField,
@@ -26,6 +28,7 @@ export default function OpportunitySignalForm() {
   const [status, setStatus] = useState<OpportunitySignalStatus>("new");
   const [notes, setNotes] = useState("");
   const [links, setLinks] = useState<SignalLink[]>([]);
+  const [focus, setFocus] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,6 +52,7 @@ export default function OpportunitySignalForm() {
       status,
       notes,
       links: cleanLinks,
+      focus,
     };
 
     startTransition(async () => {
@@ -68,9 +72,9 @@ export default function OpportunitySignalForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       {/* Company & website */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
           <Label required>Company Name</Label>
           <Input
@@ -90,10 +94,17 @@ export default function OpportunitySignalForm() {
         </div>
       </div>
 
-      {/* Status */}
-      <div className="flex flex-col gap-1.5">
-        <Label>Status</Label>
-        <StatusSelect value={status} onChange={setStatus} />
+      {/* Status & focus */}
+      <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label>Status</Label>
+          <StatusSelect value={status} onChange={setStatus} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label>Focus</Label>
+          <FocusToggle value={focus} onChange={setFocus} />
+          <Hint>starred companies sort first</Hint>
+        </div>
       </div>
 
       <LinksField links={links} onChange={setLinks} />
@@ -123,7 +134,7 @@ export default function OpportunitySignalForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="px-5 py-2.5 text-sm font-semibold bg-ink text-background rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3.5 py-2 text-sm font-semibold bg-ink text-background rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? "Adding..." : "Add Signal"}
           </button>

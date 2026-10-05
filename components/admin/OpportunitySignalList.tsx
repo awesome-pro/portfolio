@@ -1,42 +1,38 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useOptimistic, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { normalizeSignalLinks } from "@/lib/signal-links";
+import { compareSignals } from "@/lib/signal-focus";
 import type {
   OpportunitySignal,
   OpportunitySignalStatus,
 } from "@/lib/opportunity-signals";
+import { setOpportunityFocus } from "@/app/admin/opportunity-signals/actions";
 import DeleteOpportunitySignalButton from "./DeleteOpportunitySignalButton";
 import OpportunitySignalEditor from "./OpportunitySignalEditor";
 
 const PAGE_SIZE = 20;
 
-const STATUS_CONFIG: Record<
-  OpportunitySignalStatus,
-  { label: string; style: string }
-> = {
-  new: { label: "New", style: "bg-surface text-ink-muted border-border" },
-  applied: {
-    label: "Applied",
-    style: "bg-violet-50 text-violet-700 border-violet-200",
-  },
-  reached_out: {
-    label: "Reached Out",
-    style: "bg-blue-50 text-blue-700 border-blue-200",
-  },
-  interviewing: {
-    label: "Interviewing",
-    style: "bg-amber-50 text-amber-700 border-amber-200",
-  },
-  closed: {
-    label: "Closed",
-    style: "bg-background text-ink-faint border-border",
-  },
+const STATUS_LABELS: Record<OpportunitySignalStatus, string> = {
+  new: "New",
+  applied: "Applied",
+  reached_out: "Reached Out",
+  interviewing: "Interviewing",
+  closed: "Closed",
 };
 
-type FilterType = OpportunitySignalStatus | "all" | "active" | "today";
+type StatusFilter = OpportunitySignalStatus | "all" | "active" | "today";
+
+function isDiscoveredToday(dateStr: string) {
+  return (
+    new Date(dateStr).toISOString().split("T")[0] ===
+    new Date().toISOString().split("T")[0]
+  );
+}
 
 function formatDate(dateStr: string) {
+  if (isDiscoveredToday(dateStr)) return "today";
   return new Date(dateStr).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -44,12 +40,19 @@ function formatDate(dateStr: string) {
   });
 }
 
-function isDiscoveredToday(dateStr: string) {
-  const itemDate = new Date(dateStr).toISOString().split("T")[0];
-  return itemDate === new Date().toISOString().split("T")[0];
+/** "https://www.baseten.co/" -> "baseten.co" — the scheme is noise in a list. */
+function displayHost(website: string) {
+  return website
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/$/, "");
 }
 
-function matchesFilter(signal: OpportunitySignal, filter: FilterType) {
+function hrefFor(website: string) {
+  return /^https?:\/\//i.test(website) ? website : `https://${website}`;
+}
+
+function matchesStatus(signal: OpportunitySignal, filter: StatusFilter) {
   if (filter === "all") return true;
   if (filter === "today") return isDiscoveredToday(signal.discovered_at);
   if (filter === "active") return signal.status !== "closed";
@@ -61,72 +64,151 @@ function matchesSearch(signal: OpportunitySignal, query: string) {
   const links = normalizeSignalLinks(signal.links)
     .map((link) => `${link.url} ${link.title ?? ""}`)
     .join(" ");
-  const haystack = [signal.company_name, signal.website, signal.notes, links]
+  const haystack = [
+    signal.company_name,
+    signal.website,
+    signal.notes,
+    links,
+    signal.status ?? "new",
+  ]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
   return haystack.includes(query);
 }
 
-function StatusBadge({ status }: { status: OpportunitySignalStatus | null }) {
-  const key = (status ?? "new") as OpportunitySignalStatus;
-  const config = STATUS_CONFIG[key];
+function CompactSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}) {
   return (
-    <span
-      className={`text-xs font-mono px-2 py-0.5 rounded-md border ${config.style}`}
-    >
-      {config.label}
-    </span>
+    <label className="flex items-center gap-1.5">
+      <span className="text-xs font-mono text-ink-faint">{label}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="bg-surface border border-border rounded-lg pl-2.5 pr-1.5 py-1.5 text-xs font-mono text-ink-muted hover:text-ink focus:outline-none focus:border-ink-muted transition-colors cursor-pointer"
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 
 function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
+  const [focusError, setFocusError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  // Optimistic so the star flips instantly; resets to the server value once the
+  // refresh lands, which also covers focus edits made inside the editor.
+  const [focus, setFocus] = useOptimistic(signal.focus);
+
   const links = normalizeSignalLinks(signal.links);
-  const today = isDiscoveredToday(signal.discovered_at);
+  const status = signal.status ?? "new";
+
+  function toggleFocus() {
+    const next = !focus;
+    setFocusError(null);
+
+    startTransition(async () => {
+      setFocus(next);
+      try {
+        await setOpportunityFocus(signal.id, next);
+        router.refresh();
+      } catch (err) {
+        setFocusError(
+          err instanceof Error ? err.message : "Could not change focus."
+        );
+      }
+    });
+  }
 
   return (
-    <div className="flex flex-col bg-surface transition-colors">
-      <div className="flex items-start justify-between gap-4 px-5 pt-4">
+    <div className="bg-surface transition-colors">
+      <div className="flex items-start gap-3 px-4 py-3.5">
+        <button
+          type="button"
+          onClick={toggleFocus}
+          disabled={isPending}
+          aria-pressed={focus}
+          aria-label={
+            focus
+              ? `Remove ${signal.company_name} from focus`
+              : `Focus ${signal.company_name}`
+          }
+          title={focus ? "Remove from focus" : "Focus this company"}
+          className={`mt-0.5 text-base leading-none rounded-md transition-colors disabled:opacity-50 ${
+            focus
+              ? "px-2 py-1 bg-ink text-background"
+              : "px-2 py-1 text-ink-faint hover:text-ink"
+          }`}
+        >
+          {focus ? "★" : "☆"}
+        </button>
+
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <StatusBadge status={signal.status} />
-            {links.length > 0 && (
-              <span className="text-xs font-mono px-2 py-0.5 rounded-md border bg-surface text-ink-muted border-border">
-                {links.length} {links.length === 1 ? "link" : "links"}
+          <div className="flex items-baseline gap-2 flex-wrap">
+            {/* Only non-default statuses earn a badge; "new" is the absence of one. */}
+            {status !== "new" && (
+              <span className="text-xs font-mono text-ink-muted border border-border rounded px-1.5 py-px">
+                {STATUS_LABELS[status]}
               </span>
             )}
+            <span className="text-sm font-medium text-ink break-words">
+              {signal.company_name}
+            </span>
           </div>
-          <p className="text-sm font-medium text-ink mt-1.5 break-words">
-            {signal.company_name}
-          </p>
-          <p className="font-mono text-xs text-ink-faint mt-0.5">
+
+          <p className="font-mono text-xs text-ink-faint mt-1 flex items-center gap-2 flex-wrap">
             {signal.website ? (
               <a
-                href={
-                  /^https?:\/\//i.test(signal.website)
-                    ? signal.website
-                    : `https://${signal.website}`
-                }
+                href={hrefFor(signal.website)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-ink transition-colors"
-                onClick={(e) => e.stopPropagation()}
               >
-                {signal.website}
+                {displayHost(signal.website)}
               </a>
             ) : (
-              "No website"
-            )}{" "}
-            &middot; {formatDate(signal.discovered_at)}
+              <span>no site</span>
+            )}
+            <span>&middot;</span>
+            <span>{formatDate(signal.discovered_at)}</span>
+            {links.length > 0 && (
+              <>
+                <span>&middot;</span>
+                <span>
+                  {links.length} {links.length === 1 ? "link" : "links"}
+                </span>
+              </>
+            )}
           </p>
+
+          {signal.notes && (
+            <p className="text-sm text-ink-muted leading-5 line-clamp-2 mt-1.5">
+              {signal.notes}
+            </p>
+          )}
         </div>
-        <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
+
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="text-xs font-mono px-2.5 py-1 rounded-lg border border-border text-ink-muted hover:text-ink transition-colors"
+            className="text-xs font-mono px-2 py-1.5 text-ink-faint hover:text-ink transition-colors"
           >
-            {expanded ? "Close" : "Edit"}
+            {expanded ? "close" : "edit"}
           </button>
           <DeleteOpportunitySignalButton
             id={signal.id}
@@ -135,14 +217,14 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
         </div>
       </div>
 
-      {signal.notes && (
-        <div className="px-5 py-3">
-          <p className="text-sm text-ink leading-6 line-clamp-2">{signal.notes}</p>
-        </div>
+      {focusError && (
+        <p className="px-4 pb-2 -mt-1 text-xs font-mono text-destructive">
+          {focusError}
+        </p>
       )}
 
       {expanded && (
-        <div className="border-t border-border mx-5 mb-5 pt-5">
+        <div className="border-t border-border mx-4 mb-2 pt-3">
           <OpportunitySignalEditor signal={signal} />
         </div>
       )}
@@ -155,7 +237,8 @@ export default function OpportunitySignalList({
 }: {
   signals: OpportunitySignal[];
 }) {
-  const [filter, setFilter] = useState<FilterType>("active");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
+  const [focusOnly, setFocusOnly] = useState(false);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
@@ -164,22 +247,16 @@ export default function OpportunitySignalList({
   const filtered = useMemo(
     () =>
       signals.filter(
-        (s) => matchesFilter(s, filter) && matchesSearch(s, normalizedSearch)
+        (signal) =>
+          matchesStatus(signal, statusFilter) &&
+          (!focusOnly || signal.focus) &&
+          matchesSearch(signal, normalizedSearch)
       ),
-    [filter, normalizedSearch, signals]
+    [signals, statusFilter, focusOnly, normalizedSearch]
   );
 
-  // Within filtered, pin today's to the top
-  const sorted = useMemo(() => {
-    if (filter !== "active" && filter !== "all") return filtered;
-    const today: OpportunitySignal[] = [];
-    const rest: OpportunitySignal[] = [];
-    filtered.forEach((s) => {
-      if (isDiscoveredToday(s.discovered_at)) today.push(s);
-      else rest.push(s);
-    });
-    return [...today, ...rest];
-  }, [filtered, filter]);
+  // Starred first, then newest-first.
+  const sorted = useMemo(() => [...filtered].sort(compareSignals), [filtered]);
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -188,36 +265,42 @@ export default function OpportunitySignalList({
     safePage * PAGE_SIZE
   );
 
-  const counts = useMemo(() => {
-    const todayDate = new Date().toISOString().split("T")[0];
-    return {
+  const statusCounts = useMemo<Record<StatusFilter, number>>(
+    () => ({
       all: signals.length,
       active: signals.filter((s) => s.status !== "closed").length,
-      today: signals.filter(
-        (s) => new Date(s.discovered_at).toISOString().split("T")[0] === todayDate
-      ).length,
+      today: signals.filter((s) => isDiscoveredToday(s.discovered_at)).length,
       new: signals.filter((s) => (s.status ?? "new") === "new").length,
       applied: signals.filter((s) => s.status === "applied").length,
       reached_out: signals.filter((s) => s.status === "reached_out").length,
       interviewing: signals.filter((s) => s.status === "interviewing").length,
       closed: signals.filter((s) => s.status === "closed").length,
-    };
-  }, [signals]);
+    }),
+    [signals]
+  );
 
-  const filters: { value: FilterType; label: string }[] = [
-    { value: "active", label: "Active" },
-    { value: "today", label: "Today" },
-    { value: "new", label: "New" },
-    { value: "applied", label: "Applied" },
-    { value: "reached_out", label: "Reached Out" },
-    { value: "interviewing", label: "Interviewing" },
-    { value: "closed", label: "Closed" },
-    { value: "all", label: "All" },
+  const focusCount = useMemo(
+    () => signals.filter((s) => s.focus).length,
+    [signals]
+  );
+
+  const statusOptions: { value: StatusFilter; label: string }[] = [
+    { value: "active", label: `Active (${statusCounts.active})` },
+    { value: "all", label: `All (${statusCounts.all})` },
+    { value: "today", label: `Today (${statusCounts.today})` },
+    { value: "new", label: `New (${statusCounts.new})` },
+    { value: "applied", label: `Applied (${statusCounts.applied})` },
+    { value: "reached_out", label: `Reached Out (${statusCounts.reached_out})` },
+    { value: "interviewing", label: `Interviewing (${statusCounts.interviewing})` },
+    { value: "closed", label: `Closed (${statusCounts.closed})` },
   ];
 
+  const filtersActive =
+    statusFilter !== "active" || focusOnly || normalizedSearch.length > 0;
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2.5">
         <input
           value={search}
           onChange={(e) => {
@@ -225,68 +308,95 @@ export default function OpportunitySignalList({
             setPage(1);
           }}
           placeholder="Search companies, notes, links..."
-          className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
+          className="w-full bg-surface border border-border rounded-lg px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
         />
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {filters.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => {
-                setFilter(value);
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            aria-pressed={focusOnly}
+            onClick={() => {
+              setFocusOnly((v) => !v);
+              setPage(1);
+            }}
+            title="Show only starred companies"
+            className={`text-xs font-mono px-3 py-1.5 rounded-lg border transition-colors ${
+              focusOnly
+                ? "bg-ink text-background border-ink"
+                : "bg-surface border-border text-ink-muted hover:text-ink"
+            }`}
+          >
+            ★ focus ({focusCount})
+          </button>
+
+          <div className="ml-auto">
+            <CompactSelect
+              label="status"
+              value={statusFilter}
+              onChange={(value) => {
+                setStatusFilter(value as StatusFilter);
                 setPage(1);
               }}
-              className={`text-xs font-mono px-3 py-1.5 rounded-lg border transition-colors ${
-                filter === value
-                  ? "bg-ink text-background border-ink"
-                  : "bg-surface text-ink-muted border-border hover:text-ink"
-              }`}
-            >
-              {label} ({counts[value as keyof typeof counts] ?? 0})
-            </button>
-          ))}
+              options={statusOptions}
+            />
+          </div>
         </div>
       </div>
 
       {sorted.length === 0 ? (
-        <div className="py-24 text-center border border-dashed border-border rounded-2xl">
+        <div className="py-16 text-center border border-dashed border-border rounded-xl flex flex-col items-center gap-2">
           <p className="text-ink-faint font-mono text-sm">
-            {filter === "today"
-              ? "No new signals today yet."
+            {statusFilter === "today" && !focusOnly && !normalizedSearch
+              ? "Nothing new today."
               : "No signals match this filter."}
           </p>
+          {filtersActive && (
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter("active");
+                setFocusOnly(false);
+                setSearch("");
+                setPage(1);
+              }}
+              className="text-xs font-mono text-ink-muted hover:text-ink transition-colors underline underline-offset-4"
+            >
+              clear filters
+            </button>
+          )}
         </div>
       ) : (
         <>
-          <div className="flex flex-col divide-y divide-border border border-border rounded-2xl overflow-hidden">
+          <div className="flex flex-col divide-y divide-border border border-border rounded-xl overflow-hidden">
             {pageSignals.map((signal) => (
               <OpportunitySignalCard key={signal.id} signal={signal} />
             ))}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-xs font-mono text-ink-faint">
-                Page {safePage} of {totalPages} &middot; {sorted.length} signals
-              </span>
-              <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-xs font-mono text-ink-faint">
+              {sorted.length} {sorted.length === 1 ? "signal" : "signals"}
+              {totalPages > 1 && ` · page ${safePage} of ${totalPages}`}
+            </span>
+            {totalPages > 1 && (
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => setPage((v) => Math.max(1, v - 1))}
                   disabled={safePage === 1}
-                  className="text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-muted hover:text-ink transition-colors disabled:opacity-40"
+                  className="text-xs font-mono text-ink-muted hover:text-ink transition-colors disabled:opacity-30"
                 >
-                  Prev
+                  ← prev
                 </button>
                 <button
                   onClick={() => setPage((v) => Math.min(totalPages, v + 1))}
                   disabled={safePage === totalPages}
-                  className="text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-muted hover:text-ink transition-colors disabled:opacity-40"
+                  className="text-xs font-mono text-ink-muted hover:text-ink transition-colors disabled:opacity-30"
                 >
-                  Next
+                  next →
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
     </div>

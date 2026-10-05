@@ -14,15 +14,11 @@ export default async function AdminHub() {
   ]);
   const prepItems = sheets.reduce((total, sheet) => total + sheet.itemCount, 0);
 
-  const today = new Date().toISOString().split("T")[0];
-  const activeSignalsCount = signals.filter((s) => s.status !== "closed").length;
-  const todaySignalsCount = signals.filter(
-    (s) => new Date(s.discovered_at).toISOString().split("T")[0] === today
-  ).length;
   const appliedCount = signals.filter((s) => s.status === "applied").length;
   const interviewingCount = signals.filter(
     (s) => s.status === "interviewing"
   ).length;
+  const focusCount = signals.filter((s) => s.focus).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,9 +62,12 @@ export default async function AdminHub() {
               Opportunity Signals
             </h2>
             <p className="font-mono text-xs text-ink-faint">
-              {signals.length} total &middot; {activeSignalsCount} active &middot;{" "}
-              {todaySignalsCount} today &middot; {appliedCount} applied &middot;{" "}
-              {interviewingCount} interviewing
+              {signals.length} total &middot;{" "}
+              <span className="text-ink-muted">★ {focusCount} focus</span>
+              {appliedCount > 0 && <> &middot; {appliedCount} applied</>}
+              {interviewingCount > 0 && (
+                <> &middot; {interviewingCount} interviewing</>
+              )}
             </p>
           </Link>
 

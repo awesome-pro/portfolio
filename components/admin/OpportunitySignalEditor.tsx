@@ -9,7 +9,15 @@ import type {
 import type { SignalLink } from "@/lib/signal-links";
 import { updateOpportunitySignal } from "@/app/admin/opportunity-signals/actions";
 import DeleteOpportunitySignalButton from "./DeleteOpportunitySignalButton";
-import { Input, Label, LinksField, StatusSelect, Textarea } from "./SignalFields";
+import {
+  FocusToggle,
+  Hint,
+  Input,
+  Label,
+  LinksField,
+  StatusSelect,
+  Textarea,
+} from "./SignalFields";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("en-US", {
@@ -40,6 +48,7 @@ export default function OpportunitySignalEditor({
   );
   const [links, setLinks] = useState<SignalLink[]>(signal.links ?? []);
   const [notes, setNotes] = useState(signal.notes ?? "");
+  const [focus, setFocus] = useState(signal.focus);
 
   function reset() {
     setCompanyName(signal.company_name);
@@ -47,6 +56,7 @@ export default function OpportunitySignalEditor({
     setStatus(signal.status ?? "new");
     setLinks(signal.links ?? []);
     setNotes(signal.notes ?? "");
+    setFocus(signal.focus);
     setError(null);
     setSaved(false);
   }
@@ -68,6 +78,7 @@ export default function OpportunitySignalEditor({
           status,
           notes,
           links,
+          focus,
         });
         setSaved(true);
         router.refresh();
@@ -79,8 +90,8 @@ export default function OpportunitySignalEditor({
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
           <Label required>Company name</Label>
           <Input
@@ -100,9 +111,16 @@ export default function OpportunitySignalEditor({
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 sm:max-w-[12rem]">
-        <Label>Status</Label>
-        <StatusSelect value={status} onChange={setStatus} />
+      <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label>Status</Label>
+          <StatusSelect value={status} onChange={setStatus} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label>Focus</Label>
+          <FocusToggle value={focus} onChange={setFocus} />
+          <Hint>starred companies sort first</Hint>
+        </div>
       </div>
 
       <LinksField links={links} onChange={setLinks} />
@@ -112,12 +130,12 @@ export default function OpportunitySignalEditor({
         <Textarea
           value={notes}
           onChange={setNotes}
-          rows={5}
+          rows={3}
           placeholder="Why this company is worth a look, who to contact, next step..."
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
         <div className="flex items-center gap-3">
           <DeleteOpportunitySignalButton
             id={signal.id}
@@ -145,7 +163,7 @@ export default function OpportunitySignalEditor({
             type="button"
             onClick={handleSave}
             disabled={isPending}
-            className="px-4 py-2 text-sm font-semibold bg-ink text-background rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3.5 py-2 text-sm font-semibold bg-ink text-background rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending ? "Saving..." : "Save"}
           </button>

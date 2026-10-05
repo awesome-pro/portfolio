@@ -26,22 +26,19 @@ export default function DeleteOpportunitySignalButton({
   if (confirming) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-xs text-ink-muted font-mono">
-          Delete &quot;{shortName}&quot;?
-        </span>
         <button
           onClick={handleDelete}
           disabled={isPending}
-          className="text-xs font-mono px-2.5 py-1 rounded-lg bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-colors disabled:opacity-50"
+          className="text-xs font-mono px-2 py-1 rounded-md bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 transition-colors disabled:opacity-50"
         >
-          {isPending ? "Deleting..." : "Yes, delete"}
+          {isPending ? "deleting…" : "yes, delete"}
         </button>
         <button
           onClick={() => setConfirming(false)}
           disabled={isPending}
-          className="text-xs font-mono px-2.5 py-1 rounded-lg border border-border text-ink-muted hover:text-ink transition-colors disabled:opacity-50"
+          className="text-xs font-mono px-2 py-1 rounded-md border border-border text-ink-muted hover:text-ink transition-colors disabled:opacity-50"
         >
-          Cancel
+          cancel
         </button>
       </div>
     );
@@ -50,9 +47,9 @@ export default function DeleteOpportunitySignalButton({
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="text-xs font-mono px-2.5 py-1 rounded-lg border border-border text-ink-faint hover:border-destructive/40 hover:text-destructive transition-colors"
+      className="text-xs font-mono px-1.5 py-1 text-ink-faint hover:text-destructive transition-colors"
     >
-      Delete
+      delete
     </button>
   );
 }

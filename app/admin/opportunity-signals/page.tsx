@@ -11,16 +11,26 @@ export default async function OpportunitySignalsAdminPage() {
   const todayCount = signals.filter(
     (s) => new Date(s.discovered_at).toISOString().split("T")[0] === today
   ).length;
-  const activeCount = signals.filter((s) => s.status !== "closed").length;
   const appliedCount = signals.filter((s) => s.status === "applied").length;
   const interviewingCount = signals.filter(
     (s) => s.status === "interviewing"
   ).length;
+  const focusCount = signals.filter((s) => s.focus).length;
+
+  // Total first, then only the numbers that are actually non-zero — a row of
+  // "0 today · 0 interviewing" is noise, not information.
+  const stats = [
+    `${signals.length} signals`,
+    `★ ${focusCount} focus`,
+    ...(appliedCount > 0 ? [`${appliedCount} applied`] : []),
+    ...(interviewingCount > 0 ? [`${interviewingCount} interviewing`] : []),
+    ...(todayCount > 0 ? [`${todayCount} today`] : []),
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between gap-6 mb-10">
+      <div className="max-w-4xl mx-auto px-6 py-10">
+        <div className="flex items-start justify-between gap-4 mb-7">
           <div>
             <Link
               href="/admin"
@@ -31,24 +41,20 @@ export default async function OpportunitySignalsAdminPage() {
             <h1 className="text-2xl font-bold tracking-tight text-ink mt-1">
               Opportunity Signals
             </h1>
+            <p className="text-xs font-mono text-ink-faint mt-1.5">
+              {stats.join(" · ")}
+            </p>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs font-mono text-ink-faint">
-              {signals.length} total &middot; {activeCount} active &middot;{" "}
-              {todayCount} today &middot; {appliedCount} applied &middot;{" "}
-              {interviewingCount} interviewing
-            </span>
-            <Link
-              href="/admin/opportunity-signals/new"
-              className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
-            >
-              <span className="text-base leading-none">+</span> Add
-            </Link>
-          </div>
+          <Link
+            href="/admin/opportunity-signals/new"
+            className="flex items-center gap-1 text-xs font-mono px-2.5 py-1.5 rounded-lg border border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors shrink-0"
+          >
+            <span className="text-base leading-none">+</span> Add
+          </Link>
         </div>
 
         {signals.length === 0 ? (
-          <div className="py-24 text-center border border-dashed border-border rounded-2xl">
+          <div className="py-16 text-center border border-dashed border-border rounded-xl">
             <p className="text-ink-faint font-mono text-sm">
               No signals yet. The agent will add them soon.
             </p>

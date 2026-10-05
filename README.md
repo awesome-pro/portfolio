@@ -31,7 +31,7 @@
 All admin routes protected by a middleware proxy (`proxy.ts`) that validates the Supabase JWT session server-side and redirects unauthenticated requests to `/admin/login`.
 
 - Build artifact CRUD — create, edit, delete, image uploads to Supabase Storage
-- Opportunity signal tracker — companies worth reaching out to, with links, notes and a status workflow (schema in `migrations/`)
+- Opportunity signal tracker — companies worth reaching out to, with links, notes, a status workflow and a single `focus` star for the shortlist (schema in `migrations/`)
 ### CI/CD
 
 - GitHub Actions with automated Claude-powered code review on every PR
@@ -103,7 +103,7 @@ Migrations live in `migrations/`. Apply them in the Supabase SQL editor or via t
 | Table | Purpose |
 |---|---|
 | `artifacts` | Build artifacts — story, demo video, architecture images |
-| `opportunity_signals` | Companies worth reaching out to — links, notes, status workflow |
+| `opportunity_signals` | Companies worth reaching out to — links, notes, status workflow, and a `focus` star (starred sort first) |
 
 The app no longer uses `articles`, `ai_content_ideas`, `contribution_targets` or `product_opportunities`; those tables were left in place in the database.
 

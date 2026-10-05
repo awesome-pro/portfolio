@@ -1,5 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import { normalizeSignalLinks, type SignalLink } from "@/lib/signal-links";
+import { compareSignals, normalizeFocus } from "@/lib/signal-focus";
 
 export type OpportunitySignalStatus = "new" | "applied" | "reached_out" | "interviewing" | "closed";
 
@@ -14,13 +15,27 @@ export interface OpportunitySignal {
   discovered_at: string;
   updated_at: string;
   status: OpportunitySignalStatus | null;
+  /** Starred. The only prioritisation there is — see lib/signal-focus.ts */
+  focus: boolean;
 }
 
+/**
+ * `focus` is normalised, not trusted: a row written before
+ * migrations/opportunity_signal_focus.sql ran arrives without the column, and
+ * the admin list still has to render.
+ */
 function normalizeSignal(row: Record<string, unknown>): OpportunitySignal {
   return {
     ...(row as unknown as OpportunitySignal),
     links: normalizeSignalLinks(row.links),
+    focus: normalizeFocus(row.focus),
   };
+}
+
+function normalizeRows(data: unknown): OpportunitySignal[] {
+  return ((data as Record<string, unknown>[]) ?? [])
+    .map(normalizeSignal)
+    .sort(compareSignals);
 }
 
 export async function getAllOpportunitySignals(): Promise<OpportunitySignal[]> {
@@ -31,7 +46,7 @@ export async function getAllOpportunitySignals(): Promise<OpportunitySignal[]> {
     .order("discovered_at", { ascending: false });
 
   if (error) return [];
-  return ((data as Record<string, unknown>[]) ?? []).map(normalizeSignal);
+  return normalizeRows(data);
 }
 
 export async function getActiveOpportunitySignals(): Promise<OpportunitySignal[]> {
@@ -43,7 +58,7 @@ export async function getActiveOpportunitySignals(): Promise<OpportunitySignal[]
     .order("discovered_at", { ascending: false });
 
   if (error) return [];
-  return ((data as Record<string, unknown>[]) ?? []).map(normalizeSignal);
+  return normalizeRows(data);
 }
 
 export async function getOpportunitySignalById(
