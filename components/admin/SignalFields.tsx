@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import type { OpportunitySignalStatus } from "@/lib/opportunity-signals";
 import type { SignalLink } from "@/lib/signal-links";
 
@@ -58,11 +58,15 @@ export function Textarea({
   onChange,
   placeholder,
   rows = 3,
+  autoFocus,
+  onKeyDown,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   rows?: number;
+  autoFocus?: boolean;
+  onKeyDown?: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
 }) {
   return (
     <textarea
@@ -70,6 +74,8 @@ export function Textarea({
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
       rows={rows}
+      autoFocus={autoFocus}
+      onKeyDown={onKeyDown}
       className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors resize-y leading-relaxed"
     />
   );

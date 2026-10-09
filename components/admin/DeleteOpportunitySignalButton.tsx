@@ -14,7 +14,6 @@ export default function DeleteOpportunitySignalButton({
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const shortName = `${companyName.slice(0, 25)}${companyName.length > 25 ? "..." : ""}`;
 
   function handleDelete() {
     startTransition(async () => {
@@ -47,6 +46,7 @@ export default function DeleteOpportunitySignalButton({
   return (
     <button
       onClick={() => setConfirming(true)}
+      aria-label={`Delete ${companyName}`}
       className="text-xs font-mono px-1.5 py-1 text-ink-faint hover:text-destructive transition-colors"
     >
       delete

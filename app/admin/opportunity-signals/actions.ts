@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createClient } from "@/lib/supabase/server";
+import { isMissingNoteTable } from "@/lib/opportunity-notes";
 import type { OpportunitySignalStatus, SignalLink } from "@/lib/opportunity-signals";
 
 async function requireAdminSession() {
@@ -141,6 +142,81 @@ export async function setOpportunityFocus(id: string, focus: boolean) {
     .eq("id", id);
 
   if (error) throw signalWriteError(error);
+
+  revalidateSignalSurfaces();
+}
+
+// ---------------------------------------------------------------------------
+// Dated notes
+// ---------------------------------------------------------------------------
+
+export interface SignalNoteInput {
+  body: string;
+  /** `YYYY-MM-DD` — the day the note is for. */
+  note_date: string;
+  signal_ids: string[];
+}
+
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+function noteWriteError(error: { code?: string; message: string }): Error {
+  if (isMissingNoteTable(error.code)) {
+    return new Error(
+      "The signal_notes table is missing — run migrations/opportunity_signal_notes.sql in the Supabase SQL editor."
+    );
+  }
+  if (error.code === "23514") {
+    return new Error("Note text is required.");
+  }
+  return new Error(error.message);
+}
+
+function cleanNoteInput(input: SignalNoteInput) {
+  const body = input.body.trim();
+  if (!body) throw new Error("Note text is required.");
+
+  return {
+    body,
+    // Fall back to today rather than letting a malformed date reach Postgres.
+    note_date: DATE_ONLY.test(input.note_date)
+      ? input.note_date
+      : new Date().toISOString().split("T")[0],
+    signal_ids: [...new Set(input.signal_ids.filter(Boolean))],
+  };
+}
+
+export async function createSignalNote(input: SignalNoteInput) {
+  await requireAdminSession();
+
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from("signal_notes")
+    .insert(cleanNoteInput(input));
+
+  if (error) throw noteWriteError(error);
+
+  revalidateSignalSurfaces();
+}
+
+export async function updateSignalNote(id: string, input: SignalNoteInput) {
+  await requireAdminSession();
+
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from("signal_notes")
+    .update({ ...cleanNoteInput(input), updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw noteWriteError(error);
+
+  revalidateSignalSurfaces();
+}
+
+export async function deleteSignalNote(id: string) {
+  await requireAdminSession();
+
+  const supabase = createServiceClient();
+  await supabase.from("signal_notes").delete().eq("id", id);
 
   revalidateSignalSurfaces();
 }

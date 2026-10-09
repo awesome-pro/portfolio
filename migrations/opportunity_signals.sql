@@ -9,6 +9,9 @@
 -- file adds it to an existing table (and carries over the old tier model);
 -- this file creates it from scratch so a fresh database matches the live one.
 --
+-- Dated notes on a signal live in a separate table, created by
+-- migrations/opportunity_signal_notes.sql.
+--
 -- WARNING: this drops and recreates the table, so existing rows are discarded
 -- (including which companies were starred).
 

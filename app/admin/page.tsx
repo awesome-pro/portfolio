@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getAllOpportunitySignals } from "@/lib/opportunity-signals";
+import { getAllSignalNotes } from "@/lib/opportunity-notes";
+import { noteRange } from "@/lib/signal-notes";
 import { getAllArtifactsAdmin } from "@/lib/artifacts";
 import { CHECKLISTS, loadChecklist } from "@/lib/prep-checklist";
 import SignOutButton from "@/components/admin/SignOutButton";
@@ -7,10 +9,11 @@ import SignOutButton from "@/components/admin/SignOutButton";
 export const dynamic = "force-dynamic";
 
 export default async function AdminHub() {
-  const [signals, artifacts, sheets] = await Promise.all([
+  const [signals, artifacts, sheets, { notes }] = await Promise.all([
     getAllOpportunitySignals(),
     getAllArtifactsAdmin(),
     Promise.all(CHECKLISTS.map((entry) => loadChecklist(entry.slug))),
+    getAllSignalNotes(),
   ]);
   const prepItems = sheets.reduce((total, sheet) => total + sheet.itemCount, 0);
 
@@ -19,6 +22,10 @@ export default async function AdminHub() {
     (s) => s.status === "interviewing"
   ).length;
   const focusCount = signals.filter((s) => s.focus).length;
+  const today = new Date().toISOString().split("T")[0];
+  const notesToday = notes.filter(
+    (note) => noteRange(note.note_date, today) === "today"
+  ).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,6 +75,7 @@ export default async function AdminHub() {
               {interviewingCount > 0 && (
                 <> &middot; {interviewingCount} interviewing</>
               )}
+              {notesToday > 0 && <> &middot; {notesToday} notes today</>}
             </p>
           </Link>
 

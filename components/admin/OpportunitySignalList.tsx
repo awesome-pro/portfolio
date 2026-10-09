@@ -234,13 +234,22 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
 
 export default function OpportunitySignalList({
   signals,
+  initialSearch = "",
 }: {
   signals: OpportunitySignal[];
+  /**
+   * Pre-filled search, used when a company chip on a note links here. The
+   * status filter opens up too: the company you clicked may well be closed,
+   * and landing on an empty list would look like a broken link.
+   */
+  initialSearch?: string;
 }) {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("active");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    initialSearch ? "all" : "active"
+  );
   const [focusOnly, setFocusOnly] = useState(false);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
 
   const normalizedSearch = search.trim().toLowerCase();
 

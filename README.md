@@ -32,6 +32,7 @@ All admin routes protected by a middleware proxy (`proxy.ts`) that validates the
 
 - Build artifact CRUD — create, edit, delete, image uploads to Supabase Storage
 - Opportunity signal tracker — companies worth reaching out to, with links, notes, a status workflow and a single `focus` star for the shortlist (schema in `migrations/`)
+- Dated notes — free text pinned to the day it is *for*, optionally referring to saved companies, grouped today / upcoming / past on the signals board
 ### CI/CD
 
 - GitHub Actions with automated Claude-powered code review on every PR
@@ -104,6 +105,7 @@ Migrations live in `migrations/`. Apply them in the Supabase SQL editor or via t
 |---|---|
 | `artifacts` | Build artifacts — story, demo video, architecture images |
 | `opportunity_signals` | Companies worth reaching out to — links, notes, status workflow, and a `focus` star (starred sort first) |
+| `signal_notes` | Dated notes — the day the note is for, plus the companies it refers to |
 
 The app no longer uses `articles`, `ai_content_ideas`, `contribution_targets` or `product_opportunities`; those tables were left in place in the database.
 
