@@ -10,9 +10,8 @@ const EXPERIENCES: Experience[] = [
   {
     company: "Browzer",
     role: "Founding Software Engineer",
-    location: "San Francisco",
-    period: "2025 to now",
-    note: "role just ended",
+    location: "SF",
+    period: "Sept 2025 to Oct 2026",
   },
   {
     company: "Cynos Nexus",
@@ -27,9 +26,9 @@ const EXPERIENCES: Experience[] = [
     period: "2024",
   },
   {
-    company: "HeroUI",
+    company: "HeroUI (YC S24)",
     role: "Open Source Contributor",
-    location: "YC S24",
+    location: "Remote",
     period: "2024",
   },
 ];
