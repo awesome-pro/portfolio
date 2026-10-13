@@ -479,6 +479,25 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
             dirty={dirty}
             group={slug || artifactName || "draft"}
             title={artifactName}
+            // The draft, assembled from this form's own state, so the preview
+            // shows the live title, links and media rather than the last save.
+            preview={{
+              id: initial?.id ?? "draft",
+              serial_number: initial?.serial_number ?? 0,
+              slug: slug || "draft",
+              artifact_name: artifactName,
+              published_at: initial?.published_at ?? null,
+              demo_youtube_url: demoYoutubeUrl || null,
+              story_markdown: storyMarkdown || null,
+              github_links: githubLinks.filter((link) => link.url.trim()),
+              architecture_images: architectureImages,
+              view_count: initial?.view_count ?? 0,
+              // Deliberately not `new Date()`: a timestamp minted during render
+              // differs between the server pass and the client pass, which is a
+              // hydration mismatch. An unsaved draft has no revision date yet.
+              created_at: initial?.created_at ?? "",
+              updated_at: initial?.updated_at ?? "",
+            }}
             handleRef={writerRef}
           />
         </div>

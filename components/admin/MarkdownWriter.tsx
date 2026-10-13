@@ -5,8 +5,8 @@
 // Three things make a long artifact writable, and they are all here:
 //   * a document-shaped surface that grows with the text instead of a fixed box,
 //   * focus mode — the whole viewport, chrome hidden, one comfortable measure,
-//   * a preview that renders through `ArtifactMarkdown`, the exact component the
-//     public artifact page uses, so what you see is what ships.
+//   * a preview that renders through `ArtifactView`, the exact component the
+//     published artifact page renders, so what you see is what ships.
 //
 // The DOM shape never changes between modes — only class names do. That is
 // deliberate: remounting the pane would throw away the CodeMirror instance,
@@ -37,8 +37,9 @@ import {
   Table,
   type LucideIcon,
 } from "lucide-react";
-import ArtifactMarkdown from "@/components/artifacts/ArtifactMarkdown";
+import ArtifactView from "@/components/artifacts/ArtifactView";
 import { hasUnpairedDisplayMath } from "@/lib/math";
+import type { Artifact } from "@/lib/artifacts";
 import type { MarkdownEditorHandle } from "./MarkdownEditor";
 import type { FormatAction } from "./markdown-commands";
 
@@ -69,6 +70,12 @@ export interface MarkdownWriterProps {
   group: string;
   /** Shown in the focus bar so you know which artifact you are inside. */
   title?: string;
+  /**
+   * The draft as it stands, rendered by the same component the published page
+   * uses. Assembled by the form from its own state, so the preview tracks every
+   * field — title, links, media — not just the story.
+   */
+  preview: Artifact;
   handleRef?: RefObject<MarkdownWriterHandle | null>;
 }
 
@@ -188,10 +195,11 @@ export default function MarkdownWriter({
   dirty,
   group,
   title,
+  preview,
   handleRef,
 }: MarkdownWriterProps) {
   const [focused, setFocused] = useState(false);
-  const [preview, setPreview] = useState(false);
+  const [previewMode, setPreview] = useState(false);
   const [upload, setUpload] = useState<{ name: string; percent: number } | null>(
     null
   );
@@ -203,13 +211,13 @@ export default function MarkdownWriter({
 
   // Latest values, for the single window listener and the single mount effect.
   // Synced in an effect rather than during render: refs are not render state.
-  const previewRef = useRef(preview);
+  const previewRef = useRef(previewMode);
   const focusedRef = useRef(focused);
   const saveRef = useRef(onSave);
   const handleRefHolder = useRef(handleRef);
 
   useEffect(() => {
-    previewRef.current = preview;
+    previewRef.current = previewMode;
     focusedRef.current = focused;
     saveRef.current = onSave;
     handleRefHolder.current = handleRef;
@@ -369,7 +377,7 @@ export default function MarkdownWriter({
               <ToolButton
                 key={tool.action}
                 tool={tool}
-                disabled={preview}
+                disabled={previewMode}
                 onRun={handleFormat}
               />
             ))}
@@ -392,13 +400,13 @@ export default function MarkdownWriter({
         <div className="ml-auto flex flex-wrap items-center gap-1 pl-2">
           <div className="flex items-center gap-0.5 rounded-lg border border-border p-0.5">
             <ModeButton
-              active={!preview}
+              active={!previewMode}
               label="write"
               Icon={PenLine}
               onClick={() => setPreview(false)}
             />
             <ModeButton
-              active={preview}
+              active={previewMode}
               label="preview"
               Icon={Eye}
               onClick={() => setPreview(true)}
@@ -450,7 +458,7 @@ export default function MarkdownWriter({
         <div
           className={`mx-auto w-full max-w-3xl px-6 ${focused ? "py-10" : "py-6"}`}
         >
-          <div className={preview ? "hidden" : "block"}>
+          <div className={previewMode ? "hidden" : "block"}>
             <MarkdownEditor
               value={value}
               onChange={onChange}
@@ -464,7 +472,7 @@ export default function MarkdownWriter({
               onReady={handleReady}
               group={group}
               placeholder={PLACEHOLDER}
-              visible={!preview}
+              visible={!previewMode}
               minHeight={focused ? "calc(100vh - 9rem)" : "60vh"}
               handleRef={editorRef}
             />
@@ -472,14 +480,9 @@ export default function MarkdownWriter({
 
           {/* The page's own tone, not the canvas: the preview shows the
               published hierarchy, where panels lift off the page. */}
-          <div
-            className={preview ? "block bg-background" : "hidden bg-background"}
-          >
-            <p className="mb-8 font-mono text-[11px] text-ink-faint">
-              story only — rendered by the same component as the public page
-            </p>
-            {hasContent ? (
-              <ArtifactMarkdown content={value} />
+          <div className={previewMode ? "block bg-background" : "hidden bg-background"}>
+            {hasContent || preview.artifact_name ? (
+              <ArtifactView artifact={preview} story={value} isDraft />
             ) : (
               <p className="font-mono text-xs text-ink-faint">
                 nothing to preview yet
@@ -501,6 +504,10 @@ export default function MarkdownWriter({
             </span>
           ) : unpairedMath ? (
             <span className="text-destructive">{MATH_WARNING}</span>
+          ) : previewMode ? (
+            <span className="text-ink-faint">
+              preview — the published page, rendered by its own components
+            </span>
           ) : null}
         </p>
       </div>
