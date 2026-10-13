@@ -3,7 +3,12 @@
 import { isValidElement, useState, type ReactElement, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import rehypeSlug from "rehype-slug";
+import { KATEX_OPTIONS, REMARK_MATH_OPTIONS, guardCurrency } from "@/lib/math";
+import "katex/dist/katex.min.css";
 import { youtubeEmbedUrl } from "@/lib/artifacts";
 import { isVideoUrl } from "@/lib/artifact-media";
 
@@ -25,7 +30,7 @@ function YouTubeEmbed({ url }: { url: string }) {
   if (!embedUrl) return null;
 
   return (
-    <div className="my-8 overflow-hidden rounded-xl border border-border bg-surface">
+    <div className="my-8 overflow-hidden rounded-xl border border-border bg-elevated">
       <div className="aspect-video w-full bg-background">
         <iframe
           className="h-full w-full"
@@ -70,7 +75,7 @@ function CodeBlock({ children }: { children?: ReactNode }) {
   }
 
   return (
-    <div className="my-7 overflow-hidden rounded-xl border border-border bg-surface">
+    <div className="my-7 overflow-hidden rounded-xl border border-border bg-elevated">
       <div className="flex items-center justify-between border-b border-border px-4 py-2">
         <span className="font-mono text-[11px] uppercase tracking-wider text-ink-faint">
           {language}
@@ -96,26 +101,46 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
   return (
     <div className="artifact-markdown">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
+        remarkPlugins={[remarkGfm, [remarkMath, REMARK_MATH_OPTIONS]]}
+        // rehype-slug gives every heading a stable fragment id, so one claim
+        // inside a long artifact is addressable — and citable — on its own:
+        // /artifacts/<slug>#what-changed. `lib/artifact-seo.ts` lists those same
+        // ids as the article's `hasPart`, from the same slugger.
+        //
+        // rehype-katex typesets any maths into static HTML + MathML. Options
+        // (including what counts as maths, and the domain macros) live in
+        // lib/math.ts so the artifact page and the prep pages cannot drift.
+        rehypePlugins={[rehypeSlug, [rehypeKatex, KATEX_OPTIONS], rehypeHighlight]}
         components={{
-          h1: ({ children }) => (
-            <h2 className="text-2xl font-semibold text-ink mt-12 mb-4 leading-snug first:mt-0">
+          h1: ({ children, id }) => (
+            <h2
+              id={id}
+              className="text-2xl font-semibold text-ink mt-12 mb-4 leading-snug first:mt-0 scroll-mt-8"
+            >
               {children}
             </h2>
           ),
-          h2: ({ children }) => (
-            <h2 className="text-2xl font-semibold text-ink mt-12 mb-4 leading-snug first:mt-0">
+          h2: ({ children, id }) => (
+            <h2
+              id={id}
+              className="text-2xl font-semibold text-ink mt-12 mb-4 leading-snug first:mt-0 scroll-mt-8"
+            >
               {children}
             </h2>
           ),
-          h3: ({ children }) => (
-            <h3 className="text-lg font-semibold text-ink mt-9 mb-3 leading-snug first:mt-0">
+          h3: ({ children, id }) => (
+            <h3
+              id={id}
+              className="text-lg font-semibold text-ink mt-9 mb-3 leading-snug first:mt-0 scroll-mt-8"
+            >
               {children}
             </h3>
           ),
-          h4: ({ children }) => (
-            <p className="font-mono text-xs uppercase tracking-wider text-ink-faint mt-7 mb-2">
+          h4: ({ children, id }) => (
+            <p
+              id={id}
+              className="font-mono text-xs uppercase tracking-wider text-ink-faint mt-7 mb-2 scroll-mt-8"
+            >
               {children}
             </p>
           ),
@@ -181,7 +206,7 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
               <img
                 src={url}
                 alt={alt ?? ""}
-                className="my-8 w-full rounded-xl border border-border bg-surface object-contain"
+                className="my-8 w-full rounded-xl border border-border bg-elevated object-contain"
               />
             );
           },
@@ -197,7 +222,7 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
             </div>
           ),
           th: ({ children }) => (
-            <th className="border-b border-border bg-surface px-4 py-2.5 text-left font-semibold text-ink">
+            <th className="border-b border-border bg-elevated px-4 py-2.5 text-left font-semibold text-ink">
               {children}
             </th>
           ),
@@ -208,7 +233,9 @@ export default function ArtifactMarkdown({ content }: { content?: string | null 
           ),
         }}
       >
-        {content}
+        {/* Money is escaped before parsing, so `$5` and `$/1M` stay prices while
+            `$x$` is maths. See lib/math.ts. */}
+        {guardCurrency(content)}
       </ReactMarkdown>
     </div>
   );

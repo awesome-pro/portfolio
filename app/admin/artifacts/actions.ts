@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createClient } from "@/lib/supabase/server";
 import { ALLOWED_MEDIA_MIME_TYPES } from "@/lib/artifact-media";
@@ -11,6 +12,8 @@ import {
   type ArtifactImage,
   type ArtifactLink,
 } from "@/lib/artifacts";
+import { submitToIndexNow } from "@/lib/indexnow";
+import { SITE_URL } from "@/lib/identity";
 
 export interface SaveArtifactInput {
   artifact_name: string;
@@ -107,13 +110,33 @@ function validatePayload(payload: {
   }
 }
 
+/**
+ * Tells IndexNow which URLs changed, once the response has gone out. Bing's
+ * index is what Copilot grounds on, and eight pages do not need a crawl
+ * schedule to notice a new artifact.
+ */
+function notifyIndexNow(slugs: (string | null | undefined)[]) {
+  const urls = [`${SITE_URL}/`, `${SITE_URL}/artifacts`];
+  for (const slug of slugs) {
+    if (slug) urls.push(`${SITE_URL}/artifacts/${slug}`);
+  }
+  after(() => submitToIndexNow(urls));
+}
+
 function revalidateArtifactPaths(slug?: string | null) {
   revalidatePath("/");
   revalidatePath("/admin");
   revalidatePath("/admin/artifacts");
   revalidatePath("/artifacts");
   revalidatePath("/sitemap.xml");
-  if (slug) revalidatePath(`/artifacts/${slug}`);
+  revalidatePath("/llms.txt");
+  revalidatePath("/llms-full.txt");
+  if (slug) {
+    revalidatePath(`/artifacts/${slug}`);
+    // The generated social card is derived from the same fields, so a rename
+    // must not leave a stale card on the old title for an hour.
+    revalidatePath(`/og/artifacts/${slug}`);
+  }
 }
 
 export async function createArtifact(input: SaveArtifactInput) {
@@ -138,6 +161,7 @@ export async function createArtifact(input: SaveArtifactInput) {
   }
 
   revalidateArtifactPaths(data.slug);
+  notifyIndexNow([data.slug]);
   return { id: data.id as string, slug: data.slug as string };
 }
 
@@ -174,6 +198,7 @@ export async function updateArtifact(id: string, input: SaveArtifactInput) {
   revalidateArtifactPaths(existingArtifact.slug);
   revalidateArtifactPaths(data.slug as string);
   revalidatePath(`/admin/artifacts/${id}`);
+  notifyIndexNow([existingArtifact.slug, data.slug as string]);
   return { id: data.id as string, slug: data.slug as string };
 }
 
@@ -191,6 +216,7 @@ export async function deleteArtifact(id: string) {
   if (error) throw new Error(error.message);
 
   revalidateArtifactPaths((existing as { slug?: string } | null)?.slug);
+  notifyIndexNow([(existing as { slug?: string } | null)?.slug]);
 }
 
 /**

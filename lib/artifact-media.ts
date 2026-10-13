@@ -11,6 +11,14 @@ export function isVideoUrl(url: string | null | undefined): boolean {
   return typeof url === "string" && VIDEO_FILE_PATTERN.test(url);
 }
 
+/**
+ * `![alt](url)` — the one syntax for both images and video files, which
+ * `ArtifactMarkdown` turns into an <img> or a native player by extension.
+ */
+export function mediaMarkdown(media: { url: string; alt: string }): string {
+  return `![${media.alt}](${media.url})`;
+}
+
 /** Mirrors the `artifact-images` bucket's allowed_mime_types. */
 export const ALLOWED_MEDIA_MIME_TYPES = [
   "image/jpeg",

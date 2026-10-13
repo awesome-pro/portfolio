@@ -2,21 +2,39 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import {
   createArtifact,
-  createArtifactUploadUrl,
   updateArtifact,
   type SaveArtifactInput,
 } from "@/app/admin/artifacts/actions";
+import MarkdownWriter, {
+  type MarkdownWriterHandle,
+} from "@/components/admin/MarkdownWriter";
 import {
   MEDIA_ACCEPT,
-  formatMegabytes,
   isVideoUrl,
-  maxBytesFor,
+  mediaMarkdown,
 } from "@/lib/artifact-media";
+import { uploadArtifactMedia } from "@/lib/artifact-upload";
 import type { Artifact, ArtifactImage, ArtifactLink } from "@/lib/artifacts";
+
+/**
+ * The form's starting values, in exactly the shape `buildInput` produces, so the
+ * "unsaved changes" check starts clean instead of tripping over "" vs null.
+ */
+function buildInputFrom(artifact?: Artifact): SaveArtifactInput {
+  return {
+    artifact_name: artifact?.artifact_name ?? "",
+    slug: artifact?.slug ?? "",
+    demo_youtube_url: artifact?.demo_youtube_url || null,
+    story_markdown: artifact?.story_markdown || null,
+    github_links: artifact?.github_links?.length
+      ? artifact.github_links
+      : [{ label: "GitHub", url: "" }],
+    architecture_images: artifact?.architecture_images ?? [],
+  };
+}
 
 function Label({
   children,
@@ -50,33 +68,7 @@ function Input({
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder={placeholder}
-      className="w-full bg-surface border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
-    />
-  );
-}
-
-function Textarea({
-  value,
-  onChange,
-  placeholder,
-  rows = 4,
-  mono = false,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  rows?: number;
-  mono?: boolean;
-}) {
-  return (
-    <textarea
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder={placeholder}
-      rows={rows}
-      className={`w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors resize-y leading-relaxed ${
-        mono ? "font-mono" : ""
-      }`}
+      className="w-full bg-elevated border border-border rounded-xl px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
     />
   );
 }
@@ -88,50 +80,6 @@ function slugifyArtifactInput(value: string) {
     .replace(/[^\w\s-]/g, "")
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
-}
-
-/**
- * Uploads straight to Supabase with XHR rather than fetch, because fetch still
- * has no upload-progress event and a 40MB clip with no feedback looks hung.
- */
-function putWithProgress(
-  url: string,
-  file: File,
-  contentType: string,
-  onProgress: (percent: number) => void
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-Type", contentType);
-
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        onProgress(Math.round((event.loaded / event.total) * 100));
-      }
-    };
-
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        resolve();
-        return;
-      }
-      // Storage returns a JSON { message } for rejections such as
-      // invalid_mime_type or EntityTooLarge; surface that instead of a bare code.
-      try {
-        const body = JSON.parse(xhr.responseText) as { message?: string };
-        reject(new Error(body.message || `Upload failed (HTTP ${xhr.status}).`));
-      } catch {
-        reject(new Error(`Upload failed (HTTP ${xhr.status}).`));
-      }
-    };
-
-    xhr.onerror = () =>
-      reject(new Error("Upload failed. Check your connection and try again."));
-    xhr.ontimeout = () => reject(new Error("Upload timed out. Try again."));
-
-    xhr.send(file);
-  });
 }
 
 function FieldBlock({
@@ -209,51 +157,36 @@ function MediaArrayField({
   slug,
   values,
   onChange,
+  onInsertMarkdown,
 }: {
   artifactName: string;
   slug: string;
   values: ArtifactImage[];
   onChange: (values: ArtifactImage[]) => void;
+  /** Drops this media's markdown into the story at the writer's caret. */
+  onInsertMarkdown?: (markdown: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
-    const contentType = (file.type || "").toLowerCase();
-    const limit = maxBytesFor(contentType);
-
-    if (file.size > limit) {
-      setError(
-        `That file is ${formatMegabytes(file.size)}. The limit is ${formatMegabytes(
-          limit
-        )} per ${contentType.startsWith("video/") ? "video" : "image"}.`
-      );
-      return;
-    }
-
     setUploading(true);
     setProgress(0);
     setError(null);
 
     try {
-      // 1. Ask the server for a pre-signed URL, then 2. PUT the bytes straight
-      // to Supabase — the file never passes through a Server Action.
-      const target = await createArtifactUploadUrl({
-        filename: file.name,
-        contentType,
-        group: slug || artifactName || "draft",
-      });
-
-      await putWithProgress(target.uploadUrl, file, contentType, setProgress);
+      // The helper asks the server for a pre-signed URL and PUTs the bytes
+      // straight to Supabase — the file never passes through a Server Action.
+      const media = await uploadArtifactMedia(
+        file,
+        slug || artifactName || "draft",
+        setProgress
+      );
 
       onChange([
         ...values,
-        {
-          url: target.publicUrl,
-          alt: file.name.replace(/\.[^.]+$/, ""),
-          caption: "",
-        },
+        { url: media.url, alt: media.alt, caption: "" },
       ]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
@@ -279,7 +212,7 @@ function MediaArrayField({
         return (
           <div
             key={`${image.url}-${index}`}
-            className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-surface p-3 sm:grid-cols-[180px_1fr]"
+            className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-elevated p-3 sm:grid-cols-[180px_1fr]"
           >
             <div className="relative aspect-video overflow-hidden rounded-lg border border-border bg-background">
               {video ? (
@@ -315,11 +248,27 @@ function MediaArrayField({
                 onChange={(value) => update(index, { caption: value })}
                 placeholder="Caption"
               />
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {onInsertMarkdown && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onInsertMarkdown(
+                        mediaMarkdown({
+                          url: image.url,
+                          alt: image.alt || "artifact image",
+                        })
+                      )
+                    }
+                    className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-muted hover:text-ink hover:border-ink-muted transition-colors"
+                  >
+                    Insert into story
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() =>
-                    navigator.clipboard?.writeText(`![${image.alt}](${image.url})`)
+                    navigator.clipboard?.writeText(mediaMarkdown(image))
                   }
                   className="self-start text-xs font-mono px-3 py-1.5 rounded-lg border border-border text-ink-faint hover:text-ink hover:border-ink-muted transition-colors"
                 >
@@ -370,8 +319,9 @@ function MediaArrayField({
       </div>
 
       <p className="font-mono text-xs text-ink-faint">
-        Paste the markdown anywhere in the story. Images and videos use the same
-        syntax — video URLs render as a player automatically.
+        &quot;Insert into story&quot; drops this markdown wherever your caret is.
+        Images and videos share one syntax — a video URL renders as a player
+        automatically.
       </p>
 
       {error && <p className="text-xs font-mono text-destructive">{error}</p>}
@@ -400,6 +350,8 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
     initial?.github_links?.length ? initial.github_links : [{ label: "GitHub", url: "" }]
   );
 
+  const writerRef = useRef<MarkdownWriterHandle | null>(null);
+
   function handleArtifactNameChange(value: string) {
     setArtifactName(value);
     if (!initial) setSlug(slugifyArtifactInput(value));
@@ -416,6 +368,27 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
     };
   }
 
+  // What the database last accepted, compared against the live form. Both sides
+  // are the client's own shape, so the server's normalisation (trimming, dropping
+  // blank links) cannot leave the form permanently "dirty".
+  const [savedSnapshot, setSavedSnapshot] = useState(() =>
+    JSON.stringify(buildInputFrom(initial))
+  );
+  const dirty = JSON.stringify(buildInput()) !== savedSnapshot;
+
+  // A half-written artifact is worth a browser warning before it is lost.
+  useEffect(() => {
+    if (!dirty) return;
+
+    function onBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [dirty]);
+
   function handleSave() {
     setError(null);
     setSaved(false);
@@ -427,6 +400,7 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
           ? await updateArtifact(initial.id, input)
           : await createArtifact(input);
 
+        setSavedSnapshot(JSON.stringify(input));
         setSaved(true);
         if (!initial) {
           router.replace(`/admin/artifacts/${result.id}`);
@@ -464,7 +438,7 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
                 setSlug(slugifyArtifactInput(event.target.value))
               }
               placeholder="checkout-replay"
-              className="flex-1 bg-surface border border-border rounded-xl px-4 py-2.5 text-sm font-mono text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
+              className="flex-1 bg-elevated border border-border rounded-xl px-4 py-2.5 text-sm font-mono text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink-muted transition-colors"
             />
           </div>
         </div>
@@ -488,20 +462,24 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
           slug={slug}
           values={architectureImages}
           onChange={setArchitectureImages}
+          onInsertMarkdown={(markdown) =>
+            writerRef.current?.insertMarkdown(markdown)
+          }
         />
       </FieldBlock>
 
       <FieldBlock title="Story">
         <div className="flex flex-col gap-1.5">
-          <Label required>How it was implemented (Markdown)</Label>
-          <Textarea
+          <Label required>How it was implemented</Label>
+          <MarkdownWriter
             value={storyMarkdown}
             onChange={setStoryMarkdown}
-            rows={24}
-            mono
-            placeholder={
-              "Write it as one continuous piece. ## headings, lists, and ```fenced code``` all render inline.\n\nTo place architecture media inside the story, upload it above and paste its markdown (![alt](url)) wherever it belongs in the text. Video files render as an inline player."
-            }
+            onSave={() => handleSave()}
+            saving={isPending}
+            dirty={dirty}
+            group={slug || artifactName || "draft"}
+            title={artifactName}
+            handleRef={writerRef}
           />
         </div>
       </FieldBlock>
@@ -512,8 +490,15 @@ export default function ArtifactForm({ initial }: { initial?: Artifact }) {
 
       <div className="sticky bottom-0 z-10 flex flex-wrap items-center justify-between gap-4 border-t border-border bg-background/90 py-4 backdrop-blur-sm">
         <div className="min-h-5">
-          {error && <p className="text-xs font-mono text-destructive">{error}</p>}
-          {saved && <p className="text-xs font-mono text-ink-muted">Saved</p>}
+          {error ? (
+            <p className="text-xs font-mono text-destructive">{error}</p>
+          ) : isPending ? (
+            <p className="text-xs font-mono text-ink-muted">saving…</p>
+          ) : dirty ? (
+            <p className="text-xs font-mono text-ink-faint">unsaved changes</p>
+          ) : (
+            saved && <p className="text-xs font-mono text-ink-muted">saved</p>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <button

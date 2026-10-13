@@ -14,8 +14,20 @@ function formatMonth(dateStr: string | null): string {
 /**
  * The site's primary content: a quiet, editorial index of deep work.
  * Shared by the homepage (all artifacts) and /artifacts.
+ *
+ * `headingLevel` exists because the same list sits at a different depth on each
+ * page: under an "Artifacts" h2 on the homepage, directly beneath the h1 on
+ * /artifacts. A list of article titles should not skip a heading level.
  */
-export default function ArtifactIndex({ artifacts }: { artifacts: Artifact[] }) {
+export default function ArtifactIndex({
+  artifacts,
+  headingLevel = 3,
+}: {
+  artifacts: Artifact[];
+  headingLevel?: 2 | 3;
+}) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
+
   if (artifacts.length === 0) {
     return (
       <p className="py-10 font-mono text-sm text-ink-faint">
@@ -38,14 +50,14 @@ export default function ArtifactIndex({ artifacts }: { artifacts: Artifact[] }) 
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <h3 className="text-lg leading-snug font-semibold text-ink">
+                  <Heading className="text-lg leading-snug font-semibold text-ink">
                     <Link
                       href={`/artifacts/${artifact.slug}`}
                       className="decoration-ink-faint underline-offset-4 hover:underline"
                     >
                       {artifact.artifact_name}
                     </Link>
-                  </h3>
+                  </Heading>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-ink-faint">
                     {artifact.published_at && (
                       <span>{formatMonth(artifact.published_at)}</span>

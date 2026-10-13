@@ -1,4 +1,5 @@
 import { artifactExcerpt, getPublicArtifacts } from "@/lib/artifacts";
+import { artifactStats } from "@/lib/artifact-seo";
 import { getPullRequests } from "@/lib/contributions";
 import { getAllProjects } from "@/lib/projects";
 import {
@@ -64,11 +65,16 @@ export async function GET() {
   out.push("## Artifacts", "");
   for (const artifact of artifacts) {
     const excerpt = artifactExcerpt(artifact.story_markdown);
-    const published = artifact.published_at
-      ? ` (${artifact.published_at.slice(0, 10)})`
-      : "";
+    const stats = artifactStats(artifact.story_markdown);
+    // Date and reading time, because "is this worth my context window" is the
+    // question a model is actually asking when it reads a list like this.
+    const facts = [
+      artifact.published_at?.slice(0, 10),
+      stats.minutes > 0 ? `${stats.minutes} min read` : null,
+    ].filter(Boolean);
+    const suffix = facts.length > 0 ? ` (${facts.join(" · ")})` : "";
     out.push(
-      `- [${artifact.artifact_name}](${SITE}/artifacts/${artifact.slug})${published}`,
+      `- [${artifact.artifact_name}](${SITE}/artifacts/${artifact.slug})${suffix}`,
     );
     if (excerpt) out.push(`  ${excerpt}`);
     for (const link of artifact.github_links) {
@@ -92,10 +98,15 @@ export async function GET() {
   }
 
   // Answers an agent can lift whole, in the form the question is asked.
+  //
+  // An H2 section in llms.txt v2 is a file list, so each entry is the required
+  // `[name](url)` hyperlink followed by `: notes` — the question links to where
+  // the answer is published, and the answer itself rides along as the note.
   out.push("## FAQ", "");
   for (const entry of FAQ) {
-    out.push(`**${entry.question}**`, "", entry.answer, "");
+    out.push(`- [${entry.question}](${SITE}/about#faq): ${entry.answer}`);
   }
+  out.push("");
 
   out.push("## Contact", "");
 

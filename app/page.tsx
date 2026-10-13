@@ -7,7 +7,9 @@ import ArtifactIndex from "@/components/artifacts/ArtifactIndex";
 import ContributionList from "@/components/contributions";
 import Footer from "@/components/footer";
 import { getPublicArtifacts } from "@/lib/artifacts";
+import { buildArtifactItemList } from "@/lib/artifact-seo";
 import { getPullRequests } from "@/lib/contributions";
+import { SITE_URL } from "@/lib/identity";
 
 export const revalidate = 30;
 
@@ -36,8 +38,34 @@ export default async function Home() {
   const hasMoreContributions =
     mergedPullRequests.length > latestContributions.length;
 
+  // The homepage is the most-crawled page on the site, so the artifacts it
+  // shows are published as an ItemList too — "selected artifacts" rather than
+  // the complete list, which is what /artifacts carries. The root layout's
+  // Person/WebSite graph stays the only place those entities are declared.
+  const artifactsJsonLd =
+    latestArtifacts.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@graph": [
+            buildArtifactItemList(
+              latestArtifacts,
+              `${SITE_URL}/#selected-artifacts`,
+              "Selected artifacts"
+            ),
+          ],
+        }
+      : null;
+
   return (
     <div className="min-h-screen bg-background">
+      {artifactsJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(artifactsJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+      )}
       <Nav />
       <main>
         <Hero />

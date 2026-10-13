@@ -1,4 +1,5 @@
 import { getPublicArtifacts } from "@/lib/artifacts";
+import { artifactKeywords, artifactStats } from "@/lib/artifact-seo";
 import { getAllProjects } from "@/lib/projects";
 import {
   CONTACT,
@@ -65,6 +66,10 @@ export async function GET() {
     out.push(`- canonical: ${SITE}/artifacts/${artifact.slug}`);
     out.push(`- published: ${artifact.published_at ?? "unpublished"}`);
     out.push(`- updated: ${artifact.updated_at}`);
+    const stats = artifactStats(artifact.story_markdown);
+    if (stats.minutes > 0) out.push(`- reading time: ${stats.minutes} min`);
+    const keywords = artifactKeywords(artifact.story_markdown);
+    if (keywords.length > 0) out.push(`- keywords: ${keywords.join(", ")}`);
     if (artifact.demo_youtube_url) {
       out.push(`- demo video: ${artifact.demo_youtube_url}`);
     }

@@ -4,6 +4,10 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { KATEX_OPTIONS, REMARK_MATH_OPTIONS, guardCurrency } from "@/lib/math";
+// Without this the KaTeX markup renders as unstyled spans: the prep sheets have
+// been shipping un-typeset formulas since they were written.
+import "katex/dist/katex.min.css";
 
 /**
  * A checklist item's label, rendered from markdown.
@@ -26,14 +30,8 @@ export default function InlineMarkdown({
 }) {
   return (
     <ReactMarkdown
-      remarkPlugins={[
-        remarkGfm,
-        // Display math only ($...$ off). The prep files use $$ blocks for
-        // formulas and single dollars for money — "cost ($/1M in, $/1M out)"
-        // would otherwise be parsed as a formula and rendered as gibberish.
-        [remarkMath, { singleDollarTextMath: false }],
-      ]}
-      rehypePlugins={[rehypeKatex]}
+      remarkPlugins={[remarkGfm, [remarkMath, REMARK_MATH_OPTIONS]]}
+      rehypePlugins={[[rehypeKatex, KATEX_OPTIONS]]}
       components={{
         p: ({ children }) =>
           block ? (
@@ -65,7 +63,7 @@ export default function InlineMarkdown({
         ),
       }}
     >
-      {text}
+      {guardCurrency(text)}
     </ReactMarkdown>
   );
 }

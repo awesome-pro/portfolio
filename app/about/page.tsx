@@ -303,7 +303,7 @@ export default async function AboutPage() {
           </ul>
         </section>
 
-        <section className="mt-12 border-t border-border pt-8">
+        <section id="faq" className="mt-12 scroll-mt-8 border-t border-border pt-8">
           <h2 className="font-mono text-xs tracking-[0.25em] text-ink-faint uppercase">
             Questions
           </h2>

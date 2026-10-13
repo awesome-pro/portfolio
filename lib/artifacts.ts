@@ -1,3 +1,4 @@
+import { guardCurrency } from "@/lib/math";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createStaticClient } from "@/lib/supabase/static";
 
@@ -69,7 +70,12 @@ export function youtubeEmbedUrl(url: string | null | undefined): string | null {
 /**
  * Pull a plain-text lead sentence out of an artifact's markdown so index
  * listings can say what the work actually is, not just its title.
- * Fenced code, images, tables, quotes and heading lines are skipped.
+ * Fenced code, maths, images, tables, quotes and heading lines are skipped.
+ *
+ * Maths is dropped rather than quoted: this string becomes the meta
+ * description, the social card, and the llms.txt index entry, and `$$L =
+ * \sum_t \gamma^t r_t$$` is noise in all three. A paragraph that is nothing but
+ * an equation therefore drops out and the next prose paragraph leads instead.
  */
 export function artifactExcerpt(
   story: string | null | undefined,
@@ -77,7 +83,16 @@ export function artifactExcerpt(
 ): string {
   if (!story) return "";
 
-  const withoutCode = story.replace(/```[\s\S]*?```/g, "\n\n");
+  const withoutCode = guardCurrency(story)
+    .replace(/```[\s\S]*?```/g, "\n\n")
+    // Display maths owns its own lines; inline maths is replaced by a space so
+    // the sentence around it survives. `guardCurrency` has already turned the
+    // money into `\$`, so only real delimiters are left to pair up.
+    .replace(/^[ \t]*\$\$[\s\S]*?\$\$[ \t]*$/gm, "\n\n")
+    .replace(/\$\$[\s\S]*?\$\$/g, " ")
+    .replace(/(?<!\\)\$[^$\n]*\$/g, " ")
+    // Money was escaped for parsing; a description should read normally.
+    .replace(/\\\$/g, "$");
 
   const paragraphs = withoutCode
     .split(/\n{2,}/)

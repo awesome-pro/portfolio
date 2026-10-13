@@ -1,6 +1,12 @@
 import type { MetadataRoute } from "next";
 import { getPublicArtifacts } from "@/lib/artifacts";
+import { extractYouTubeId } from "@/lib/artifacts";
+import {
+  artifactDescription,
+  artifactSocialImage,
+} from "@/lib/artifact-seo";
 import { getAllProjects } from "@/lib/projects";
+import { isVideoUrl } from "@/lib/artifact-media";
 import { SITE_URL } from "@/lib/identity";
 
 export const revalidate = 30;
@@ -89,12 +95,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const artifactRoutes: MetadataRoute.Sitemap = artifacts.map((artifact) => ({
-    url: `${SITE_URL}/artifacts/${artifact.slug}`,
-    lastModified: dateOrUndefined(artifact.updated_at ?? artifact.published_at),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
+  // Artifact entries carry their stills and their demo video. An image sitemap
+  // entry is how a diagram inside a write-up becomes findable on its own, and
+  // the video entry is what makes the demo eligible without waiting for Google
+  // to associate the embedded player with the page.
+  const artifactRoutes: MetadataRoute.Sitemap = artifacts.map((artifact) => {
+    const stills = artifact.architecture_images
+      .filter((media) => !isVideoUrl(media.url))
+      .map((media) => media.url);
+    const social = artifactSocialImage(artifact);
+    const images = stills.length > 0 ? stills : [social.url];
+    const youtubeId = extractYouTubeId(artifact.demo_youtube_url);
+
+    return {
+      url: `${SITE_URL}/artifacts/${artifact.slug}`,
+      lastModified: dateOrUndefined(artifact.updated_at ?? artifact.published_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+      images,
+      videos: youtubeId
+        ? [
+            {
+              title: `${artifact.artifact_name} — demo`,
+              thumbnail_loc: `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`,
+              description: artifactDescription(artifact, 200),
+              player_loc: `https://www.youtube-nocookie.com/embed/${youtubeId}`,
+              family_friendly: "yes",
+              upload_date: dateOrUndefined(
+                artifact.published_at ?? artifact.created_at
+              ),
+            },
+          ]
+        : undefined,
+    };
+  });
 
   return [...staticRoutes, ...projectRoutes, ...artifactRoutes];
 }

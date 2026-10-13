@@ -22,6 +22,11 @@
 #
 # Both say the same thing here: this is a personal portfolio whose entire
 # purpose is to be found, read, quoted and cited. Nothing on it is restricted.
+#
+# `use=full`, not `use=reference`: reference means "index, excerpt, link back",
+# which contradicts `train-ai=y` in the same line. The aipref combining rule
+# resolves a self-contradicting statement toward the most restrictive reading,
+# so the narrower value would have quietly narrowed the whole policy.
 # Neither vocabulary is enforced by anyone; they are preferences, and the
 # wildcard Allow below is what actually governs crawling.
 
@@ -60,7 +65,7 @@
 
 User-Agent: *
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -84,7 +89,7 @@ Disallow: /api/
 # OpenAI, ChatGPT search index
 User-Agent: OAI-SearchBot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -92,7 +97,7 @@ Disallow: /api/
 # OpenAI, user-initiated fetch
 User-Agent: ChatGPT-User
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -100,7 +105,7 @@ Disallow: /api/
 # Anthropic, search index
 User-Agent: Claude-SearchBot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -108,7 +113,7 @@ Disallow: /api/
 # Anthropic, user-initiated fetch
 User-Agent: Claude-User
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -116,7 +121,7 @@ Disallow: /api/
 # Perplexity, search index
 User-Agent: PerplexityBot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -124,7 +129,7 @@ Disallow: /api/
 # Perplexity, user-initiated fetch
 User-Agent: Perplexity-User
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -132,7 +137,7 @@ Disallow: /api/
 # DuckDuckGo, real-time AI answers
 User-Agent: DuckAssistBot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -140,7 +145,7 @@ Disallow: /api/
 # Apple, Spotlight/Siri/Safari search
 User-Agent: Applebot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -148,7 +153,7 @@ Disallow: /api/
 # Amazon, Alexa search
 User-Agent: Amzn-SearchBot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -156,7 +161,7 @@ Disallow: /api/
 # Amazon, live Alexa queries
 User-Agent: Amzn-User
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -164,7 +169,7 @@ Disallow: /api/
 # Google, user-triggered agent browsing
 User-Agent: Google-Agent
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -172,7 +177,7 @@ Disallow: /api/
 # Google, Notebook source fetches
 User-Agent: Google-GeminiNotebook
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -180,7 +185,7 @@ Disallow: /api/
 # Meta, user-triggered assistant fetches
 User-Agent: meta-externalfetcher
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -188,7 +193,7 @@ Disallow: /api/
 # Mistral, user-triggered fetch
 User-Agent: MistralAI-User
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -196,7 +201,7 @@ Disallow: /api/
 # You.com, search index
 User-Agent: YouBot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
@@ -207,14 +212,14 @@ Disallow: /api/
 
 User-Agent: Googlebot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/
 
 User-Agent: bingbot
 Content-Usage: search=y, ai-use=y, train-ai=y
-Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=reference
+Content-Signal: search=yes, ai-input=yes, ai-train=yes, use=full
 Allow: /
 Disallow: /admin/
 Disallow: /api/

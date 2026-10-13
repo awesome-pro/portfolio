@@ -8,6 +8,10 @@
   --radius: 0.65rem;
   --background: oklch(1 0 0);
   --surface:      #ffffff;
+  /* A lifted panel — the writing canvas, inputs, cards. */
+  --elevated:     #ffffff;
+  /* Bars that frame a panel — the writer's toolbar and status row. */
+  --chrome:       #f7f6f3;
   --ink:          #111110;
   --ink-muted:    #6b6b63;
   --ink-faint:    #c4c4bc;
@@ -46,6 +50,13 @@
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --surface:      var(--background);
+  /* Dark mode is where this matters: `--surface` is the page here, so a panel
+     that used it was invisible against the page. The canvas is a warm charcoal
+     a couple of steps up from near-black, which is the separation the X
+     composer gets from its chrome — enough to see where you are writing,
+     not enough to become a bright box. */
+  --elevated:     oklch(0.225 0.008 75);
+  --chrome:       var(--background);
   --ink:          #f2f2ee;
   --ink-muted:    #a8a89f;
   --ink-faint:    #6e6e64;
@@ -85,6 +96,8 @@
 @theme inline {
   --color-background:   var(--background);
   --color-surface:      var(--surface);
+  --color-elevated:     var(--elevated);
+  --color-chrome:       var(--chrome);
   --color-ink:          var(--ink);
   --color-ink-muted:    var(--ink-muted);
   --color-ink-faint:    var(--ink-faint);
@@ -152,9 +165,20 @@
 .artifact-markdown :not(pre) > code {
   border: 1px solid var(--border);
   border-radius: 0.375rem;
-  background: var(--surface);
+  /* Panels inside prose lift off the page in dark mode, where `--surface` and
+     `--background` are the same near-black; in light mode `--elevated` is white
+     and this is unchanged. */
+  background: var(--elevated);
   padding: 0.125rem 0.375rem;
   color: var(--ink);
+}
+
+/* Maths is case-sensitive notation — the site-wide `text-transform: lowercase`
+   on <body> was rendering O(n) as o(n) and L^CLIP as l^clip. KaTeX output is
+   exempt, and nothing else is. */
+.katex,
+.katex * {
+  text-transform: none;
 }
 
 .artifact-markdown pre code {
@@ -202,8 +226,9 @@
   display: none;
 }
 
-[data-view="agent"] .artifact-markdown,
-[data-view="agent"] .artifact-markdown * {
+/* Inherited, not forced on every descendant: the blanket `*` also replaced
+   KaTeX's own font families and broke maths spacing in agent view. */
+[data-view="agent"] .artifact-markdown {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
 }
 
