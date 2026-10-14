@@ -1,16 +1,14 @@
 "use client";
 
 import type { KeyboardEvent, ReactNode } from "react";
-import type { OpportunitySignalStatus } from "@/lib/opportunity-signals";
+import {
+  OPPORTUNITY_SIGNAL_STATUSES,
+  type OpportunitySignalStatus,
+} from "@/lib/opportunity-signals";
 import type { SignalLink } from "@/lib/signal-links";
 
-export const STATUS_OPTIONS: { value: OpportunitySignalStatus; label: string }[] = [
-  { value: "new", label: "New" },
-  { value: "applied", label: "Applied" },
-  { value: "reached_out", label: "Reached Out" },
-  { value: "interviewing", label: "Interviewing" },
-  { value: "closed", label: "Closed" },
-];
+/** The vocabulary lives in lib/opportunity-signals.ts; this is just its name here. */
+export const STATUS_OPTIONS = OPPORTUNITY_SIGNAL_STATUSES;
 
 export function Label({
   children,

@@ -2,7 +2,34 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { normalizeSignalLinks, type SignalLink } from "@/lib/signal-links";
 import { compareSignals, normalizeFocus } from "@/lib/signal-focus";
 
-export type OpportunitySignalStatus = "new" | "applied" | "reached_out" | "interviewing" | "closed";
+/**
+ * The pipeline, as one list.
+ *
+ * Order here is the order every control offers — the pill on the list, the
+ * editor's select, the filter above them — so the vocabulary cannot drift
+ * between three files. `status` is free text in Postgres (the column has no
+ * check constraint; see migrations/opportunity_signals.sql), which is why the
+ * server action validates what it is sent against this list instead of trusting
+ * it.
+ */
+export const OPPORTUNITY_SIGNAL_STATUSES = [
+  { value: "new", label: "New" },
+  { value: "applied", label: "Applied" },
+  { value: "reached_out", label: "Reached Out" },
+  { value: "interviewing", label: "Interviewing" },
+  { value: "closed", label: "Closed" },
+] as const;
+
+export type OpportunitySignalStatus =
+  (typeof OPPORTUNITY_SIGNAL_STATUSES)[number]["value"];
+
+/** The label for a status — "reached_out" reads as "Reached Out". */
+export function signalStatusLabel(status: OpportunitySignalStatus): string {
+  return (
+    OPPORTUNITY_SIGNAL_STATUSES.find((option) => option.value === status)
+      ?.label ?? status
+  );
+}
 
 export type { SignalLink };
 

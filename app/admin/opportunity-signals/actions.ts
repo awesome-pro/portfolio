@@ -5,7 +5,11 @@ import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase/service";
 import { createClient } from "@/lib/supabase/server";
 import { isMissingNoteTable } from "@/lib/opportunity-notes";
-import type { OpportunitySignalStatus, SignalLink } from "@/lib/opportunity-signals";
+import {
+  OPPORTUNITY_SIGNAL_STATUSES,
+  type OpportunitySignalStatus,
+  type SignalLink,
+} from "@/lib/opportunity-signals";
 
 async function requireAdminSession() {
   const supabase = await createClient();
@@ -139,6 +143,37 @@ export async function setOpportunityFocus(id: string, focus: boolean) {
   const { error } = await supabase
     .from("opportunity_signals")
     .update({ focus: focus === true, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw signalWriteError(error);
+
+  revalidateSignalSurfaces();
+}
+
+/**
+ * The list's one-click status.
+ *
+ * Separate from `updateOpportunitySignal` for the same reason the star is:
+ * moving a company along the pipeline is one fact about it, and it must never
+ * round-trip — or risk clobbering — the notes, links and website beside it.
+ *
+ * The column is free text with no check constraint, so the value is validated
+ * here: whatever a client posts, only a status this app knows about is stored.
+ */
+export async function setOpportunityStatus(
+  id: string,
+  status: OpportunitySignalStatus
+) {
+  await requireAdminSession();
+
+  if (!OPPORTUNITY_SIGNAL_STATUSES.some((option) => option.value === status)) {
+    throw new Error("Unknown status.");
+  }
+
+  const supabase = createServiceClient();
+  const { error } = await supabase
+    .from("opportunity_signals")
+    .update({ status, updated_at: new Date().toISOString() })
     .eq("id", id);
 
   if (error) throw signalWriteError(error);

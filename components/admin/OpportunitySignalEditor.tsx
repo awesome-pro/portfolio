@@ -30,11 +30,21 @@ function formatDate(value: string) {
 /**
  * Everything about a signal is editable here, so the admin list never needs to
  * navigate to a separate page to change a note or fix a link.
+ *
+ * Status is the one field this form does not own. It saves the moment it changes
+ * — from the pill on the row, or from the select below — so it is passed in and
+ * changed through the list. That also keeps it honest: one value, one owner, so
+ * saving a note can never quietly roll a status back, and "Reset" only resets
+ * what was actually unsaved.
  */
 export default function OpportunitySignalEditor({
   signal,
+  status,
+  onStatusChange,
 }: {
   signal: OpportunitySignal;
+  status: OpportunitySignalStatus;
+  onStatusChange: (status: OpportunitySignalStatus) => void;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -43,9 +53,6 @@ export default function OpportunitySignalEditor({
 
   const [companyName, setCompanyName] = useState(signal.company_name);
   const [website, setWebsite] = useState(signal.website ?? "");
-  const [status, setStatus] = useState<OpportunitySignalStatus>(
-    signal.status ?? "new"
-  );
   const [links, setLinks] = useState<SignalLink[]>(signal.links ?? []);
   const [notes, setNotes] = useState(signal.notes ?? "");
   const [focus, setFocus] = useState(signal.focus);
@@ -53,7 +60,6 @@ export default function OpportunitySignalEditor({
   function reset() {
     setCompanyName(signal.company_name);
     setWebsite(signal.website ?? "");
-    setStatus(signal.status ?? "new");
     setLinks(signal.links ?? []);
     setNotes(signal.notes ?? "");
     setFocus(signal.focus);
@@ -114,7 +120,8 @@ export default function OpportunitySignalEditor({
       <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3">
         <div className="flex flex-col gap-1.5">
           <Label>Status</Label>
-          <StatusSelect value={status} onChange={setStatus} />
+          <StatusSelect value={status} onChange={onStatusChange} />
+          <Hint>saves the moment you pick one</Hint>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>Focus</Label>

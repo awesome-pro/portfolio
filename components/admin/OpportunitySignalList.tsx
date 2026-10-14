@@ -4,23 +4,20 @@ import { useMemo, useOptimistic, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { normalizeSignalLinks } from "@/lib/signal-links";
 import { compareSignals } from "@/lib/signal-focus";
-import type {
-  OpportunitySignal,
-  OpportunitySignalStatus,
+import {
+  OPPORTUNITY_SIGNAL_STATUSES,
+  signalStatusLabel,
+  type OpportunitySignal,
+  type OpportunitySignalStatus,
 } from "@/lib/opportunity-signals";
-import { setOpportunityFocus } from "@/app/admin/opportunity-signals/actions";
+import {
+  setOpportunityFocus,
+  setOpportunityStatus,
+} from "@/app/admin/opportunity-signals/actions";
 import DeleteOpportunitySignalButton from "./DeleteOpportunitySignalButton";
 import OpportunitySignalEditor from "./OpportunitySignalEditor";
 
 const PAGE_SIZE = 20;
-
-const STATUS_LABELS: Record<OpportunitySignalStatus, string> = {
-  new: "New",
-  applied: "Applied",
-  reached_out: "Reached Out",
-  interviewing: "Interviewing",
-  closed: "Closed",
-};
 
 type StatusFilter = OpportunitySignalStatus | "all" | "active" | "today";
 
@@ -69,7 +66,9 @@ function matchesSearch(signal: OpportunitySignal, query: string) {
     signal.website,
     signal.notes,
     links,
-    signal.status ?? "new",
+    // The label, not the stored slug: what is on screen is "Reached Out", so
+    // that is what someone will type. ("reached_out" would not match it.)
+    signal.status ? signalStatusLabel(signal.status) : "new",
   ]
     .filter(Boolean)
     .join(" ")
@@ -106,21 +105,78 @@ function CompactSelect({
   );
 }
 
+/**
+ * The status, as a control instead of a label.
+ *
+ * It saves the moment it changes: no opening the company, no choosing, no
+ * pressing Save. That was three steps for one decision, and the decision is
+ * usually made while scanning the list, not while editing a record. One control,
+ * one click, done — and "New" now shows as a status rather than as the absence
+ * of one, so every row says where it stands.
+ *
+ * A native select on purpose: arrow keys, first-letter type-ahead and the mobile
+ * picker all come for free, and it is the same control the filter above uses.
+ */
+function StatusPill({
+  status,
+  companyName,
+  disabled,
+  onChange,
+}: {
+  status: OpportunitySignalStatus;
+  companyName: string;
+  disabled?: boolean;
+  onChange: (status: OpportunitySignalStatus) => void;
+}) {
+  return (
+    <span className="relative inline-flex shrink-0 items-center">
+      <select
+        value={status}
+        disabled={disabled}
+        onChange={(event) =>
+          onChange(event.target.value as OpportunitySignalStatus)
+        }
+        aria-label={`Status for ${companyName}`}
+        title="Change status — saves immediately"
+        className={`cursor-pointer appearance-none rounded border border-border bg-surface py-px pr-5 pl-1.5 font-mono text-xs transition-colors hover:border-ink-muted hover:text-ink focus:border-ink-muted focus:outline-none disabled:opacity-50 ${
+          status === "new" ? "text-ink-faint" : "text-ink-muted"
+        }`}
+      >
+        {OPPORTUNITY_SIGNAL_STATUSES.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-1.5 text-[9px] text-ink-faint"
+      >
+        ▾
+      </span>
+    </span>
+  );
+}
+
 function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(false);
-  const [focusError, setFocusError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   // Optimistic so the star flips instantly; resets to the server value once the
   // refresh lands, which also covers focus edits made inside the editor.
   const [focus, setFocus] = useOptimistic(signal.focus);
+  // Same for the status, which is also settable from inside the editor — one
+  // owner for the value, so the two controls cannot disagree.
+  const [status, setStatus] = useOptimistic<OpportunitySignalStatus>(
+    signal.status ?? "new"
+  );
 
   const links = normalizeSignalLinks(signal.links);
-  const status = signal.status ?? "new";
 
   function toggleFocus() {
     const next = !focus;
-    setFocusError(null);
+    setError(null);
 
     startTransition(async () => {
       setFocus(next);
@@ -128,8 +184,23 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
         await setOpportunityFocus(signal.id, next);
         router.refresh();
       } catch (err) {
-        setFocusError(
-          err instanceof Error ? err.message : "Could not change focus."
+        setError(err instanceof Error ? err.message : "Could not change focus.");
+      }
+    });
+  }
+
+  function changeStatus(next: OpportunitySignalStatus) {
+    if (next === status) return;
+    setError(null);
+
+    startTransition(async () => {
+      setStatus(next);
+      try {
+        await setOpportunityStatus(signal.id, next);
+        router.refresh();
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Could not change status."
         );
       }
     });
@@ -160,12 +231,12 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-2 flex-wrap">
-            {/* Only non-default statuses earn a badge; "new" is the absence of one. */}
-            {status !== "new" && (
-              <span className="text-xs font-mono text-ink-muted border border-border rounded px-1.5 py-px">
-                {STATUS_LABELS[status]}
-              </span>
-            )}
+            <StatusPill
+              status={status}
+              companyName={signal.company_name}
+              disabled={isPending}
+              onChange={changeStatus}
+            />
             <span className="text-sm font-medium text-ink break-words">
               {signal.company_name}
             </span>
@@ -217,15 +288,19 @@ function OpportunitySignalCard({ signal }: { signal: OpportunitySignal }) {
         </div>
       </div>
 
-      {focusError && (
+      {error && (
         <p className="px-4 pb-2 -mt-1 text-xs font-mono text-destructive">
-          {focusError}
+          {error}
         </p>
       )}
 
       {expanded && (
         <div className="border-t border-border mx-4 mb-2 pt-3">
-          <OpportunitySignalEditor signal={signal} />
+          <OpportunitySignalEditor
+            signal={signal}
+            status={status}
+            onStatusChange={changeStatus}
+          />
         </div>
       )}
     </div>
@@ -297,11 +372,12 @@ export default function OpportunitySignalList({
     { value: "active", label: `Active (${statusCounts.active})` },
     { value: "all", label: `All (${statusCounts.all})` },
     { value: "today", label: `Today (${statusCounts.today})` },
-    { value: "new", label: `New (${statusCounts.new})` },
-    { value: "applied", label: `Applied (${statusCounts.applied})` },
-    { value: "reached_out", label: `Reached Out (${statusCounts.reached_out})` },
-    { value: "interviewing", label: `Interviewing (${statusCounts.interviewing})` },
-    { value: "closed", label: `Closed (${statusCounts.closed})` },
+    // The per-status filters come from the same list the pills do, so the
+    // wording — and the order — can never disagree with the control they filter.
+    ...OPPORTUNITY_SIGNAL_STATUSES.map(({ value, label }) => ({
+      value: value as StatusFilter,
+      label: `${label} (${statusCounts[value]})`,
+    })),
   ];
 
   const filtersActive =
