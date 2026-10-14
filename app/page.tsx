@@ -57,7 +57,7 @@ export default async function Home() {
       : null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="lowercase min-h-screen bg-background">
       {artifactsJsonLd && (
         <script
           type="application/ld+json"

@@ -158,7 +158,6 @@
 
   body {
     font-family: var(--font-inter), system-ui, sans-serif;
-    text-transform: lowercase;
   }
 }
 
@@ -173,9 +172,6 @@
   color: var(--ink);
 }
 
-/* Maths is case-sensitive notation — the site-wide `text-transform: lowercase`
-   on <body> was rendering O(n) as o(n) and L^CLIP as l^clip. KaTeX output is
-   exempt, and nothing else is. */
 .katex,
 .katex * {
   text-transform: none;
