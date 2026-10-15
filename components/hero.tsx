@@ -2,8 +2,8 @@ import Link from "next/link";
 import AgentUrl from "@/components/agent-url";
 
 const LINKS = [
-  { label: "x", href: "https://x.com/abhibuilds" },
   { label: "mail", href: "mailto:abhinandan@abhinandan.one" },
+  { label: "x", href: "https://x.com/abhibuilds" },
   { label: "github", href: "https://github.com/awesome-pro" },
 ];
 
@@ -42,7 +42,7 @@ export default function Hero() {
           </a>
         ))}
 
-        <Link
+        {/* <Link
           href="/resume.pdf"
           className="group inline-flex items-center gap-1.5 text-ink-muted transition-colors hover:text-ink focus-visible:text-ink"
         >
@@ -59,7 +59,7 @@ export default function Hero() {
             </span>
           </span>
           <AgentUrl url="https://abhinandan.one/resume.pdf" />
-        </Link>
+        </Link> */}
       </nav>
     </section>
   );

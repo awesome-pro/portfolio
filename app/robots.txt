@@ -5,7 +5,6 @@
 # read generously, and to point crawlers at the machine-readable versions:
 #
 #   Human pages:        https://abhinandan.one
-#   Profile for agents: https://abhinandan.one/about
 #   Index for LLMs:     https://abhinandan.one/llms.txt
 #   Full text for LLMs: https://abhinandan.one/llms-full.txt
 #   Sitemap:            https://abhinandan.one/sitemap.xml

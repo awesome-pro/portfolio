@@ -207,16 +207,6 @@ export default function ArtifactView({
         </h1>
 
         <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-ink-faint">
-          <span>
-            by{" "}
-            <Link
-              href="/about"
-              rel="author"
-              className="text-ink-muted transition-colors hover:text-ink"
-            >
-              {PERSON_NAME}
-            </Link>
-          </span>
           {artifact.published_at ? (
             <time dateTime={artifact.published_at}>
               {formatPublishedDate(artifact.published_at)}

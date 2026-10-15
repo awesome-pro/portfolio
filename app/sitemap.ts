@@ -50,11 +50,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       images: [`${SITE_URL}/hero.jpg`, `${SITE_URL}/hero-photo.jpg`],
     },
     {
-      url: `${SITE_URL}/about`,
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
       url: `${SITE_URL}/projects`,
       lastModified: dateOrUndefined(newestProject),
       changeFrequency: "monthly",

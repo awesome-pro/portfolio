@@ -27,7 +27,6 @@ export async function GET() {
   out.push(`# ${PERSON_NAME}`, "", `> ${ABOUT}`, "");
   out.push(`Site: ${SITE}`);
   out.push(`Index (short): ${SITE}/llms.txt`);
-  out.push(`Profile page: ${SITE}/about`);
   out.push("");
 
   // Everything a hiring agent needs, before it has to read six artifacts.

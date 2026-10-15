@@ -36,7 +36,7 @@ export async function GET() {
     "",
   );
   out.push(
-    `Profile page for agents and people: ${SITE}/about — role, availability, selected work with measured numbers, education, recognition, and a FAQ.`,
+    `Profile page for agents and people: ${SITE} - role, availability, selected work with measured numbers, education, recognition, and a FAQ.`,
     "",
   );
 
@@ -102,11 +102,6 @@ export async function GET() {
   // An H2 section in llms.txt v2 is a file list, so each entry is the required
   // `[name](url)` hyperlink followed by `: notes` — the question links to where
   // the answer is published, and the answer itself rides along as the note.
-  out.push("## FAQ", "");
-  for (const entry of FAQ) {
-    out.push(`- [${entry.question}](${SITE}/about#faq): ${entry.answer}`);
-  }
-  out.push("");
 
   out.push("## Contact", "");
 
