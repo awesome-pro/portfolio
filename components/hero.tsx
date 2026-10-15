@@ -42,7 +42,7 @@ export default function Hero() {
           </a>
         ))}
 
-        {/* <Link
+        <Link
           href="/resume.pdf"
           className="group inline-flex items-center gap-1.5 text-ink-muted transition-colors hover:text-ink focus-visible:text-ink"
         >
@@ -59,7 +59,7 @@ export default function Hero() {
             </span>
           </span>
           <AgentUrl url="https://abhinandan.one/resume.pdf" />
-        </Link> */}
+        </Link>
       </nav>
     </section>
   );
