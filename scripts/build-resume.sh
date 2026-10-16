@@ -5,21 +5,20 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="$ROOT_DIR/.resume-build"
 LATEX_IMAGE="${LATEX_IMAGE:-texlive/texlive:latest}"
 DOCKER_BIN="${DOCKER_BIN:-}"
-ALL_VARIANTS=(resume ml_resume forward_deployed_resume)
+ALL_VARIANTS=(resume)
 
 usage() {
   cat >&2 <<'EOF'
-Usage: scripts/build-resume.sh [resume|ml_resume|forward_deployed_resume|all]...
+Usage: scripts/build-resume.sh [resume|all]...
 
-When no variant is provided, all resume PDFs are built.
+There is one resume. `data/resume.tex` is the source; this compiles it to
+`public/resume.pdf`, which `/resume` serves and `/resume.txt` mirrors as text.
 EOF
 }
 
 tex_file_for() {
   case "$1" in
     resume) echo "$ROOT_DIR/data/resume.tex" ;;
-    ml_resume) echo "$ROOT_DIR/data/ml_resume.tex" ;;
-    forward_deployed_resume) echo "$ROOT_DIR/data/forward_deployed_resume.tex" ;;
     *)
       echo "Unknown resume variant: $1" >&2
       usage
@@ -31,8 +30,6 @@ tex_file_for() {
 output_file_for() {
   case "$1" in
     resume) echo "$ROOT_DIR/public/resume.pdf" ;;
-    ml_resume) echo "$ROOT_DIR/public/ml_resume.pdf" ;;
-    forward_deployed_resume) echo "$ROOT_DIR/public/forward_deployed_resume.pdf" ;;
     *)
       echo "Unknown resume variant: $1" >&2
       usage
@@ -78,7 +75,7 @@ else
     fi
 
     case "$variant" in
-      resume|ml_resume|forward_deployed_resume) VARIANTS+=("$variant") ;;
+      resume) VARIANTS+=("$variant") ;;
       *)
         echo "Unknown resume variant: $variant" >&2
         usage

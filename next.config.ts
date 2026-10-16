@@ -25,6 +25,22 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: CONTENT_SIGNALS }];
   },
 
+  /**
+   * `data/resume.tex` is read at render time rather than imported, so the
+   * tracer cannot see it: it is joined from `process.cwd()` at runtime. The
+   * routes that publish the resume therefore have to name it, or the file is
+   * missing from the serverless bundle and `/resume.txt` and the llms indexes
+   * lose the resume only once deployed.
+   *
+   * `/resume.txt` is prerendered, so it needs nothing at request time; it is
+   * listed anyway so that dropping `force-static` cannot silently break it.
+   */
+  outputFileTracingIncludes: {
+    "/resume.txt": ["./data/resume.tex"],
+    "/llms.txt": ["./data/resume.tex"],
+    "/llms-full.txt": ["./data/resume.tex"],
+  },
+
   // No serverActions.bodySizeLimit override on purpose: architecture media is
   // uploaded straight to Supabase Storage from the browser using a pre-signed
   // URL, so uploads never pass through a Server Action. The previous 12mb

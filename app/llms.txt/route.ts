@@ -4,11 +4,17 @@ import { getPullRequests } from "@/lib/contributions";
 import { getAllProjects } from "@/lib/projects";
 import {
   CONTACT,
-  FAQ,
   factLines,
   SITE_URL as SITE,
   SUMMARY,
 } from "@/lib/identity";
+import {
+  RESUME_PAGE,
+  RESUME_PDF,
+  RESUME_SUBTITLE,
+  RESUME_TEXT,
+  resumeProvenance,
+} from "@/lib/resume";
 
 /** Matches the freshness window of the pages this summarises. */
 export const revalidate = 60;
@@ -46,6 +52,18 @@ export async function GET() {
   // non-heading part of the file on purpose: in llms.txt v2 the H2 sections are
   // for file lists, and this is prose.
   out.push(...factLines(), "");
+
+  // The resume itself, linked rather than described. An agent that reads a
+  // summary of the resume here and the resume everywhere else is holding two
+  // documents it has to reconcile; /resume.txt is the resume, so there is only
+  // ever one, and the three links are three formats of it.
+  out.push("## Resume", "");
+  out.push(
+    `- [Resume — ${RESUME_SUBTITLE}](${SITE}${RESUME_TEXT}): the resume as text. ${resumeProvenance(SITE)}`,
+  );
+  out.push(`- [Resume page](${SITE}${RESUME_PAGE})`);
+  out.push(`- [Resume (PDF)](${SITE}${RESUME_PDF})`);
+  out.push("");
 
   // llms.txt v2 requires every file-list entry to be a markdown hyperlink
   // `[name](url)`, optionally followed by ": notes". Bare URLs and bold names

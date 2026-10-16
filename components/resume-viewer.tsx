@@ -1,4 +1,5 @@
 import { Download, ExternalLink } from "lucide-react";
+import AgentUrl from "@/components/agent-url";
 import Footer from "@/components/footer";
 import Nav from "@/components/nav";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,8 @@ type ResumeViewerProps = {
   title: string;
   subtitle: string;
   pdfUrl: string;
+  /** The same resume as text, for readers that cannot open a PDF. */
+  textUrl: string;
   downloadName: string;
   iframeTitle: string;
 };
@@ -15,6 +18,7 @@ export default function ResumeViewer({
   title,
   subtitle,
   pdfUrl,
+  textUrl,
   downloadName,
   iframeTitle,
 }: ResumeViewerProps) {
@@ -52,6 +56,10 @@ export default function ResumeViewer({
                 Open PDF
               </a>
             </Button>
+            {/* Hidden in the human view, printed in agent view and in the raw
+                response: the same resume as text, for a reader that cannot
+                render a PDF. */}
+            <AgentUrl url={`https://abhinandan.one${textUrl}`} />
           </div>
         </section>
 

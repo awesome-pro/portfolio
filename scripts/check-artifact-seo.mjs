@@ -210,8 +210,52 @@ check("homepage still declares the person entity", Boolean(home.find((node) => h
 const llms = await get("/llms.txt");
 check("llms.txt lists artifacts with reading time", /\d+ min read/.test(llms.body));
 check("llms.txt FAQ section is a file list", /^- \[.+\]\(https:\/\/\S+\): /m.test(llms.body));
+check("llms.txt links the resume as text", llms.body.includes("/resume.txt"));
 const llmsFull = await get("/llms-full.txt");
 check("llms-full.txt carries per-artifact keywords", llmsFull.body.includes("- keywords:"));
+
+// The resume has one source — data/resume.tex — and reads out in three places:
+// the PDF a human opens at /resume, /resume.txt, and the two llms files. These
+// assert the text forms agree with each other and carry no LaTeX, because the
+// failure that matters is an agent quoting a resume the human cannot find in
+// the PDF. Nothing is compared against a copied sentence: the surfaces are
+// compared against each other, so there is no fourth copy to fall out of date.
+const resumeText = await get("/resume.txt");
+check(
+  "resume.txt is served as plain text",
+  resumeText.status === 200 &&
+    (resumeText.headers.get("content-type") ?? "").includes("text/plain"),
+  `status ${resumeText.status}`
+);
+check(
+  "resume.txt carries no LaTeX",
+  !/\\[a-zA-Z]+/.test(resumeText.body),
+  (resumeText.body.match(/\\[a-zA-Z]+/) ?? [""])[0]
+);
+check(
+  "resume.txt names the PDF it mirrors",
+  resumeText.body.includes("/resume.pdf")
+);
+
+const resumePdf = await get("/resume.pdf");
+check(
+  "the resume PDF it mirrors is served",
+  resumePdf.status === 200 &&
+    (resumePdf.headers.get("content-type") ?? "").includes("pdf"),
+  `status ${resumePdf.status}`
+);
+
+const resumeBlock =
+  llmsFull.body.split("\n# Resume\n")[1]?.split("\n# Projects")[0] ?? "";
+const bulletsIn = (body) => body.split("\n").filter((line) => line.startsWith("- "));
+const fullBullets = bulletsIn(resumeBlock);
+const textBullets = bulletsIn(resumeText.body);
+check(
+  "llms-full.txt and resume.txt carry the same resume bullets",
+  fullBullets.length > 0 &&
+    fullBullets.every((line) => textBullets.includes(line)),
+  `${fullBullets.length} in llms-full, ${textBullets.length} in resume.txt`
+);
 
 const keyFile = await get("/indexnow-key.txt");
 check(

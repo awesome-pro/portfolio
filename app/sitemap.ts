@@ -24,7 +24,7 @@ function dateOrUndefined(value: string | null | undefined): Date | undefined {
  * Every entry used to claim `new Date()`, which is a freshness claim a crawler
  * can catch you in: four pages that never change cannot all have been modified
  * in the same second, every time it looks. Artifact and project pages carry
- * their own dates; the pages that genuinely have no date (the resumes, the
+ * their own dates; the pages that genuinely have no date (the resume, the
  * GitHub-fed contribution list) now omit the field rather than invent one.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -68,16 +68,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE_URL}/resume`,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/ml_resume`,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/forward_deployed_resume`,
       changeFrequency: "monthly",
       priority: 0.8,
     },

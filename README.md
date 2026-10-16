@@ -22,9 +22,15 @@
 
 ### Resume
 
+There is one resume, and one source for it.
+
 - **Source** — Editable LaTeX lives in `data/resume.tex`
 - **PDF** — `pnpm resume:build` compiles the source into `public/resume.pdf`
 - **Page** — `/resume` renders the generated PDF and exposes a direct download
+- **Text** — `/resume.txt` is the same resume as text, for agents. It is parsed
+  from `data/resume.tex` by `lib/resume.ts` at render time, never retyped, so it
+  cannot drift from the PDF. `/llms.txt` links to it and `/llms-full.txt`
+  carries it in full; the artifact checks assert the PDF it points at is served.
 
 ### Admin CMS
 

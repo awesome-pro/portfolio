@@ -9,6 +9,7 @@ import {
   SITE_URL as SITE,
   SUMMARY,
 } from "@/lib/identity";
+import { loadResume, RESUME_SUBTITLE, resumeBody, resumeProvenance } from "@/lib/resume";
 
 export const revalidate = 60;
 
@@ -21,6 +22,7 @@ const ABOUT = SUMMARY;
  */
 export async function GET() {
   const artifacts = await getPublicArtifacts();
+  const resume = await loadResume();
 
   const out: string[] = [];
 
@@ -36,6 +38,13 @@ export async function GET() {
   for (const entry of FAQ) {
     out.push(`**${entry.question}**`, "", entry.answer, "");
   }
+
+  // The resume, whole and unedited, from the source the PDF is typeset from.
+  // Not a paragraph about the resume: the same words /resume serves, so an
+  // agent quoting this file and a human reading the PDF cannot disagree.
+  out.push("# Resume", "");
+  out.push(`Resume — ${RESUME_SUBTITLE}. ${resumeProvenance(SITE)}`, "");
+  out.push(resumeBody(resume), "");
 
   out.push("# Projects", "");
   for (const project of getAllProjects()) {

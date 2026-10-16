@@ -4,8 +4,6 @@ on:
   push:
     paths:
       - data/resume.tex
-      - data/ml_resume.tex
-      - data/forward_deployed_resume.tex
       - scripts/build-resume.sh
       - .github/workflows/build-resume.yml
   workflow_dispatch:
@@ -28,8 +26,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          all_variants="resume ml_resume forward_deployed_resume"
-          all_pdfs="public/resume.pdf public/ml_resume.pdf public/forward_deployed_resume.pdf"
+          all_variants="resume"
+          all_pdfs="public/resume.pdf"
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "variants=${all_variants}" >> "$GITHUB_OUTPUT"
@@ -61,16 +59,6 @@ jobs:
           if grep -Fxq "data/resume.tex" <<< "$changed_files"; then
             variants+=("resume")
             pdfs+=("public/resume.pdf")
-          fi
-
-          if grep -Fxq "data/ml_resume.tex" <<< "$changed_files"; then
-            variants+=("ml_resume")
-            pdfs+=("public/ml_resume.pdf")
-          fi
-
-          if grep -Fxq "data/forward_deployed_resume.tex" <<< "$changed_files"; then
-            variants+=("forward_deployed_resume")
-            pdfs+=("public/forward_deployed_resume.pdf")
           fi
 
           echo "variants=${variants[*]}" >> "$GITHUB_OUTPUT"

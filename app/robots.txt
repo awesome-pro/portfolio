@@ -5,6 +5,7 @@
 # read generously, and to point crawlers at the machine-readable versions:
 #
 #   Human pages:        https://abhinandan.one
+#   Resume (text):      https://abhinandan.one/resume.txt
 #   Index for LLMs:     https://abhinandan.one/llms.txt
 #   Full text for LLMs: https://abhinandan.one/llms-full.txt
 #   Sitemap:            https://abhinandan.one/sitemap.xml
