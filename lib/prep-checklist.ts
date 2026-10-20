@@ -3,12 +3,12 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 /**
- * The interview prep checklist, parsed from markdown into tickable sections.
+ * The interview prep checklists, parsed from markdown into tickable sections.
  *
- * The markdown is the source of truth: items are added by editing
- * data/inference-interview-prep.md, not by writing to a database. That keeps
- * "add an item" as cheap as it is in Notion, with no schema and no migration,
- * and it means the checklist is versioned alongside everything else.
+ * The markdown is the source of truth: items are added by editing the sheet's
+ * file in `data/`, not by writing to a database. That keeps "add an item" as
+ * cheap as it is in Notion, with no schema and no migration, and it means the
+ * checklists are versioned alongside everything else.
  *
  * Which leaves one hard problem — what a tick is attached to. Ticks live in the
  * browser (see lib/prep-progress-store.ts) and are keyed by a hash of the item's
@@ -22,6 +22,7 @@ const SOURCES = {
   checklist: "data/inference-interview-prep.md",
   practical: "data/inference-interview-practical-problems.md",
   "system-design": "data/inference-system-design-and-dsa.md",
+  "coding-interview": "data/inferact_coding_interview_master_checklist.md",
 } as const;
 
 export type ChecklistSlug = keyof typeof SOURCES;
@@ -209,15 +210,17 @@ export function parseChecklist(markdown: string): PrepChecklist {
 }
 
 /**
- * The three sheets, in the order they are meant to be worked through: concepts,
- * then the problem bank, then platform design and DSA. Each is its own page
- * because together they are 696 items — one page that size is unusable, and
- * three files stay editable on their own.
+ * The sheets, in the order they are meant to be worked through: concepts, then
+ * the problem bank, then platform design and DSA, then the timed coding track.
+ * Each is its own page because together they run to hundreds of items — one page
+ * that size is unusable — and separate files stay editable on their own.
  *
  * Item keys are hashes of `module title + item text` and nothing else, so a key
  * means the same thing on any sheet; because no two sheets share a module
  * title, no key can collide between them and ticks stay independent without the
- * schema needing to know which sheet an item came from.
+ * schema needing to know which sheet an item came from. (The same holds for
+ * section ids, which are what a custom item is filed under — a new sheet must
+ * not reuse another sheet's module titles.)
  */
 export interface ChecklistSource {
   slug: ChecklistSlug;
@@ -249,6 +252,13 @@ export const CHECKLISTS: ChecklistSource[] = [
     blurb: "Platform design prompts and the DSA that still gets asked.",
     file: SOURCES["system-design"],
     href: "/admin/prep/system-design",
+  },
+  {
+    slug: "coding-interview",
+    label: "coding interview",
+    blurb: "Timed coding: Python, PyTorch internals, runtime and Triton kernels.",
+    file: SOURCES["coding-interview"],
+    href: "/admin/prep/coding-interview",
   },
 ];
 

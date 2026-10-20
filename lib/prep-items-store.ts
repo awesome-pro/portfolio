@@ -1,7 +1,7 @@
 /**
  * Item edits for the prep checklist — an overlay on the markdown, not a copy.
  *
- * The markdown file is parsed at build time into 487 items; this store holds
+ * The markdown files are parsed at build time into items; this store holds
  * only what the user changed from the page, keyed the same way (see
  * lib/prep-checklist.ts). Three kinds of row:
  *

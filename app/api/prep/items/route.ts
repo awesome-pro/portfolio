@@ -5,7 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 /**
  * Add, reword, hide and restore checklist items.
  *
- * The page itself is static — it bakes the 487 markdown items in at build time —
+ * The page itself is static — it bakes every markdown item in at build time —
  * and these changes are layered on in the browser. So adding an item is
  * immediate: no rebuild, no deploy, and the row comes back on every device.
  *

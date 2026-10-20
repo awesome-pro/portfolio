@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import InlineMarkdown from "@/components/admin/InlineMarkdown";
 import PrepChecklist from "@/components/admin/PrepChecklist";
 import {
   CHECKLISTS,
@@ -10,7 +11,7 @@ import {
 /**
  * One prep sheet: a heading, its counts, and the checklist itself.
  *
- * All three sheets render through here so they cannot drift apart in look or in
+ * Every sheet renders through here so they cannot drift apart in look or in
  * behaviour — only the file they read differs. The switcher keeps them one
  * click from each other, because the point of splitting them is that each stays
  * small enough to work through, not that they become separate tools.
@@ -43,12 +44,15 @@ export default async function PrepSheet({ slug }: { slug: string }) {
         {checklist.intro.length > 0 && (
           <div className="mt-4 max-w-2xl">
             {checklist.intro.map((paragraph, index) => (
-              <p
+              <div
                 key={index}
                 className="mb-2 text-sm leading-relaxed text-ink-muted last:mb-0"
               >
-                {paragraph}
-              </p>
+                {/* Same renderer as every other prose block on the sheet: the
+                    intro is markdown too, and printing it raw left the bold
+                    labels and code spans as literal asterisks and backticks. */}
+                <InlineMarkdown text={paragraph} />
+              </div>
             ))}
           </div>
         )}
