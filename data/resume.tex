@@ -91,8 +91,8 @@
       \resumeProjectHeading
           {\textbf{HiQCache} $|$ \emph{SGLang, Quantization} $|$ \href{https://github.com/sgl-project/sglang/pull/41365}{\underline{PR \#41365}} $|$ \href{https://github.com/awesome-pro/hiqcache}{\underline{GitHub}}}{}
           \resumeItemListStart
-            \resumeItem{Built an INT8 host-tier KV cache for SGLang HiCache, reducing Qwen3-8B L2 KV storage from 147,456 $\rightarrow$ 82,944 B/token (43.75\%) and increasing fixed-budget host-cache capacity 1.78$\times$ (54K $\rightarrow$ 96K tokens) while keeping GPU L1 KV in BF16.}
-            \resumeItem{Integrated and validated real GPU$\leftrightarrow$CPU KV compression/restoration on SGLang, with repeated 8 GB-budget runs improving cache hit rate from $\sim$57\% to $\sim$73\% and increasing L2-restored KV from $\sim$127K to $\sim$168K tokens on an RTX A6000.}
+            \resumeItem{Implemented INT8 CPU-tier KV caching in SGLang HiCache with GPU$\leftrightarrow$CPU compression/restoration, reducing Qwen3-8B host KV memory by \textbf{43.75\%} (144 $\rightarrow$ 81 KiB/token) and increasing fixed-budget L2 capacity \textbf{1.78$\times$} (54K $\rightarrow$ 96K tokens).}
+            \resumeItem{Benchmarked on an RTX A6000 using exact-token trace replay (128 requests, 284K prompt tokens), improving cache-hit rate from \textbf{57.6\% $\rightarrow$ 72.0\%} against BF16 at equal 8 GB budget, capturing \textbf{$\sim$99\%} of the workload's 72.72\% oracle reuse ceiling.}
           \resumeItemListEnd
 
       \resumeProjectHeading
