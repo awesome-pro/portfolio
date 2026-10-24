@@ -98,8 +98,8 @@
       \resumeProjectHeading
           {\textbf{RolloutCore} $|$ \emph{NCCL, vLLM} $|$ \href{https://github.com/awesome-pro/rolloutcore}{\underline{GitHub}}}{}
           \resumeItemListStart
-            \resumeItem{Built a RL rollout control plane around vLLM with drain-before-mutate semantics, live NCCL weight installs, post-update cache invalidation, and admit-time version/provenance binding, validated end-to-end without restarting the inference process.}
-            \resumeItem{On Qwen3-8B, measured 4.25s hot updates vs 37.04s full restart ($\sim$8.7$\times$ lower model-transition time) on 2$\times$ RTX 3090 over PCIe; reproduced 32 stale prefix-cache hits and changed output when cross-version invalidation was deliberately skipped.}
+            \resumeItem{Built a versioned RL rollout control plane around vLLM, orchestrating NCCL hot-weight updates, drain-before-mutate, cache invalidation, and per-trajectory weight provenance without modifying vLLM.}
+            \resumeItem{Benchmarked Qwen3-8B hot updates at \textbf{4.25s vs 37.04s} for engine restart (\textbf{8.7$\times$ faster transition}) on 2$\times$ RTX 3090s; demonstrated \textbf{32 stale KV-cache token hits and divergent generation} without invalidation in an OPT-125M negative-control experiment.}
           \resumeItemListEnd
 
        \resumeProjectHeading
