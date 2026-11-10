@@ -84,12 +84,12 @@
 \resumeSubHeadingListEnd
 
 
-%-----------PROJECTS-----------
-\section{Open Source Projects}
+%-----------OPEN SOURCE CONTRIBUTIONS & PROJECTS-----------
+\section{Open Source Projects \& Contributions}
     \resumeSubHeadingListStart
 
       \resumeProjectHeading
-          {\textbf{HiQCache} $|$ \emph{SGLang, Quantization} $|$ \href{https://github.com/sgl-project/sglang/pull/41365}{\underline{PR \#41365}} $|$ \href{https://github.com/awesome-pro/hiqcache}{\underline{GitHub}}}{}
+          {\textbf{HiQCache} $|$ \emph{SGLang, Quantization} $|$ \href{https://github.com/sgl-project/sglang/pull/41365}{\underline{PR\#41365}} $|$ \href{https://github.com/awesome-pro/hiqcache}{\underline{GitHub}}}{}
           \resumeItemListStart
             \resumeItem{Implemented INT8 CPU-tier KV caching in SGLang HiCache with GPU$\leftrightarrow$CPU compression/restoration, reducing Qwen3-8B host KV memory by \textbf{43.75\%} (144 $\rightarrow$ 81 KiB/token) and increasing fixed-budget L2 capacity \textbf{1.78$\times$} (54K $\rightarrow$ 96K tokens).}
             \resumeItem{Benchmarked on an RTX A6000 using exact-token trace replay (128 requests, 284K prompt tokens), improving cache-hit rate from \textbf{57.6\% $\rightarrow$ 72.0\%} against BF16 at equal 8 GB budget, capturing \textbf{$\sim$99\%} of the workload's 72.72\% oracle reuse ceiling.}
@@ -107,6 +107,14 @@
           \resumeItemListStart
             \resumeItem{Built a from-scratch inference runtime with continuous batching, token-budget scheduling, chunked prefill, recompute preemption, and paged KV with content-addressed prefix caching.}
             \resumeItem{Implemented a Llama-family path over those paged KV tensors and matched Hugging Face ($\leq$6e-8 float32 logit error; identical greedy tokens); on a 120-request shared-prefix workload, prefix reuse cut computed prefill work by 97\%.}
+          \resumeItemListEnd
+        
+        \resumeProjectHeading
+          {\textbf{Contributions}}{\small \href{https://abhinandan.one/contributions}{\underline{All contributions}}}
+          \resumeItemListStart
+            \resumeItem{\href{https://github.com/vllm-project/vllm/pull/62005}{\underline{vLLM\#62005}} - [Quantization] Report the resolved kernel per layer in model inspection}
+            \resumeItem{\href{https://github.com/ai-dynamo/dynamo/pull/15333}{\underline{Dynamo\#15333}} - fix(bindings): preserve session affinity through chat processors}
+            \resumeItem{\href{https://github.com/kvcache-ai/Mooncake/pull/4375}{\underline{Mooncake\#4375}} - [Bugfix][TE] Warn when MC\_TRANSFER\_TIMEOUT cannot cover the Ascend retries}
           \resumeItemListEnd
     \resumeSubHeadingListEnd
 
